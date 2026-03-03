@@ -72,8 +72,23 @@
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // Наш старый тестовый маркер
-    L.marker([43.2389, 76.8897]).bindPopup("<b>Центральная локация</b><br>♿ Есть пандус").addTo(map);
+    // --- ЗАГРУЗКА ДАННЫХ С СЕРВЕРА (API) ---
+        fetch('/api/places')
+            .then(response => response.json()) // Превращаем ответ сервера в JSON
+            .then(places => {
+                // Проходимся по каждому месту в списке
+                places.forEach(place => {
+                    // Формируем текст для всплывающего окна
+                    let popupText = `<b>${place.name}</b><br>`;
+                    popupText += place.hasRamp ? "✅ Есть пандус" : "❌ Нет пандуса";
+
+                    // Добавляем маркер на карту
+                    L.marker([place.lat, place.lng])
+                        .addTo(map)
+                        .bindPopup(popupText);
+                });
+            })
+            .catch(error => console.error("Ошибка при загрузке мест:", error));
 
     // --- НОВАЯ ЛОГИКА ГЕОЛОКАЦИИ ---
 
