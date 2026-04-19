@@ -1,19 +1,14 @@
 {
-  "name": "OpenPath - Карта Доступности",
+  "name": "OpenPath Алматы",
   "short_name": "OpenPath",
-  "description": "Интерактивная карта доступных мест для людей с инвалидностью.",
-  "start_url": "./index.html",
+  "description": "Инклюзивная карта города",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#007bff",
+  "theme_color": "#28a745",
   "icons": [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/854/854878.png",
       "sizes": "512x512",
       "type": "image/png"
     }
