@@ -1,26 +1,21 @@
-const CACHE_NAME = 'openpath-cache-v1';
+const CACHE_NAME = 'openpath-v1';
 const urlsToCache = [
     './index.html',
-    './manifest.json'
+    './manifest.json',
+    'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css',
+    'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js'
 ];
 
-// Установка воркера и кэширование файлов
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => {
-                return cache.addAll(urlsToCache);
-            })
+            .then(cache => cache.addAll(urlsToCache))
     );
 });
 
-// Перехват запросов (чтобы работало оффлайн)
 self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
-            .then(response => {
-                if (response) return response;
-                return fetch(event.request);
-            })
+            .then(response => response || fetch(event.request))
     );
 });

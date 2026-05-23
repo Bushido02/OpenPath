@@ -3,9 +3,8 @@
   "short_name": "OpenPath",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f2f2f7",
+  "background_color": "#1c1c1e",
   "theme_color": "#28a745",
-  "description": "Навигатор доступной среды Алматы",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/854/854878.png",
