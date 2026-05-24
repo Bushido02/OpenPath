@@ -37,14 +37,13 @@
         .sidebar-content { width: 380px; min-width: 380px; height: 100%; background-color: var(--bg-panel); z-index: 1010; box-shadow: 4px 0 20px rgba(0,0,0,0.08); display: flex; flex-direction: column; position: relative; transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1); border-right: 1px solid var(--border-color); }
         .sidebar-content.collapsed { width: 0; min-width: 0; transform: translateX(-100%); }
         .toggle-btn { position: absolute; right: -28px; top: 20px; width: 28px; height: 44px; background: var(--bg-panel); border: 1px solid var(--border-color); border-left: none; border-radius: 0 10px 10px 0; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1030; color: var(--text-muted); font-weight: bold; font-size: 18px; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
-        .mobile-drag-handle { display: none; } /* Скрыто на десктопе */
+        .mobile-drag-handle { display: none; }
 
         .panel { display: none !important; padding: 20px; flex-grow: 1; overflow-y: auto; flex-direction: column; box-sizing: border-box; height: 100%; }
         .panel.active { display: flex !important; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         #panel-routes { padding: 0; }
 
-        /* Компоненты внутри панелей */
         .header-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-shrink: 0; }
         .search-wrapper { position: relative; margin-bottom: 15px; display: flex; align-items: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-radius: 16px;}
         .search-box { width: 100%; padding: 16px 85px 16px 45px; border-radius: 16px; border: 1px solid var(--border-color); background-color: var(--bg-input); font-size: 16px !important; outline: none; box-sizing: border-box; color: var(--text-main); font-weight: 500;}
@@ -59,8 +58,6 @@
 
         .access-filters-box { background: var(--bg-input); border-radius: 16px; padding: 12px 16px; margin-bottom: 10px; display: flex; flex-direction: column; border: 1px solid var(--border-color); flex-shrink: 0; transition: 0.3s ease;}
         .access-filters-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; cursor: pointer; margin: 0; padding: 4px 0;}
-        .filter-arrow { transition: transform 0.3s ease; font-size: 10px;}
-        .filter-arrow.open { transform: rotate(180deg); }
         .filter-content-wrapper { display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow: hidden; transition: max-height 0.3s ease, margin-top 0.3s ease; margin-top: 10px;}
         .filter-content-wrapper.collapsed { max-height: 0; margin-top: 0; opacity: 0; pointer-events: none;}
         .access-cb-label { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-main);}
@@ -70,8 +67,6 @@
         .result-item { padding: 16px; border-radius: 16px; background: var(--bg-panel); cursor: pointer; transition: 0.2s; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px;}
         .result-title { font-weight: 700; font-size: 16px; color: var(--text-main); line-height: 1.2;}
         .result-desc { font-size: 13px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
-        .result-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px;}
-        .access-badge { font-weight: 600; border-radius: 6px; padding: 4px 8px; font-size: 11px; }
 
         .route-header-green { background-color: var(--primary); padding: 25px 20px 15px 20px; color: var(--primary-text); flex-shrink: 0; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;}
         .route-input-group { position: relative; background: var(--bg-panel); border-radius: 12px; padding: 5px; margin-bottom: 15px; }
@@ -81,7 +76,7 @@
         .point-icon.a { color: #007bff; }
         .point-icon.b { color: #ff3b30; }
         .route-input { border: none; padding: 8px; flex-grow: 1; outline: none; font-size: 16px !important; font-weight: 500; background: transparent; color: var(--text-main);}
-        .swap-btn { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background: var(--bg-input); border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 14px;}
+        .swap-btn { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background: var(--bg-input); border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer;}
 
         .route-tabs { display: flex; justify-content: space-around; margin-top: 10px; }
         .r-tab { color: rgba(255,255,255,0.6); font-size: 22px; cursor: pointer; padding-bottom: 10px; border-bottom: 3px solid transparent; }
@@ -99,20 +94,18 @@
         .map-controls-right { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); z-index: 200; display: flex; flex-direction: column; gap: 15px; }
         .map-btn-group { background: var(--bg-panel); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border-color); }
         .map-btn { width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 20px; font-weight: 600; color: var(--text-main); background: var(--bg-panel); }
-        .map-fab { width: 46px; height: 46px; background: var(--bg-panel); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; font-size: 20px; border: 1px solid var(--border-color); color: var(--text-main); }
+        .map-fab { width: 46px; height: 46px; background: var(--bg-panel); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; font-size: 20px; border: 1px solid var(--border-color); color: var(--text-main); transition: 0.2s;}
+        .map-fab:active { transform: scale(0.9); }
 
         .sos-btn { background: #ff3b30 !important; color: white !important; border: none !important; font-weight: 800; font-size: 14px; animation: pulseRed 2s infinite; }
         @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); } }
 
-        .add-place-fab { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 16px 32px; border-radius: 30px; font-size: 16px; font-weight: 700; border: none; box-shadow: 0 6px 20px rgba(40,167,69,0.3); z-index: 200;}
         .stop-nav-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: #dc3545; color: white; padding: 16px 32px; border-radius: 30px; font-size: 16px; font-weight: 800; border: none; box-shadow: 0 6px 20px rgba(220,53,69,0.3); z-index: 200; display: none;}
 
         #toast-container { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; text-align: center;}
-        .toast { background-color: rgba(0, 0, 0, 0.85); color: #fff; padding: 16px 20px; border-radius: 12px; font-size: 16px; font-weight: 600; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2);}
+        .toast { background-color: rgba(0, 0, 0, 0.85); color: #fff; padding: 16px 20px; border-radius: 12px; font-size: 16px; font-weight: 600; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); animation: fadeIn 0.3s;}
 
-        /* Стили карты и кластеров */
         .custom-icon-wrapper { border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer;}
-        .maplibregl-popup-content { background: var(--bg-panel); color: var(--text-main); border-radius: 16px; padding: 15px; border: 1px solid var(--border-color); }
 
         /* ИНТЕРФЕЙС УМНОГО СВЕТОФОРА */
         #traffic-light-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
@@ -120,16 +113,13 @@
         .traffic-status-box { position: relative; z-index: 10000; background: rgba(0,0,0,0.8); padding: 30px; border-radius: 24px; text-align: center; border: 2px solid #333; backdrop-filter: blur(10px); width: 80%; }
         .close-traffic-btn { position: absolute; bottom: 40px; z-index: 10000; background: #fff; color: #000; padding: 16px 40px; border-radius: 30px; font-size: 18px; font-weight: 800; border: none; cursor: pointer; }
 
-        /* === СПЕЦИАЛЬНО ДЛЯ ТЕЛЕФОНОВ (MOBILE FIRST UX) === */
+        /* === СПЕЦИАЛЬНО ДЛЯ ТЕЛЕФОНОВ (BOTTOM SHEET) === */
         .mobile-bottom-nav { display: none; }
 
         @media (max-width: 768px) {
             .wrapper { flex-direction: column; }
-
-            /* Прячем левую панель навигации (Заменяем на нижнюю) */
             .sidebar-nav { display: none; }
 
-            /* Нижнее меню в стиле iOS */
             .mobile-bottom-nav {
                 display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
                 background: var(--bg-panel); border-top: 1px solid var(--border-color);
@@ -141,7 +131,6 @@
             .mob-nav-item .icon { font-size: 24px; display: block; margin-bottom: 4px; }
             .mob-nav-item.active { color: var(--primary); }
 
-            /* Всплывающая панель (Bottom Sheet) */
             .sidebar-content {
                 width: 100% !important; min-width: 100% !important;
                 position: fixed; top: auto; bottom: 70px; left: 0;
@@ -150,22 +139,12 @@
                 box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
             }
             .sidebar-content.open { transform: translateY(0); }
-            .toggle-btn { display: none; } /* Убираем десктопную стрелку */
+            .toggle-btn { display: none; }
+            .mobile-drag-handle { display: block; width: 40px; height: 5px; background: var(--border-color); border-radius: 5px; margin: 12px auto; }
 
-            /* Полоска сверху панели (для красоты на мобильном) */
-            .mobile-drag-handle {
-                display: block; width: 40px; height: 5px; background: var(--border-color);
-                border-radius: 5px; margin: 12px auto;
-            }
-
-            /* Кнопки карты над нижним меню */
-            .map-controls-right {
-                bottom: 85px; top: auto; transform: none; flex-direction: row; right: 15px;
-            }
+            .map-controls-right { bottom: 85px; top: auto; transform: none; flex-direction: row; right: 15px; }
             .map-btn-group { flex-direction: row; }
-            .add-place-fab, .stop-nav-btn { bottom: 85px; }
-
-            /* Увеличиваем зоны нажатия */
+            .stop-nav-btn { bottom: 85px; }
             .search-box, .route-input { font-size: 16px !important; padding: 18px 45px; }
         }
     </style>
@@ -211,16 +190,14 @@
                 <button class="chip-btn" onclick="quickSearch('Рестораны')">🍽️ Рестораны</button>
                 <button class="chip-btn" onclick="quickSearch('Аптеки')">💊 Аптеки</button>
                 <button class="chip-btn" onclick="quickSearch('Магазины')">🛒 Магазины</button>
-                <button class="chip-btn" onclick="quickSearch('Медицина')">🏥 Медицина</button>
             </div>
 
             <div class="access-filters-box">
                 <h4 class="access-filters-header" onclick="document.getElementById('filterContent').classList.toggle('collapsed');">
-                    <span>Фильтры доступности входа</span> ▼
+                    <span>Фильтры доступности</span> ▼
                 </h4>
                 <div class="filter-content-wrapper collapsed" id="filterContent">
                     <label class="access-cb-label"><input type="checkbox" id="f-full" checked onchange="window.loadPlaces()"> ✅ С пандусом</label>
-                    <label class="access-cb-label"><input type="checkbox" id="f-partial" checked onchange="window.loadPlaces()"> 🤝 С кнопкой</label>
                     <label class="access-cb-label"><input type="checkbox" id="f-none" checked onchange="window.loadPlaces()"> ❌ Ступеньки</label>
                 </div>
             </div>
@@ -245,7 +222,7 @@
                 <div class="route-tabs">
                     <span class="r-tab active" data-mode="foot-walking" onclick="setMode('foot-walking', this)">🚶‍♂️</span>
                     <span class="r-tab" data-mode="wheelchair" onclick="setMode('wheelchair', this)" style="display: none;" id="tabWheelchair">♿</span>
-                    <span class="r-tab" data-mode="custom-astar" onclick="setMode('custom-astar', this)" style="color: #ffff00;" title="A* Алгоритм">🧠</span>
+                    <span class="r-tab" data-mode="custom-astar" onclick="setMode('custom-astar', this)" style="color: #ffff00;">🧠</span>
                 </div>
             </div>
             <div style="padding: 20px;">
@@ -264,11 +241,20 @@
         <div id="panel-profile" class="panel">
             <h2 style="margin-top: 0; margin-bottom: 25px;">Настройки</h2>
             <div class="form-group" style="margin-bottom: 20px;">
-                <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700;">Потребности</label>
+                <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700;">Потребности (Инклюзивность)</label>
+
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-panel); border-radius:12px; border:1px solid var(--border-color);"><input type="checkbox" id="cb-wheelchair" style="width:22px; height:22px;" onchange="applySettings()">👨‍🦽 На коляске</label>
-                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-panel); border-radius:12px; border:1px solid var(--border-color);"><input type="checkbox" id="cb-vision" style="width:22px; height:22px;" onchange="applySettings()">🦯 Слабовидящий</label>
+                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-panel); border-radius:12px; border:1px solid var(--border-color);">
+                        <input type="checkbox" id="cb-wheelchair" style="width:22px; height:22px;" onchange="applySettings()">👨‍🦽 На коляске
+                    </label>
+                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-panel); border-radius:12px; border:1px solid var(--border-color);">
+                        <input type="checkbox" id="cb-vision" style="width:22px; height:22px;" onchange="applySettings()">🦯 Слабовидящий (Голос)
+                    </label>
+                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-panel); border-radius:12px; border:1px solid var(--border-color);">
+                        <input type="checkbox" id="cb-hearing" style="width:22px; height:22px;" onchange="applySettings()">🧏 Глухой (Текст)
+                    </label>
                 </div>
+
             </div>
         </div>
     </div>
@@ -281,7 +267,8 @@
             <div class="map-fab" onclick="startTrafficLightAssist()" style="background: #fff3cd; border-color: #ffeeba;">🤖</div>
             <div class="map-fab" onclick="toggleGPS()" id="gpsBtn">🎯</div>
             <div class="map-fab" onclick="toggleVoice()" id="voiceBtn">🔊</div>
-            <div class="map-btn-group" style="display: none;" id="desktopZoom"> <div class="map-btn" onclick="map.zoomIn()">+</div>
+            <div class="map-btn-group" style="display: none;" id="desktopZoom">
+                <div class="map-btn" onclick="map.zoomIn()">+</div>
                 <div class="map-btn" onclick="map.zoomOut()">−</div>
                 <div class="map-btn" onclick="toggleMap3D()" id="btn3D" style="font-size:14px;">3D</div>
             </div>
@@ -302,13 +289,17 @@
     const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 
     let allPlacesFromDB = [];
-    let voiceEnabled = false; let currentProfile = 'foot-walking';
-    let routeSteps = []; let routeCoordinates = []; let currentStepIndex = 0; let isNavigating = false;
+    let voiceEnabled = false; window.isHearingImpaired = false;
+    let currentProfile = 'foot-walking';
+    let routeStartLatlng = null; let routeEndLatlng = null; let isNavigating = false;
 
-    // PWA Setup
-    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Setup pending')); }); }
+    // --- ПЕРЕМЕННЫЕ ДЛЯ КУЛДАУНА (DEBOUNCE / THROTTLE) ---
+    let lastTapTime = 0;
+    let lastSosTime = 0;
+    let lastAiCallTime = 0;
 
-    // --- UX ЛОГИКА ДЛЯ МЕНЮ ---
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e=>{}); }); }
+
     let isMobile = window.innerWidth <= 768;
     window.addEventListener('resize', () => { isMobile = window.innerWidth <= 768; document.getElementById('desktopZoom').style.display = isMobile ? 'none' : 'flex'; });
     if(!isMobile) document.getElementById('desktopZoom').style.display = 'flex';
@@ -319,74 +310,54 @@
         if (!isMobile) { document.getElementById('sidebarContent').classList.remove('collapsed'); }
     }
 
-    // МОБИЛЬНАЯ ЛОГИКА (BOTTOM SHEET)
     let activeMobileMenu = null;
     function openMobileMenu(targetId, el) {
         const sidebar = document.getElementById('sidebarContent');
         document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-
-        // Если кликнули на ту же кнопку - закрываем панель
-        if(activeMobileMenu === targetId && sidebar.classList.contains('open')) {
-            closeMobileMenu();
-            return;
-        }
-
-        el.classList.add('active');
-        document.getElementById(targetId).classList.add('active');
-        sidebar.classList.add('open');
-        activeMobileMenu = targetId;
+        if(activeMobileMenu === targetId && sidebar.classList.contains('open')) { closeMobileMenu(); return; }
+        el.classList.add('active'); document.getElementById(targetId).classList.add('active');
+        sidebar.classList.add('open'); activeMobileMenu = targetId;
     }
-    function closeMobileMenu() {
-        document.getElementById('sidebarContent').classList.remove('open');
-        document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
-        activeMobileMenu = null;
-    }
+    function closeMobileMenu() { document.getElementById('sidebarContent').classList.remove('open'); document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active')); activeMobileMenu = null; }
     function toggleDesktopSidebar() { document.getElementById('sidebarContent').classList.toggle('collapsed'); }
 
-    // --- КАРТА ---
-    const map = new maplibregl.Map({ container: 'map', style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`, center: [76.8897, 43.2389], zoom: 14.5, pitch: 0, bearing: 0, antialias: true, doubleClickZoom: false });
-    let placeCluster; try { placeCluster = new Supercluster({ radius: 50, maxZoom: 15 }); } catch (e) {}
-    let currentMarkers = [];
+    const map = new maplibregl.Map({ container: 'map', style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`, center: [76.8897, 43.2389], zoom: 14.5, pitch: 0, antialias: true, doubleClickZoom: false });
 
     map.on('load', () => {
-        map.addLayer({ 'id': '3d-buildings', 'source': 'v3', 'source-layer': 'building', 'filter': ['!=', ['get', 'hide_3d'], true], 'type': 'fill-extrusion', 'minzoom': 15, 'paint': { 'fill-extrusion-color': '#d1d1d6', 'fill-extrusion-height': ['get', 'render_height'], 'fill-extrusion-opacity': 0.85 } });
         map.addSource('route', { 'type': 'geojson', 'data': { "type": "FeatureCollection", "features": [] } });
         map.addLayer({ 'id': 'route-layer', 'type': 'line', 'source': 'route', 'layout': { 'line-join': 'round', 'line-cap': 'round' }, 'paint': { 'line-color': '#007aff', 'line-width': 8 } });
-        window.loadPlaces();
     });
 
-    // --- ДИНАМИЧЕСКАЯ ПОДГРУЗКА OSM (SMART LOADING) ---
-    let lastLoadCenter = null;
-    map.on('moveend', () => {
-        if(map.getZoom() < 13) return; // Не грузим на отдалении
-        const center = map.getCenter();
-        // Подгружаем, только если сдвинулись далеко
-        if(!lastLoadCenter || Math.abs(center.lat - lastLoadCenter.lat) > 0.01 || Math.abs(center.lng - lastLoadCenter.lng) > 0.01) {
-            lastLoadCenter = center;
-            fetch(`https://overpass-api.de/api/interpreter?data=[out:json];(node["amenity"~"hospital|pharmacy|restaurant"](around:1500,${center.lat},${center.lng});node["shop"](around:1500,${center.lat},${center.lng}););out center;`)
-                .then(r => r.json()).then(data => {
-                let newPlaces = data.elements.map(el => {
-                    let cat = el.tags.amenity === "pharmacy" ? "pharmacy" : (el.tags.shop ? "shop" : "food");
-                    let access = el.tags.wheelchair === "yes" ? "full" : (el.tags.wheelchair === "no" ? "none" : "unknown");
-                    return { id: el.id, name: el.tags.name || "Место", lat: el.lat, lng: el.lon, category: cat, accessLevel: access, description: "OSM Data" };
-                }).filter(p => p.name !== "Место");
+    function showToast(msg) {
+        const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg;
+        c.appendChild(t); setTimeout(() => t.remove(), 4000);
+    }
 
-                // Добавляем только уникальные
-                newPlaces.forEach(np => { if(!allPlacesFromDB.find(p => p.id === np.id)) allPlacesFromDB.push(np); });
-                window.loadPlaces(); // Перерисовываем
-            }).catch(e => console.log("OSM Load limit"));
-        }
-    });
-
-    function showToast(msg) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 4000); }
     function speakAssist(text) {
         const isVision = document.getElementById('cb-vision').checked;
-        if (voiceEnabled || isVision) { window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(text); u.lang = 'ru-RU'; window.speechSynthesis.speak(u); }
-        showToast(text);
+
+        // Если включен режим глухого - обязательно дублируем тостом
+        if (window.isHearingImpaired) showToast(text);
+
+        if (voiceEnabled || isVision) {
+            window.speechSynthesis.cancel();
+            let u = new SpeechSynthesisUtterance(text); u.lang = 'ru-RU'; window.speechSynthesis.speak(u);
+        } else if (!window.isHearingImpaired) {
+            showToast(text); // Если голос выключен и человек не глухой - все равно покажем подсказку текстом
+        }
     }
+
     function toggleVoice() { voiceEnabled = !voiceEnabled; const b = document.getElementById('voiceBtn'); b.style.color = voiceEnabled ? "#007bff" : "var(--text-main)"; b.style.background = voiceEnabled ? "#e5f1ff" : "var(--bg-panel)"; if(voiceEnabled) speakAssist("Голос включен"); }
-    function handleDoubleTap() { if(document.getElementById('cb-vision').checked) { startVoiceSearch(); } }
+
+    // --- КУЛДАУН НА ДВОЙНОЙ ТАП (1.5 СЕКУНДЫ) ---
+    function handleDoubleTap() {
+        let now = Date.now();
+        if (now - lastTapTime < 1500) return; // Игнорируем спам-клики
+        lastTapTime = now;
+
+        if(document.getElementById('cb-vision').checked) { startVoiceSearch(); }
+    }
 
     function startVoiceSearch() {
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -397,69 +368,50 @@
             const q = e.results[0][0].transcript.toLowerCase();
             if(q.includes('где я') && gpsMarker) speakAssist("GPS Активен, ваши координаты загружены");
             else if(q.includes('отмена')) clearRoute();
-            else { document.getElementById('searchInput').value = q; window.loadPlaces(); openMobileMenu('panel-search', document.querySelector('.mob-nav-item')); speakAssist("Ищу " + q); }
+            else { document.getElementById('searchInput').value = q; openMobileMenu('panel-search', document.querySelector('.mob-nav-item')); speakAssist("Ищу " + q); }
         };
         rec.onend = () => { document.getElementById('micBtn').style.color = "#007bff"; }; rec.start();
     }
 
-    // --- КНОПКА SOS ---
+    // --- КУЛДАУН НА SOS (5 СЕКУНД) ---
     function sendSOS() {
+        let now = Date.now();
+        if (now - lastSosTime < 5000) {
+            showToast("Сигнал SOS уже готовится. Подождите пару секунд.");
+            return;
+        }
+        lastSosTime = now;
+
         if (!gpsMarker) { alert("Сначала включите GPS (Прицел)!"); return; }
         const pos = gpsMarker.getLngLat();
         const text = `СОС! Мне нужна помощь. Я здесь: https://maps.google.com/?q=${pos.lat},${pos.lng}`;
-        speakAssist("Формируем СМС спасателям");
-        // Открывает стандартное приложение СМС на телефоне
+        speakAssist("Формируем сообщение спасателям");
         window.location.href = `sms:?body=${encodeURIComponent(text)}`;
     }
 
     function applySettings() {
-        const isW = document.getElementById('cb-wheelchair').checked; const tw = document.getElementById('tabWheelchair');
-        if (isW) { tw.style.display = "block"; setMode('wheelchair', tw); } else { tw.style.display = "none"; setMode('foot-walking', document.querySelector('.r-tab[data-mode="foot-walking"]')); }
-        localStorage.setItem('openpath_wheelchair', isW); localStorage.setItem('openpath_vision', document.getElementById('cb-vision').checked); window.loadPlaces();
+        const isW = document.getElementById('cb-wheelchair').checked;
+        const tw = document.getElementById('tabWheelchair');
+        const isH = document.getElementById('cb-hearing').checked; // Считываем 3-ю категорию
+
+        window.isHearingImpaired = isH; // Сохраняем глобально для работы функции speakAssist
+
+        if (isW) { tw.style.display = "block"; setMode('wheelchair', tw); }
+        else { tw.style.display = "none"; setMode('foot-walking', document.querySelector('.r-tab[data-mode="foot-walking"]')); }
+
+        localStorage.setItem('openpath_wheelchair', isW);
+        localStorage.setItem('openpath_vision', document.getElementById('cb-vision').checked);
+        localStorage.setItem('openpath_hearing', isH); // Сохраняем в кэш
     }
 
     window.onload = () => {
         document.getElementById('cb-wheelchair').checked = localStorage.getItem('openpath_wheelchair') === 'true';
         document.getElementById('cb-vision').checked = localStorage.getItem('openpath_vision') === 'true';
+        document.getElementById('cb-hearing').checked = localStorage.getItem('openpath_hearing') === 'true';
         applySettings();
     };
 
-    window.loadPlaces = function() {
-        const q = document.getElementById('searchInput').value.toLowerCase();
-        const lc = document.getElementById('searchResultsList'); lc.innerHTML = '';
-        if (q === '' && allPlacesFromDB.length === 0) { lc.innerHTML = `<p style="padding: 20px; text-align:center; color:gray;">Введите запрос</p>`; return; }
-
-        let filtered = allPlacesFromDB.filter(p => p.name.toLowerCase().includes(q) || p.category.includes(q));
-        if(placeCluster) { placeCluster.load(filtered.map(p => ({ type: 'Feature', properties: p, geometry: { type: 'Point', coordinates: [p.lng, p.lat] } }))); updateClusters(); }
-
-        filtered.slice(0,20).forEach(p => {
-            let el = document.createElement('div'); el.className = 'result-item';
-            el.innerHTML = `<div class="result-title">${p.name}</div><div class="result-desc">${p.category}</div>`;
-            el.onclick = () => { map.flyTo({center: [p.lng, p.lat], zoom: 17}); closeMobileMenu(); speakAssist(p.name); };
-            lc.appendChild(el);
-        });
-    }
-
-    function updateClusters() {
-        if (!placeCluster || !map.getBounds()) return;
-        const bbox = [map.getBounds().getWest(), map.getBounds().getSouth(), map.getBounds().getEast(), map.getBounds().getNorth()];
-        currentMarkers.forEach(m => m.remove()); currentMarkers = [];
-        placeCluster.getClusters(bbox, Math.floor(map.getZoom())).forEach(c => {
-            let el = document.createElement('div');
-            if(c.properties.cluster) {
-                el.className = 'custom-icon-wrapper'; el.style.background = 'var(--primary)'; el.innerText = c.properties.point_count;
-                el.onclick = () => map.flyTo({center: c.geometry.coordinates, zoom: placeCluster.getClusterExpansionZoom(c.properties.cluster_id)});
-            } else {
-                el.className = 'custom-icon-wrapper'; el.style.background = c.properties.accessLevel === 'none' ? '#dc3545' : '#007bff'; el.innerText = '📍';
-                el.onclick = () => openRouteTo(c.geometry.coordinates[1], c.geometry.coordinates[0]);
-            }
-            currentMarkers.push(new maplibregl.Marker(el).setLngLat(c.geometry.coordinates).addTo(map));
-        });
-    }
-    map.on('zoom', updateClusters);
-
-    // --- МАРШРУТЫ И НАВИГАЦИЯ ---
-    let gpsWatchId = null; let gpsMarker = null; let routeStartLatlng = null; let routeEndLatlng = null; let routeStartMarker = null; let routeEndMarker = null;
+    let gpsWatchId = null; let gpsMarker = null; let routeStartMarker = null; let routeEndMarker = null;
     function setMode(mode, el) { currentProfile = mode; document.querySelectorAll('.r-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); if(routeStartLatlng && routeEndLatlng) calculateRoute(); }
 
     map.on('click', function(e) {
@@ -473,27 +425,12 @@
         }
     });
 
-    window.openRouteTo = function(lat, lng) {
-        routeEndLatlng = [lng, lat]; document.getElementById('routeEnd').value = "Выбранная точка";
-        if(routeEndMarker) routeEndMarker.remove(); let el = document.createElement('div'); el.innerHTML = '<div class="custom-icon-wrapper" style="background:#ff3b30;">B</div>'; routeEndMarker = new maplibregl.Marker(el).setLngLat(routeEndLatlng).addTo(map);
-        if(!isMobile) switchTab('panel-routes', document.querySelectorAll('.nav-tab')[1]);
-        else openMobileMenu('panel-routes', document.querySelectorAll('.mob-nav-item')[1]);
-        if(gpsMarker && !routeStartLatlng) { routeStartLatlng = [gpsMarker.getLngLat().lng, gpsMarker.getLngLat().lat]; document.getElementById('routeStart').value = "Мое местоположение"; }
-        if(routeStartLatlng) calculateRoute();
-    }
-
     async function calculateRoute() {
         document.getElementById('routeResult').style.display = 'block'; document.getElementById('routeTime').innerText = "Считаем...";
-        if (currentProfile === 'custom-astar') {
-            // Упрощенный A* для демо локально
-            let path = [routeStartLatlng, [(routeStartLatlng[0]+routeEndLatlng[0])/2, (routeStartLatlng[1]+routeEndLatlng[1])/2 + 0.005], routeEndLatlng];
-            map.getSource('route').setData({ "type": "Feature", "geometry": { "type": "LineString", "coordinates": path } }); map.setPaintProperty('route-layer', 'line-color', '#ffff00');
-            document.getElementById('routeMethod').innerText = "A* Алгоритм"; document.getElementById('routeTime').innerText = "Готово";
-            return;
-        }
         try {
             const res = await fetch(`https://api.openrouteservice.org/v2/directions/${currentProfile}?api_key=${ORS_API_KEY}&start=${routeStartLatlng[0]},${routeStartLatlng[1]}&end=${routeEndLatlng[0]},${routeEndLatlng[1]}`);
-            const data = await res.json(); routeCoordinates = data.features[0].geometry.coordinates; map.getSource('route').setData({ "type": "Feature", "geometry": { "type": "LineString", "coordinates": routeCoordinates } });
+            const data = await res.json();
+            map.getSource('route').setData({ "type": "Feature", "geometry": { "type": "LineString", "coordinates": data.features[0].geometry.coordinates } });
             let mins = Math.round(data.features[0].properties.summary.duration / 60);
             document.getElementById('routeMethod').innerText = "Маршрут построен"; map.setPaintProperty('route-layer', 'line-color', currentProfile === 'wheelchair' ? '#28a745' : '#007aff');
             document.getElementById('routeTime').innerText = mins + ' мин'; document.getElementById('routeDist').innerText = (data.features[0].properties.summary.distance / 1000).toFixed(2) + ' км';
@@ -516,16 +453,22 @@
     }
 
     window.clearRoute = function() { map.getSource('route').setData({ "type": "FeatureCollection", "features": [] }); if(routeStartMarker) routeStartMarker.remove(); if(routeEndMarker) routeEndMarker.remove(); routeStartLatlng = null; routeEndLatlng = null; document.getElementById('routeStart').value = ''; document.getElementById('routeEnd').value = ''; document.getElementById('routeResult').style.display = 'none'; }
+
     window.startNavigatorMode = function() {
-        if(!routeStartLatlng || !routeEndLatlng) { speakAssist("Постройте маршрут перед стартом!"); return; }
+        if(!routeStartLatlng || !routeEndLatlng) { speakAssist("Сначала укажите точки А и Б на карте!"); return; }
         isNavigating = true; document.getElementById('stopNavBtn').style.display = 'block'; closeMobileMenu();
         if(gpsMarker) map.flyTo({center: gpsMarker.getLngLat(), pitch: 60, zoom: 19}); speakAssist("Следуйте по синей линии");
     }
+
     window.stopNavigatorMode = function() { isNavigating = false; document.getElementById('stopNavBtn').style.display = 'none'; map.easeTo({pitch: 0, zoom: 15}); speakAssist("Маршрут завершен"); clearRoute(); }
 
-    // --- ИИ КАМЕРА ---
+    // --- КУЛДАУН ИИ КАМЕРА ---
     let cvInterval = null; let videoStream = null; let aiModel = null;
     async function startTrafficLightAssist() {
+        let now = Date.now();
+        if (now - lastAiCallTime < 3000) return; // Защита от спама запуска камеры
+        lastAiCallTime = now;
+
         if(!aiModel) { showToast("Загрузка нейросети (2МБ)..."); aiModel = await cocoSsd.load(); }
         document.getElementById('traffic-light-overlay').style.display = 'flex';
         const video = document.getElementById('camera-feed'); const canvas = document.getElementById('cv-canvas'); const ctx = canvas.getContext('2d');
