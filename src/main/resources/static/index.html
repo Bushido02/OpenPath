@@ -24,7 +24,7 @@
         body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; background-color: var(--bg-main); color: var(--text-main); -webkit-tap-highlight-color: transparent;}
         .wrapper { display: flex; height: 100dvh; width: 100%; position: relative; }
 
-        /* ДЕСКТОП */
+        /* ДЕСКТОП И СТРУКТУРА */
         .sidebar-nav { width: 72px; min-width: 72px; height: 100%; background-color: var(--bg-panel); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding-top: 15px; z-index: 1020; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
         .nav-tab { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 14px 0; cursor: pointer; color: var(--text-muted); transition: 0.2s; border-left: 3px solid transparent; }
         .nav-tab.active { color: var(--primary); border-left-color: var(--primary); background: rgba(0, 122, 255, 0.05); }
@@ -54,9 +54,10 @@
         .result-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
         .result-desc { font-size: 13px; color: var(--text-muted); }
 
+        /* ИНЛАЙН-КАРТОЧКА С ФОТО */
         .place-detail-card { background: var(--bg-input); border-radius: 18px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; }
-        .place-detail-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #e5e5ea; }
-        .place-detail-card .close-card { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-weight: bold; color: var(--text-main); }
+        .place-detail-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #e5e5ea; display: block;}
+        .place-detail-card .close-card { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.4); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; }
         .place-detail-card .accessibility-badge { display: inline-block; padding: 6px 12px; background: var(--primary); color: white; border-radius: 10px; font-size: 13px; font-weight: 600; margin-top: 8px; }
 
         .access-filters-box { background: var(--bg-input); border-radius: 14px; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); }
@@ -89,7 +90,7 @@
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase;}
         .form-input { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-input); font-size: 16px !important; outline: none; color: var(--text-main); font-weight: 500;}
 
-        /* КАРТА И КНОПКИ */
+        /* КАРТА */
         #map-container { flex-grow: 1; height: 100%; width: 100%; position: relative; z-index: 1; }
         #map { height: 100%; width: 100%; background-color: var(--border-color); }
 
@@ -234,9 +235,9 @@
             </div>
 
             <div class="form-group">
-                <label>Системные функции</label>
+                <label>Интерфейс и подсказки</label>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-gps-allowed" checked style="width:22px; height:22px;" onchange="handleGpsPermissionChange()"> 🎯 Разрешить GPS и трекинг</label>
+                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-show-toasts" checked style="width:22px; height:22px;"> 🔔 Показывать подсказки (тосты)</label>
                 </div>
             </div>
 
@@ -277,37 +278,51 @@
     const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
     const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 
-    // ВСТАВЬ СЮДА ССЫЛКУ НА СВОЙ СЕРВЕР VERCEL, НАПРИМЕР: https://my-app.vercel.app
-    const BACKEND_URL = '';
+    // ВСТАВЬ СВОЙ URL ИЗ ВЕРСЕЛ СЮДА:
+    const BACKEND_URL = 'https://open-path-three.vercel.app';
 
-    // Массив теперь динамически наполняется из бэкенда. Оставили дефолтные точки на случай, если URL пустой.
+    // Локальная база данных (Рандомные качественные фото по тематикам добавлены сразу)
     let localDatabase = [
-        { id: 1, name: "ТРЦ MEGA Alma-Ata", lat: 43.2018, lng: 76.8923, category: "shop", accessLevel: "full", desc: "Крупный торговый центр с пандусами и лифтами.", image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400" },
-        { id: 2, name: "Magnum Cash&Carry", lat: 43.2375, lng: 76.8875, category: "shop", accessLevel: "full", desc: "Продуктовый супермаркет.", image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400" },
-        { id: 4, name: "Аптека Садыхан", lat: 43.2380, lng: 76.8890, category: "pharmacy", accessLevel: "full", desc: "Круглосуточная аптека.", image: "https://images.unsplash.com/photo-1631549916768-411d643a54ef?w=400" }
+        { id: 1, name: "ТРЦ MEGA Alma-Ata", lat: 43.2018, lng: 76.8923, category: "shop", accessLevel: "full", desc: "Крупный торговый центр с пандусами и лифтами.", image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500&q=80" },
+        { id: 2, name: "Magnum Cash&Carry", lat: 43.2375, lng: 76.8875, category: "shop", accessLevel: "full", desc: "Продуктовый супермаркет.", image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&q=80" },
+        { id: 4, name: "Аптека Садыхан", lat: 43.2380, lng: 76.8890, category: "pharmacy", accessLevel: "full", desc: "Круглосуточная аптека.", image: "https://images.unsplash.com/photo-1631549916768-411d643a54ef?w=500&q=80" }
     ];
 
-    // Функция загрузки всех ваших 4000 мест с бэкенда Vercel
+    // Набор картинок из интернета для генерации, если в базе данных Вёрсела нет картинок
+    const randomPhotos = {
+        shop: ["https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500", "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=500"],
+        pharmacy: ["https://images.unsplash.com/photo-1631549916768-411d643a54ef?w=500", "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?w=500"],
+        food: ["https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500", "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=500"],
+        hospital: ["https://images.unsplash.com/photo-1586773860418-d3b3de97e663?w=500", "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=500"]
+    };
+
     async function fetchPlacesFromVercel() {
         if (!BACKEND_URL) return;
         try {
-            const response = await fetch(`${BACKEND_URL}/api/places`); // Замени эндпоинт на свой, если он другой
+            const response = await fetch(`${BACKEND_URL}/api/places`);
             const data = await response.json();
             if (Array.isArray(data) && data.length > 0) {
-                localDatabase = data.map(p => ({
-                    id: p.id,
-                    name: p.name,
-                    lat: p.lat || p.latitude,
-                    lng: p.lng || p.longitude,
-                    category: p.category || 'shop',
-                    accessLevel: p.accessLevel || 'full',
-                    desc: p.desc || p.description || 'Описание отсутствует',
-                    image: p.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400'
-                }));
-                console.log(`Загружено объектов с бэкенда: ${localDatabase.length}`);
+                localDatabase = data.map(p => {
+                    let cat = p.category || 'shop';
+                    // Если картинки нет или она пустая, подставляем качественную тематическую ссылку
+                    let imgArray = randomPhotos[cat] || randomPhotos['shop'];
+                    let fallbackImage = imgArray[Math.floor(Math.random() * imgArray.length)];
+
+                    return {
+                        id: p.id,
+                        name: p.name,
+                        lat: p.lat || p.latitude,
+                        lng: p.lng || p.longitude,
+                        category: cat,
+                        accessLevel: p.accessLevel || 'full',
+                        desc: p.desc || p.description || 'Описание отсутствует',
+                        image: p.image && p.image.startsWith('http') ? p.image : fallbackImage
+                    };
+                });
+                console.log(`Загружено мест с Vercel: ${localDatabase.length}`);
             }
         } catch (e) {
-            console.error("Ошибка запроса к Vercel бэкенду, используем локальные сейвы:", e);
+            console.error("Бэкенд Vercel недоступен, работаем на встроенной базе:", e);
         }
     }
 
@@ -372,7 +387,6 @@
         document.getElementById('sidebarContent').classList.remove('open');
         document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
         activeMobileMenu = null; updateMobileControlsPosition();
-
         if (mapPickingMode) {
             mapPickingMode = null;
             document.getElementById('map-picking-overlay').style.display = 'none';
@@ -487,7 +501,7 @@
         speakAssist(p.name + ". " + p.desc);
     }
 
-    // --- ИСПРАВЛЕННАЯ ЛОГИКА КЛИКА ПО КАРТЕ ---
+    // --- ИСПРАВЛЕННАЯ ЛОГИКА КЛИКОВ ПО КАРТЕ (КАК В 2ГИС) ---
     window.startPickingMode = function(type) {
         mapPickingMode = type;
         if(isMobile) closeMobileMenu();
@@ -496,7 +510,6 @@
         showToast("Укажите точку на карте");
     }
 
-    // Вспомогательная функция для расчета расстояния (в км) между точками на сфере
     function getDistance(lat1, lon1, lat2, lon2) {
         const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -507,16 +520,19 @@
     }
 
     map.on('click', function(e) {
-        // Если запущен режим выбора точек для маршрута A-B:
+        let clickedLat = e.lngLat.lat;
+        let clickedLng = e.lngLat.lng;
+
+        // Режим 1: Если мы выбираем точки внутри панели маршрутов А-В
         if (mapPickingMode) {
             if (mapPickingMode === 'start') {
-                routeStartLatlng = [e.lngLat.lng, e.lngLat.lat];
+                routeStartLatlng = [clickedLng, clickedLat];
                 document.getElementById('routeStart').value = "Точка на карте";
                 if(routeStartMarker) routeStartMarker.remove();
                 let el = document.createElement('div'); el.innerHTML = '<div class="point-icon a" style="width:24px;height:24px;font-size:12px;">A</div>';
                 routeStartMarker = new maplibregl.Marker(el).setLngLat(routeStartLatlng).addTo(map);
             } else if (mapPickingMode === 'end') {
-                routeEndLatlng = [e.lngLat.lng, e.lngLat.lat];
+                routeEndLatlng = [clickedLng, clickedLat];
                 document.getElementById('routeEnd').value = "Точка на карте";
                 if(routeEndMarker) routeEndMarker.remove();
                 let el = document.createElement('div'); el.innerHTML = '<div class="point-icon b" style="width:24px;height:24px;font-size:12px;">B</div>';
@@ -530,12 +546,9 @@
             return;
         }
 
-        // СВОБОДНЫЙ КЛИК ПО КАРТЕ (КАК В 2ГИС):
-        // Ищем место из базы данных поблизости (в радиусе 500 метров)
-        let clickedLat = e.lngLat.lat;
-        let clickedLng = e.lngLat.lng;
+        // Режим 2: Свободный клик по карте вне меню маршрутов
         let closestPlace = null;
-        let minDistance = 0.5; // макс. радиус 500 метров
+        let minDistance = 0.4; // Ищем заведение в радиусе 400 метров
 
         localDatabase.forEach(p => {
             let dist = getDistance(clickedLat, clickedLng, p.lat, p.lng);
@@ -546,12 +559,28 @@
         });
 
         if (closestPlace) {
+            // Если попали рядом с заведением — открываем его карточку
             map.flyTo({center: [closestPlace.lng, closestPlace.lat], zoom: 16});
             if (isMobile) openMobileMenu('panel-search', document.querySelectorAll('.mob-nav-item')[0]);
             else switchTab('panel-search', document.querySelectorAll('.nav-tab')[0]);
             renderDetailsInline(closestPlace);
         } else {
-            showToast("Рядом ничего не найдено");
+            // Если кликнули на свободную дорогу — автоматически предлагаем построить маршрут СЮДА (Точка B)
+            if (isMobile) openMobileMenu('panel-routes', document.querySelectorAll('.mob-nav-item')[1]);
+            else switchTab('panel-routes', document.querySelectorAll('.nav-tab')[1]);
+
+            routeEndLatlng = [clickedLng, clickedLat];
+            document.getElementById('routeEnd').value = `Координаты: ${clickedLat.toFixed(4)}, ${clickedLng.toFixed(4)}`;
+
+            if(routeEndMarker) routeEndMarker.remove();
+            let el = document.createElement('div'); el.innerHTML = '<div class="point-icon b" style="width:24px;height:24px;font-size:12px;">B</div>';
+            routeEndMarker = new maplibregl.Marker(el).setLngLat(routeEndLatlng).addTo(map);
+
+            if (gpsMarker && !routeStartLatlng) {
+                routeStartLatlng = [gpsMarker.getLngLat().lng, gpsMarker.getLngLat().lat];
+                document.getElementById('routeStart').value = "Мое местоположение";
+            }
+            if (routeStartLatlng && routeEndLatlng) calculateRoute();
         }
     });
 
@@ -623,27 +652,47 @@
 
     function setMode(mode, el) { currentProfile = mode; document.querySelectorAll('.r-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); if(routeStartLatlng && routeEndLatlng) calculateRoute(); }
 
-    // --- УПРАВЛЕНИЕ РАЗРЕШЕНИЕМ НА GPS ТРЕКИНГ ---
-    function handleGpsPermissionChange() {
-        const allowed = document.getElementById('cb-gps-allowed').checked;
-        if(!allowed && gpsWatchId) {
-            navigator.geolocation.clearWatch(gpsWatchId);
-            gpsWatchId = null;
-            if (gpsMarker) gpsMarker.remove();
-            gpsMarker = null;
-            document.getElementById('gpsBtn').style.color = "var(--text-main)";
-            showToast("GPS трекинг полностью отключен");
+    // УПРАВЛЯЕМЫЕ КНОПКИ УВЕДОМЛЕНИЙ (КОНТРОЛИРУЮТСЯ ТУМБЛЕРОМ)
+    function showToast(msg) {
+        const allowed = document.getElementById('cb-show-toasts').checked;
+        if (!allowed) return; // Если тосты выключены в настройках — прерываем выполнение
+
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.innerText = msg;
+        c.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    function speakAssist(text) {
+        if (voiceEnabled || document.getElementById('cb-vision').checked) {
+            window.speechSynthesis.cancel();
+            let u = new SpeechSynthesisUtterance(text);
+            u.lang = 'ru-RU';
+            window.speechSynthesis.speak(u);
+        } else {
+            showToast(text);
         }
     }
 
-    function toggleGPS() {
-        // Проверяем, разрешен ли GPS в настройках
-        const allowed = document.getElementById('cb-gps-allowed').checked;
-        if (!allowed) {
-            showToast("GPS отключен в настройках инклюзивности!");
-            return;
-        }
+    function toggleVoice() { voiceEnabled = !voiceEnabled; const b = document.getElementById('voiceBtn'); b.style.color = voiceEnabled ? "var(--primary)" : "var(--text-main)"; if(voiceEnabled) speakAssist("Голос включен"); }
+    function handleDoubleTap() { let now = Date.now(); if (now - lastTapTime < 1500) return; lastTapTime = now; if(document.getElementById('cb-vision').checked) startVoiceSearch(); }
 
+    function startVoiceSearch() {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) return showToast("Нет микрофона");
+        const rec = new SR(); rec.lang = 'ru-RU'; document.getElementById('micBtn').style.color = "red";
+        if (navigator.vibrate) navigator.vibrate(50); speakAssist("Слушаю...");
+        rec.onresult = (e) => {
+            const q = e.results[0][0].transcript.toLowerCase();
+            if(q.includes('сброс')) { clearRoute(); }
+            else { document.getElementById('searchInput').value = q; window.loadPlaces(); if(isMobile) openMobileMenu('panel-search', document.querySelectorAll('.mob-nav-item')[0]); speakAssist("Ищу " + q); }
+        };
+        rec.onend = () => { document.getElementById('micBtn').style.color = "var(--primary)"; }; rec.start();
+    }
+
+    function toggleGPS() {
         const btn = document.getElementById('gpsBtn');
         if (gpsWatchId) {
             navigator.geolocation.clearWatch(gpsWatchId);
@@ -669,24 +718,6 @@
                 }, null, { enableHighAccuracy: true });
             }
         }
-    }
-
-    function showToast(msg) { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000); }
-    function speakAssist(text) { if (voiceEnabled || document.getElementById('cb-vision').checked) { window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(text); u.lang = 'ru-RU'; window.speechSynthesis.speak(u); } else { showToast(text); } }
-    function toggleVoice() { voiceEnabled = !voiceEnabled; const b = document.getElementById('voiceBtn'); b.style.color = voiceEnabled ? "var(--primary)" : "var(--text-main)"; if(voiceEnabled) speakAssist("Голос включен"); }
-    function handleDoubleTap() { let now = Date.now(); if (now - lastTapTime < 1500) return; lastTapTime = now; if(document.getElementById('cb-vision').checked) startVoiceSearch(); }
-
-    function startVoiceSearch() {
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SR) return showToast("Нет микрофона");
-        const rec = new SR(); rec.lang = 'ru-RU'; document.getElementById('micBtn').style.color = "red";
-        if (navigator.vibrate) navigator.vibrate(50); speakAssist("Слушаю...");
-        rec.onresult = (e) => {
-            const q = e.results[0][0].transcript.toLowerCase();
-            if(q.includes('сброс')) { clearRoute(); }
-            else { document.getElementById('searchInput').value = q; window.loadPlaces(); if(isMobile) openMobileMenu('panel-search', document.querySelectorAll('.mob-nav-item')[0]); speakAssist("Ищу " + q); }
-        };
-        rec.onend = () => { document.getElementById('micBtn').style.color = "var(--primary)"; }; rec.start();
     }
 
     function sendSOS() {
