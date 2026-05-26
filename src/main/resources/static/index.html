@@ -38,7 +38,7 @@
         .panel.active { display: flex !important; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ПОИСК И СЛИТНЫЙ ПОЛЗУНОК ДЛЯ СПИСКА */
+        /* ПОИСК */
         .search-wrapper { position: relative; margin-bottom: 15px; display: flex; align-items: center; flex-shrink: 0; }
         .search-box { width: 100%; padding: 16px 45px 16px 40px; border-radius: 14px; border: 1px solid var(--border-color); background-color: var(--bg-input); font-size: 16px !important; outline: none; box-sizing: border-box; color: var(--text-main); font-weight: 500; transition: 0.2s;}
         .search-box:focus { border-color: var(--primary); background: var(--bg-panel); box-shadow: 0 0 0 3px rgba(0,122,255,0.1);}
@@ -48,8 +48,8 @@
         .quick-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; flex-shrink: 0;}
         .chip-btn { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 20px; font-size: 14px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
 
-        /* РАБОЧИЙ ПОЛЗУНОК ДЛЯ ПРОКРУТКИ МЕСТ */
-        .results-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; pr-2; max-height: calc(100% - 160px); }
+        /* ОПТИМИЗИРОВАННЫЙ СПИСОК МЕСТ С КРАСИВЫМ ПОЛЗУНКОМ */
+        .results-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; max-height: calc(100% - 160px); padding-right: 4px; }
         .results-list::-webkit-scrollbar { width: 6px; }
         .results-list::-webkit-scrollbar-track { background: transparent; }
         .results-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
@@ -59,8 +59,8 @@
         .result-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
         .result-desc { font-size: 13px; color: var(--text-muted); }
 
-        /* ИНЛАЙН КАРТОЧКА С РАНДОМНЫМИ ФОТО */
-        .place-detail-card { background: var(--bg-input); border-radius: 18px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; flex-shrink: 0;}
+        /* ИНЛАЙН-КАРТОЧКА МЕСТА */
+        .place-detail-card { background: var(--bg-input); border-radius: 18px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; flex-shrink: 0; }
         .place-detail-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #e5e5ea; display: block; }
         .place-detail-card .close-card { position: absolute; top: 22px; right: 22px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; z-index: 10;}
         .place-detail-card .accessibility-badge { display: inline-block; padding: 6px 12px; background: var(--primary); color: white; border-radius: 10px; font-size: 13px; font-weight: 600; margin-top: 8px; }
@@ -95,7 +95,7 @@
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase;}
         .form-input { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-input); font-size: 16px !important; outline: none; color: var(--text-main); font-weight: 500;}
 
-        /* КАРТА И ЭЛЕМЕНТЫ */
+        /* КАРТА */
         #map-container { flex-grow: 1; height: 100%; width: 100%; position: relative; z-index: 1; }
         #map { height: 100%; width: 100%; background-color: var(--border-color); }
 
@@ -115,10 +115,10 @@
 
         .custom-icon-wrapper { border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.25); cursor: pointer;}
 
-        /* ПУЛЬСИРУЮЩИЙ КРУГ GPS (БЕЗ ЛИШНИХ СИНИХ МЕТОК СВЕРХУ) */
-        .gps-pulse { width: 18px; height: 18px; background: #007aff; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,122,255,0.5); position: relative; }
-        .gps-pulse::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: rgba(0,122,255,0.4); border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(1.2); opacity: 0; } }
+        /* ЧИСТЫЙ КРУГ GPS (БЕЗ НАЛОЖЕНИЯ СИНИХ ПИНОВ ЗАВЕДЕНИЙ СВЕРХУ) */
+        .gps-pulse { width: 20px; height: 20px; background: #007aff; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 14px rgba(0,122,255,0.6); position: relative; }
+        .gps-pulse::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: rgba(0,122,255,0.3); border-radius: 50%; animation: pulseCircle 1.8s infinite; }
+        @keyframes pulseCircle { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
 
         .mobile-bottom-nav { display: none; }
 
@@ -286,12 +286,12 @@
     const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
     const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 
-    // Подключаем относительный путь для Vercel. Фронтенд сам поймет, на каком домене крутится.
+    // Автоопределение адреса сервера
     const BACKEND_URL = window.location.origin;
 
     let localDatabase = [];
 
-    // Подборка качественных рандомных фото по категориям (Unsplash Source)
+    // Подборка качественных рандомных тематических фото
     const randomPhotos = {
         shop: ["https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500", "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500"],
         pharmacy: ["https://images.unsplash.com/photo-1631549916768-411d643a54ef?w=500", "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?w=500"],
@@ -322,7 +322,7 @@
                 });
             }
         } catch (e) {
-            console.error("Ошибка получения мест, загружаем локальные сейвы:", e);
+            console.error("Ошибка загрузки мест из Spring Boot:", e);
         }
     }
 
@@ -501,7 +501,7 @@
         speakAssist(p.name + ". " + p.desc);
     }
 
-    // --- ЛОГИКА СВОБОДНЫХ КЛИКОВ ПО КАРТЕ ---
+    // --- СВОБОДНЫЕ КЛИКИ ПО КАРТЕ ---
     window.startPickingMode = function(type) {
         mapPickingMode = type;
         if(isMobile) closeMobileMenu();
@@ -646,7 +646,7 @@
     }
     window.stopNavigatorMode = function() { document.getElementById('stopNavBtn').style.display = 'none'; map.easeTo({pitch: 0, zoom: 15}); speakAssist("Завершено"); clearRoute(); }
 
-    function setMode(mode, el) { currentProfile = mode; document.querySelectorAll('.r-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); if(routeStartLatlng && routeEndLatlng) calculateRoute(); }
+    function setMode(mode, el) { currentProfile = mode; document.querySelectorAll('.r-tab').forEach(t=>t.classList.remove('active')); el.add(active); if(routeStartLatlng && routeEndLatlng) calculateRoute(); }
 
     function showToast(msg) {
         const allowed = document.getElementById('cb-show-toasts').checked;
