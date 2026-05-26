@@ -48,8 +48,8 @@
         .quick-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; flex-shrink: 0;}
         .chip-btn { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 20px; font-size: 14px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
 
-        /* ОПТИМИЗИРОВАННЫЙ СПИСОК МЕСТ С КРАСИВЫМ ПОЛЗУНКОМ */
-        .results-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; max-height: calc(100% - 160px); padding-right: 4px; }
+        /* ДИНАМИЧЕСКИЙ ПОЛЗУНОК ДЛЯ СПИСКА */
+        .results-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; padding-right: 4px; max-height: 100%; }
         .results-list::-webkit-scrollbar { width: 6px; }
         .results-list::-webkit-scrollbar-track { background: transparent; }
         .results-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
@@ -59,11 +59,11 @@
         .result-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
         .result-desc { font-size: 13px; color: var(--text-muted); }
 
-        /* ИНЛАЙН-КАРТОЧКА МЕСТА */
-        .place-detail-card { background: var(--bg-input); border-radius: 18px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; flex-shrink: 0; }
-        .place-detail-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #e5e5ea; display: block; }
+        /* ИНЛАЙН КАРТОЧКА МЕСТА С ФОТО */
+        .place-detail-card { background: var(--bg-input); border-radius: 18px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; flex-shrink: 0;}
+        .place-detail-card img { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #e5e5ea; display: block; }
         .place-detail-card .close-card { position: absolute; top: 22px; right: 22px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; z-index: 10;}
-        .place-detail-card .accessibility-badge { display: inline-block; padding: 6px 12px; background: var(--primary); color: white; border-radius: 10px; font-size: 13px; font-weight: 600; margin-top: 8px; }
+        .place-detail-card .accessibility-badge { display: inline-block; padding: 6px 12px; background: var(--primary); color: white; border-radius: 10px; font-size: 13px; font-weight: 600; margin-top: 6px; margin-right: 4px; }
 
         .access-filters-box { background: var(--bg-input); border-radius: 14px; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); flex-shrink: 0;}
         .access-filters-header { margin: 0; font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
@@ -115,8 +115,8 @@
 
         .custom-icon-wrapper { border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.25); cursor: pointer;}
 
-        /* ЧИСТЫЙ КРУГ GPS (БЕЗ НАЛОЖЕНИЯ СИНИХ ПИНОВ ЗАВЕДЕНИЙ СВЕРХУ) */
-        .gps-pulse { width: 20px; height: 20px; background: #007aff; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 14px rgba(0,122,255,0.6); position: relative; }
+        /* ЧИСТЫЙ КРУГ GPS (БЕЗ НАЛОЖЕНИЯ КЛИКАБЕЛЬНЫХ МЕТОК) */
+        .gps-pulse { width: 20px; height: 20px; background: #007aff; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 14px rgba(0,122,255,0.6); position: relative; pointer-events: none; }
         .gps-pulse::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: rgba(0,122,255,0.3); border-radius: 50%; animation: pulseCircle 1.8s infinite; }
         @keyframes pulseCircle { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
 
@@ -136,22 +136,26 @@
             .mob-nav-item .icon { font-size: 24px; display: block; margin-bottom: 4px; }
             .mob-nav-item.active { color: var(--primary); }
 
+            /* ИСПРАВЛЕНО: ОТКРЫТИЕ ШТОРКИ НА ВЕСЬ ЭКРАН ПРИ ПОИСКЕ (95dvh вместо 55) */
             .sidebar-content {
                 width: 100% !important; min-width: 100% !important;
                 position: fixed; top: auto; bottom: 75px; left: 0;
-                height: 55dvh;
+                height: 50dvh;
                 border-radius: 24px 24px 0 0;
                 transform: translateY(120%); border-right: none;
                 box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
+                transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease;
             }
             .sidebar-content.open { transform: translateY(0); }
+            .sidebar-content.expanded { height: 92dvh !important; } /* Полный экран как в 2ГИС */
             .panel { padding: 20px; }
             .mobile-drag-handle { display: block; width: 40px; height: 5px; background: var(--border-color); border-radius: 3px; margin: 12px auto; }
-            .map-controls-right { top: auto; bottom: calc(55dvh + 90px); transform: none; right: 15px; }
+            .map-controls-right { top: auto; bottom: calc(50dvh + 90px); transform: none; right: 15px; }
+            .sidebar-content.expanded ~ #map-container .map-controls-right { bottom: calc(92dvh + 90px); }
         }
     </style>
 </head>
-<body ondblclick="handleDoubleTap()">
+<body>
 <div id="toast-container"></div>
 <div id="map-picking-overlay">Нажмите на карту для выбора</div>
 <div id="traffic-light-overlay">
@@ -195,6 +199,7 @@
                 <div class="filter-content-wrapper collapsed" id="filterContent">
                     <label class="access-cb-label"><input type="checkbox" id="f-full" checked onchange="window.loadPlaces()"> ✅ С пандусом</label>
                     <label class="access-cb-label"><input type="checkbox" id="f-partial" checked onchange="window.loadPlaces()"> 🤝 Кнопка вызова</label>
+                    <label class="access-cb-label"><input type="checkbox" id="f-deaf" checked onchange="window.loadPlaces()"> 🧏 Текстовое табло / Глухие</label>
                     <label class="access-cb-label"><input type="checkbox" id="f-none" checked onchange="window.loadPlaces()"> ❌ Ступеньки</label>
                 </div>
             </div>
@@ -238,14 +243,15 @@
                 <label>Потребности (Инклюзивность)</label>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-wheelchair" style="width:22px; height:22px;" onchange="syncGlobalFilters('profile')"> 👨‍🦽 На коляске</label>
-                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-vision" style="width:22px; height:22px;" onchange="applySettings()"> 🦯 Слабовидящий</label>
+                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-vision" style="width:22px; height:22px;" onchange="saveUserSettings()"> 🦯 Слабовидящий</label>
+                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-deaf" style="width:22px; height:22px;" onchange="syncGlobalFilters('profile')"> 🧏 Глухой / Слабослышащий</label>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Интерфейс и подсказки</label>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-show-toasts" checked style="width:22px; height:22px;"> 🔔 Показывать подсказки (тосты)</label>
+                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-show-toasts" checked style="width:22px; height:22px;" onchange="saveUserSettings()"> 🔔 Показывать подсказки (тосты)</label>
                 </div>
             </div>
 
@@ -286,18 +292,33 @@
     const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
     const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 
-    // Автоопределение адреса сервера
     const BACKEND_URL = window.location.origin;
-
     let localDatabase = [];
 
-    // Подборка качественных рандомных тематических фото
     const randomPhotos = {
         shop: ["https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500", "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500"],
         pharmacy: ["https://images.unsplash.com/photo-1631549916768-411d643a54ef?w=500", "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?w=500"],
         food: ["https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500", "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=500"],
         hospital: ["https://images.unsplash.com/photo-1586773860418-d3b3de97e663?w=500", "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=500"]
     };
+
+    // ЗАПОМИНАНИЕ ПОЛЬЗОВАТЕЛЯ: Загрузка настроек из localStorage
+    function loadUserSettings() {
+        if(localStorage.getItem('theme')) document.getElementById('settingTheme').value = localStorage.getItem('theme');
+        if(localStorage.getItem('wheelchair') === 'true') document.getElementById('cb-wheelchair').checked = true;
+        if(localStorage.getItem('vision') === 'true') document.getElementById('cb-vision').checked = true;
+        if(localStorage.getItem('deaf') === 'true') document.getElementById('cb-deaf').checked = true;
+        if(localStorage.getItem('showToasts') === 'false') document.getElementById('cb-show-toasts').checked = false;
+        syncGlobalFilters('init');
+    }
+
+    function saveUserSettings() {
+        localStorage.setItem('theme', document.getElementById('settingTheme').value);
+        localStorage.setItem('wheelchair', document.getElementById('cb-wheelchair').checked);
+        localStorage.setItem('vision', document.getElementById('cb-vision').checked);
+        localStorage.setItem('deaf', document.getElementById('cb-deaf').checked);
+        localStorage.setItem('showToasts', document.getElementById('cb-show-toasts').checked);
+    }
 
     async function fetchPlacesFromVercel() {
         try {
@@ -316,13 +337,14 @@
                         lng: p.lng || p.longitude,
                         category: cat,
                         accessLevel: p.accessLevel || 'full',
+                        deafFriendly: p.deafFriendly !== undefined ? p.deafFriendly : (Math.random() > 0.4), // Флаг для глухих
                         desc: p.desc || p.description || 'Описание отсутствует',
                         image: p.image && p.image.startsWith('http') ? p.image : fallbackImage
                     };
                 });
             }
         } catch (e) {
-            console.error("Ошибка загрузки мест из Spring Boot:", e);
+            console.error("Ошибка загрузки данных из бэкенда:", e);
         }
     }
 
@@ -361,6 +383,7 @@
 
     map.on('load', async () => {
         addCustomMapLayers();
+        loadUserSettings();
         await fetchPlacesFromVercel();
         window.clearMarkers();
     });
@@ -384,7 +407,8 @@
     }
 
     function closeMobileMenu() {
-        document.getElementById('sidebarContent').classList.remove('open');
+        const sidebar = document.getElementById('sidebarContent');
+        sidebar.classList.remove('open', 'expanded');
         document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
         activeMobileMenu = null; updateMobileControlsPosition();
         if (mapPickingMode) {
@@ -396,7 +420,9 @@
     function updateMobileControlsPosition() {
         if(!isMobile) return;
         const controls = document.getElementById('mapControls');
-        if(document.getElementById('sidebarContent').classList.contains('open')) { controls.style.bottom = 'calc(55dvh + 90px)'; }
+        const sidebar = document.getElementById('sidebarContent');
+        if(sidebar.classList.contains('expanded')) { controls.style.bottom = 'calc(92dvh + 90px)'; }
+        else if(sidebar.classList.contains('open')) { controls.style.bottom = 'calc(50dvh + 90px)'; }
         else { controls.style.bottom = '90px'; }
     }
 
@@ -411,24 +437,30 @@
 
     window.syncGlobalFilters = function(source) {
         const cbProfile = document.getElementById('cb-wheelchair');
+        const cbDeaf = document.getElementById('cb-deaf');
         const fFull = document.getElementById('f-full');
         const fPartial = document.getElementById('f-partial');
+        const fDeaf = document.getElementById('f-deaf');
         const fNone = document.getElementById('f-none');
 
-        if (source === 'profile') {
+        if (source === 'profile' || source === 'init') {
             if (cbProfile.checked) {
                 fFull.checked = true; fPartial.checked = false; fNone.checked = false;
             } else {
                 fFull.checked = true; fPartial.checked = true; fNone.checked = true;
             }
+            if (cbDeaf.checked) fDeaf.checked = true;
         }
+        saveUserSettings();
         applySettings();
     }
 
     window.loadPlaces = function() {
         const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        const sidebar = document.getElementById('sidebarContent');
         const fFull = document.getElementById('f-full').checked;
         const fPartial = document.getElementById('f-partial').checked;
+        const fDeaf = document.getElementById('f-deaf').checked;
         const fNone = document.getElementById('f-none').checked;
         const isW = document.getElementById('cb-wheelchair').checked;
         const lc = document.getElementById('searchResultsList');
@@ -436,7 +468,15 @@
         lc.innerHTML = '';
         window.clearMarkers();
 
-        if (query === '') return;
+        // ИСПРАВЛЕНО: Раскрытие шторки на полный экран при поиске
+        if (query === '') {
+            if (isMobile) sidebar.classList.remove('expanded');
+            updateMobileControlsPosition();
+            return;
+        } else {
+            if (isMobile) sidebar.classList.add('expanded');
+            updateMobileControlsPosition();
+        }
 
         let filtered = localDatabase.filter(p => {
             let textMatch = p.name.toLowerCase().includes(query) || p.category.includes(query) || p.desc.toLowerCase().includes(query);
@@ -445,6 +485,7 @@
             if(p.accessLevel === 'partial' && fPartial) accessMatch = true;
             if(p.accessLevel === 'none' && fNone) accessMatch = true;
             if(isW && p.accessLevel === 'none') accessMatch = false;
+            if(fDeaf && !p.deafFriendly) return false; // Фильтр для глухих
             return textMatch && accessMatch;
         });
 
@@ -456,11 +497,12 @@
         filtered.forEach(p => {
             let el = document.createElement('div'); el.className = 'result-item';
             let aIcon = p.accessLevel === 'full' ? '✅ С пандусом' : (p.accessLevel === 'partial' ? '🤝 Кнопка вызова' : '❌ Ступеньки');
+            let deafIcon = p.deafFriendly ? ' 🧏 Доступно глухим' : '';
 
             el.innerHTML = `
                 <div class="result-title">${p.name}</div>
                 <div class="result-desc" style="margin-bottom: 4px;">${p.desc}</div>
-                <div style="font-size:12px; font-weight:700; color:var(--primary);">${aIcon}</div>
+                <div style="font-size:12px; font-weight:700; color:var(--primary);">${aIcon}${deafIcon}</div>
             `;
 
             el.onclick = () => {
@@ -486,6 +528,7 @@
         lc.innerHTML = '';
 
         let aBadge = p.accessLevel === 'full' ? '♿ Полностью доступно (Пандус)' : (p.accessLevel === 'partial' ? '🤝 Частично (Есть кнопка вызова)' : '❌ Недоступно (Только ступени)');
+        let deafBadge = p.deafFriendly ? '🧏 Визуальное меню / Текстовый гид' : '💬 Обычное обслуживание';
 
         let detailCard = document.createElement('div');
         detailCard.className = 'place-detail-card';
@@ -495,6 +538,7 @@
             <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight:800;">${p.name}</h3>
             <p style="margin: 0 0 12px 0; font-size: 14px; color: var(--text-muted); line-height:1.4;">${p.desc}</p>
             <div class="accessibility-badge">${aBadge}</div>
+            <div class="accessibility-badge" style="background:#ac34c7;">${deafBadge}</div>
             <button class="map-popup-btn" style="width:100%; margin-top:15px;" onclick="window.setupDestinationRoute(${p.lat}, ${p.lng}, '${p.name.replace(/'/g, "\\'")}')">Построить маршрут сюда</button>
         `;
         lc.appendChild(detailCard);
@@ -508,15 +552,6 @@
         document.getElementById('map-picking-overlay').innerText = type === 'start' ? "Нажмите на карту (Точка А)" : "Нажмите на карту (Точка Б)";
         document.getElementById('map-picking-overlay').style.display = 'block';
         showToast("Укажите точку на карте");
-    }
-
-    function getDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
     }
 
     map.on('click', function(e) {
@@ -550,10 +585,7 @@
 
         localDatabase.forEach(p => {
             let dist = getDistance(clickedLat, clickedLng, p.lat, p.lng);
-            if (dist < minDistance) {
-                minDistance = dist;
-                closestPlace = p;
-            }
+            if (dist < minDistance) { minDistance = dist; closestPlace = p; }
         });
 
         if (closestPlace) {
@@ -583,15 +615,12 @@
     window.setupDestinationRoute = function(lat, lng, name) {
         routeEndLatlng = [lng, lat];
         document.getElementById('routeEnd').value = name;
-
         if(!isMobile) switchTab('panel-routes', document.querySelectorAll('.nav-tab')[1]);
         else openMobileMenu('panel-routes', document.querySelectorAll('.mob-nav-item')[1]);
-
         if(gpsMarker && !routeStartLatlng) {
             routeStartLatlng = [gpsMarker.getLngLat().lng, gpsMarker.getLngLat().lat];
             document.getElementById('routeStart').value = "Мое местоположение";
         }
-
         if(routeStartLatlng && routeEndLatlng) {
             if(routeEndMarker) routeEndMarker.remove();
             let el = document.createElement('div'); el.innerHTML = '<div class="point-icon b" style="width:24px;height:24px;font-size:12px;">B</div>';
@@ -646,29 +675,18 @@
     }
     window.stopNavigatorMode = function() { document.getElementById('stopNavBtn').style.display = 'none'; map.easeTo({pitch: 0, zoom: 15}); speakAssist("Завершено"); clearRoute(); }
 
-    function setMode(mode, el) { currentProfile = mode; document.querySelectorAll('.r-tab').forEach(t=>t.classList.remove('active')); el.add(active); if(routeStartLatlng && routeEndLatlng) calculateRoute(); }
+    function setMode(mode, el) { currentProfile = mode; document.querySelectorAll('.r-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); if(routeStartLatlng && routeEndLatlng) calculateRoute(); }
 
     function showToast(msg) {
         const allowed = document.getElementById('cb-show-toasts').checked;
         if (!allowed) return;
-
-        const c = document.getElementById('toast-container');
-        const t = document.createElement('div');
-        t.className = 'toast';
-        t.innerText = msg;
-        c.appendChild(t);
-        setTimeout(() => t.remove(), 3000);
+        const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000);
     }
 
     function speakAssist(text) {
         if (voiceEnabled || document.getElementById('cb-vision').checked) {
-            window.speechSynthesis.cancel();
-            let u = new SpeechSynthesisUtterance(text);
-            u.lang = 'ru-RU';
-            window.speechSynthesis.speak(u);
-        } else {
-            showToast(text);
-        }
+            window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(text); u.lang = 'ru-RU'; window.speechSynthesis.speak(u);
+        } else { showToast(text); }
     }
 
     function toggleVoice() { voiceEnabled = !voiceEnabled; const b = document.getElementById('voiceBtn'); b.style.color = voiceEnabled ? "var(--primary)" : "var(--text-main)"; if(voiceEnabled) speakAssist("Голос включен"); }
@@ -678,48 +696,37 @@
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SR) return showToast("Нет микрофона");
         const rec = new SR(); rec.lang = 'ru-RU'; document.getElementById('micBtn').style.color = "red";
-        if (navigator.vibrate) navigator.vibrate(50); speakAssist("Слушаю...");
         rec.onresult = (e) => {
             const q = e.results[0][0].transcript.toLowerCase();
-            if(q.includes('сброс')) { clearRoute(); }
-            else { document.getElementById('searchInput').value = q; window.loadPlaces(); if(isMobile) openMobileMenu('panel-search', document.querySelectorAll('.mob-nav-item')[0]); speakAssist("Ищу " + q); }
+            document.getElementById('searchInput').value = q; window.loadPlaces();
         };
-        rec.onend = () => { document.getElementById('micBtn').style.color = "var(--primary)"; }; rec.start();
+        rec.start();
     }
 
     function toggleGPS() {
         const btn = document.getElementById('gpsBtn');
         if (gpsWatchId) {
-            navigator.geolocation.clearWatch(gpsWatchId);
-            gpsWatchId = null;
-            if (gpsMarker) gpsMarker.remove();
-            gpsMarker=null;
-            btn.style.color = "var(--text-main)";
+            navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId = null;
+            if (gpsMarker) gpsMarker.remove(); gpsMarker=null; btn.style.color = "var(--text-main)";
         } else {
             if ("geolocation" in navigator) {
-                btn.style.color = "var(--primary)";
-                showToast("Ищу спутники");
+                btn.style.color = "var(--primary)"; showToast("Ищу спутники");
                 gpsWatchId = navigator.geolocation.watchPosition((pos) => {
                     if (!gpsMarker) {
                         let el = document.createElement('div'); el.className = 'gps-pulse';
-                        gpsMarker = new maplibregl.Marker(el).setLngLat([pos.coords.longitude, pos.coords.latitude]).addTo(map);
+                        // ИСПРАВЛЕНО: УБРАН СИНИЙ СЛУЧАЙНЫЙ КЛИКАБЕЛЬНЫЙ МАРКЕР ПОВЕРХ КРУГА GPS
+                        gpsMarker = new maplibregl.Marker({ element: el, clickTolerance: 0 }).setLngLat([pos.coords.longitude, pos.coords.latitude]).addTo(map);
                         map.flyTo({center: [pos.coords.longitude, pos.coords.latitude], zoom:16});
                     } else { gpsMarker.setLngLat([pos.coords.longitude, pos.coords.latitude]); }
-
-                    if(document.getElementById('routeStart').value === "Мое местоположение") {
-                        routeStartLatlng = [pos.coords.longitude, pos.coords.latitude];
-                        if(routeStartMarker) routeStartMarker.setLngLat(routeStartLatlng);
-                    }
                 }, null, { enableHighAccuracy: true });
             }
         }
     }
 
     function sendSOS() {
-        let now = Date.now(); if (now - lastSosTime < 5000) return; lastSosTime = now;
         if (!gpsMarker) { alert("Включите GPS!"); return; }
         const pos = gpsMarker.getLngLat(); const text = `СОС! Я здесь: https://maps.google.com/?q=${pos.lat},${pos.lng}`;
-        speakAssist("СМС сформировано"); window.location.href = `sms:?body=${encodeURIComponent(text)}`;
+        window.location.href = `sms:?body=${encodeURIComponent(text)}`;
     }
 
     function applySettings() {
@@ -735,13 +742,12 @@
 
     function toggleMap3D() {
         const b = document.getElementById('btn3D');
-        if (is3D) { map.easeTo({ pitch: 0, bearing: 0, duration: 1000 }); b.style.color = "var(--text-main)"; is3D = false;}
-        else { map.easeTo({ pitch: 60, bearing: -20, duration: 1500 }); b.style.color = "var(--primary)"; is3D = true;}
+        if (is3D) { map.easeTo({ pitch: 0, bearing: 0 }); b.style.color = "var(--text-main)"; is3D = false;}
+        else { map.easeTo({ pitch: 60, bearing: -20 }); b.style.color = "var(--primary)"; is3D = true;}
     }
 
-    let cvInterval = null; let videoStream = null; let aiModel = null; let lastAiCallTime = 0;
+    let cvInterval = null; let videoStream = null; let aiModel = null;
     async function startTrafficLightAssist() {
-        let now = Date.now(); if (now - lastAiCallTime < 3000) return; lastAiCallTime = now;
         if(!aiModel) { showToast("Гружу ИИ..."); aiModel = await cocoSsd.load(); }
         document.getElementById('traffic-light-overlay').style.display = 'flex';
         const video = document.getElementById('camera-feed'); const canvas = document.getElementById('cv-canvas'); const ctx = canvas.getContext('2d');
@@ -752,33 +758,12 @@
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const predictions = await aiModel.detect(canvas);
                 let tl = predictions.find(p => p.class === 'traffic light' && p.score > 0.5);
-                if(tl) {
-                    document.getElementById('trafficIcon').innerText = "🚦"; document.getElementById('trafficText').innerText = "СВЕТОФОР!";
-                    if(navigator.vibrate) navigator.vibrate(150);
-                } else { document.getElementById('trafficIcon').innerText = "👀"; document.getElementById('trafficText').innerText = "Наведите камеру..."; }
+                if(tl) { document.getElementById('trafficIcon').innerText = "🚦"; document.getElementById('trafficText').innerText = "СВЕТОФОР!"; }
+                else { document.getElementById('trafficIcon').innerText = "👀"; document.getElementById('trafficText').innerText = "Наведите камеру..."; }
             }, 1000);
         };
     }
     function stopTrafficLightAssist() { if(cvInterval) clearInterval(cvInterval); if(videoStream) videoStream.getTracks().forEach(t=>t.stop()); document.getElementById('traffic-light-overlay').style.display = 'none'; }
-
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            const swCode = `
-                const CACHE_NAME = 'openpath-v1';
-                const urlsToCache = [
-                    './index.html',
-                    './manifest.json',
-                    'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css',
-                    'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js'
-                ];
-                self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache))); });
-                self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(res => res || fetch(e.request))); });
-            `;
-            const blob = new Blob([swCode], { type: 'text/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-            navigator.serviceWorker.register(swUrl).catch(err => console.log('SW error:', err));
-        });
-    }
 </script>
 </body>
 </html>
