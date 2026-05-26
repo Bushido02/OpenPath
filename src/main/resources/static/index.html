@@ -24,7 +24,7 @@
         body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; background-color: var(--bg-main); color: var(--text-main); -webkit-tap-highlight-color: transparent;}
         .wrapper { display: flex; height: 100dvh; width: 100%; position: relative; }
 
-        /* ДЕСКТОП И СТРУКТУРА */
+        /* НАВИГАЦИЯ И БОКОВАЯ ПАНЕЛЬ */
         .sidebar-nav { width: 72px; min-width: 72px; height: 100%; background-color: var(--bg-panel); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding-top: 15px; z-index: 1020; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
         .nav-tab { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 14px 0; cursor: pointer; color: var(--text-muted); transition: 0.2s; border-left: 3px solid transparent; }
         .nav-tab.active { color: var(--primary); border-left-color: var(--primary); background: rgba(0, 122, 255, 0.05); }
@@ -34,11 +34,11 @@
         .sidebar-content { width: 380px; min-width: 380px; height: 100%; background-color: var(--bg-panel); z-index: 1010; box-shadow: 4px 0 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; border-right: 1px solid var(--border-color); transition: 0.3s; }
         .mobile-drag-handle { display: none; }
 
-        .panel { display: none !important; padding: 20px; flex-grow: 1; overflow-y: auto; flex-direction: column; box-sizing: border-box; height: 100%; }
+        .panel { display: none !important; padding: 20px; flex-grow: 1; overflow: hidden; flex-direction: column; box-sizing: border-box; height: 100%; }
         .panel.active { display: flex !important; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ПОИСК */
+        /* ПОИСК И СЛИТНЫЙ ПОЛЗУНОК ДЛЯ СПИСКА */
         .search-wrapper { position: relative; margin-bottom: 15px; display: flex; align-items: center; flex-shrink: 0; }
         .search-box { width: 100%; padding: 16px 45px 16px 40px; border-radius: 14px; border: 1px solid var(--border-color); background-color: var(--bg-input); font-size: 16px !important; outline: none; box-sizing: border-box; color: var(--text-main); font-weight: 500; transition: 0.2s;}
         .search-box:focus { border-color: var(--primary); background: var(--bg-panel); box-shadow: 0 0 0 3px rgba(0,122,255,0.1);}
@@ -48,19 +48,24 @@
         .quick-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; flex-shrink: 0;}
         .chip-btn { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 20px; font-size: 14px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
 
-        .results-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px;}
-        .result-item { padding: 16px; border-radius: 16px; background: var(--bg-input); cursor: pointer; border: 1px solid transparent; display: flex; flex-direction: column; gap: 6px;}
+        /* РАБОЧИЙ ПОЛЗУНОК ДЛЯ ПРОКРУТКИ МЕСТ */
+        .results-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; pr-2; max-height: calc(100% - 160px); }
+        .results-list::-webkit-scrollbar { width: 6px; }
+        .results-list::-webkit-scrollbar-track { background: transparent; }
+        .results-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+
+        .result-item { padding: 16px; border-radius: 16px; background: var(--bg-input); cursor: pointer; border: 1px solid transparent; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;}
         .result-item:active { background: var(--border-color); }
         .result-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
         .result-desc { font-size: 13px; color: var(--text-muted); }
 
-        /* ИНЛАЙН-КАРТОЧКА С ФОТО */
-        .place-detail-card { background: var(--bg-input); border-radius: 18px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; }
-        .place-detail-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #e5e5ea; display: block;}
-        .place-detail-card .close-card { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.4); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; }
+        /* ИНЛАЙН КАРТОЧКА С РАНДОМНЫМИ ФОТО */
+        .place-detail-card { background: var(--bg-input); border-radius: 18px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; flex-shrink: 0;}
+        .place-detail-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #e5e5ea; display: block; }
+        .place-detail-card .close-card { position: absolute; top: 22px; right: 22px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; z-index: 10;}
         .place-detail-card .accessibility-badge { display: inline-block; padding: 6px 12px; background: var(--primary); color: white; border-radius: 10px; font-size: 13px; font-weight: 600; margin-top: 8px; }
 
-        .access-filters-box { background: var(--bg-input); border-radius: 14px; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .access-filters-box { background: var(--bg-input); border-radius: 14px; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); flex-shrink: 0;}
         .access-filters-header { margin: 0; font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .filter-content-wrapper { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; transition: 0.2s; }
         .filter-content-wrapper.collapsed { display: none; }
@@ -90,7 +95,7 @@
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase;}
         .form-input { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-input); font-size: 16px !important; outline: none; color: var(--text-main); font-weight: 500;}
 
-        /* КАРТА */
+        /* КАРТА И ЭЛЕМЕНТЫ */
         #map-container { flex-grow: 1; height: 100%; width: 100%; position: relative; z-index: 1; }
         #map { height: 100%; width: 100%; background-color: var(--border-color); }
 
@@ -109,8 +114,11 @@
         .toast { background-color: rgba(28, 28, 30, 0.9); color: #fff; padding: 14px 20px; border-radius: 12px; font-size: 15px; font-weight: 500; backdrop-filter: blur(10px); animation: fadeIn 0.3s;}
 
         .custom-icon-wrapper { border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.25); cursor: pointer;}
+
+        /* ПУЛЬСИРУЮЩИЙ КРУГ GPS (БЕЗ ЛИШНИХ СИНИХ МЕТОК СВЕРХУ) */
         .gps-pulse { width: 18px; height: 18px; background: #007aff; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,122,255,0.5); position: relative; }
         .gps-pulse::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: rgba(0,122,255,0.4); border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(1.2); opacity: 0; } }
 
         .mobile-bottom-nav { display: none; }
 
@@ -210,7 +218,7 @@
                 </div>
                 <div class="route-point" onclick="startPickingMode('end')">
                     <span class="point-icon b">B</span>
-                    <input type="text" class="route-input" id="routeEnd" placeholder="Куда (Нажмите, чтобы выбрать)" readonly>
+                    <input type="text" class="route-input" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly>
                 </div>
             </div>
 
@@ -278,33 +286,26 @@
     const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
     const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 
-    // ВСТАВЬ СВОЙ URL ИЗ ВЕРСЕЛ СЮДА:
-    const BACKEND_URL = 'https://open-path-three.vercel.app';
+    // Подключаем относительный путь для Vercel. Фронтенд сам поймет, на каком домене крутится.
+    const BACKEND_URL = window.location.origin;
 
-    // Локальная база данных (Рандомные качественные фото по тематикам добавлены сразу)
-    let localDatabase = [
-        { id: 1, name: "ТРЦ MEGA Alma-Ata", lat: 43.2018, lng: 76.8923, category: "shop", accessLevel: "full", desc: "Крупный торговый центр с пандусами и лифтами.", image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500&q=80" },
-        { id: 2, name: "Magnum Cash&Carry", lat: 43.2375, lng: 76.8875, category: "shop", accessLevel: "full", desc: "Продуктовый супермаркет.", image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&q=80" },
-        { id: 4, name: "Аптека Садыхан", lat: 43.2380, lng: 76.8890, category: "pharmacy", accessLevel: "full", desc: "Круглосуточная аптека.", image: "https://images.unsplash.com/photo-1631549916768-411d643a54ef?w=500&q=80" }
-    ];
+    let localDatabase = [];
 
-    // Набор картинок из интернета для генерации, если в базе данных Вёрсела нет картинок
+    // Подборка качественных рандомных фото по категориям (Unsplash Source)
     const randomPhotos = {
-        shop: ["https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500", "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=500"],
+        shop: ["https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500", "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500"],
         pharmacy: ["https://images.unsplash.com/photo-1631549916768-411d643a54ef?w=500", "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?w=500"],
         food: ["https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500", "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=500"],
         hospital: ["https://images.unsplash.com/photo-1586773860418-d3b3de97e663?w=500", "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=500"]
     };
 
     async function fetchPlacesFromVercel() {
-        if (!BACKEND_URL) return;
         try {
             const response = await fetch(`${BACKEND_URL}/api/places`);
             const data = await response.json();
             if (Array.isArray(data) && data.length > 0) {
                 localDatabase = data.map(p => {
                     let cat = p.category || 'shop';
-                    // Если картинки нет или она пустая, подставляем качественную тематическую ссылку
                     let imgArray = randomPhotos[cat] || randomPhotos['shop'];
                     let fallbackImage = imgArray[Math.floor(Math.random() * imgArray.length)];
 
@@ -319,10 +320,9 @@
                         image: p.image && p.image.startsWith('http') ? p.image : fallbackImage
                     };
                 });
-                console.log(`Загружено мест с Vercel: ${localDatabase.length}`);
             }
         } catch (e) {
-            console.error("Бэкенд Vercel недоступен, работаем на встроенной базе:", e);
+            console.error("Ошибка получения мест, загружаем локальные сейвы:", e);
         }
     }
 
@@ -501,7 +501,7 @@
         speakAssist(p.name + ". " + p.desc);
     }
 
-    // --- ИСПРАВЛЕННАЯ ЛОГИКА КЛИКОВ ПО КАРТЕ (КАК В 2ГИС) ---
+    // --- ЛОГИКА СВОБОДНЫХ КЛИКОВ ПО КАРТЕ ---
     window.startPickingMode = function(type) {
         mapPickingMode = type;
         if(isMobile) closeMobileMenu();
@@ -523,7 +523,6 @@
         let clickedLat = e.lngLat.lat;
         let clickedLng = e.lngLat.lng;
 
-        // Режим 1: Если мы выбираем точки внутри панели маршрутов А-В
         if (mapPickingMode) {
             if (mapPickingMode === 'start') {
                 routeStartLatlng = [clickedLng, clickedLat];
@@ -546,9 +545,8 @@
             return;
         }
 
-        // Режим 2: Свободный клик по карте вне меню маршрутов
         let closestPlace = null;
-        let minDistance = 0.4; // Ищем заведение в радиусе 400 метров
+        let minDistance = 0.4;
 
         localDatabase.forEach(p => {
             let dist = getDistance(clickedLat, clickedLng, p.lat, p.lng);
@@ -559,13 +557,11 @@
         });
 
         if (closestPlace) {
-            // Если попали рядом с заведением — открываем его карточку
             map.flyTo({center: [closestPlace.lng, closestPlace.lat], zoom: 16});
             if (isMobile) openMobileMenu('panel-search', document.querySelectorAll('.mob-nav-item')[0]);
             else switchTab('panel-search', document.querySelectorAll('.nav-tab')[0]);
             renderDetailsInline(closestPlace);
         } else {
-            // Если кликнули на свободную дорогу — автоматически предлагаем построить маршрут СЮДА (Точка B)
             if (isMobile) openMobileMenu('panel-routes', document.querySelectorAll('.mob-nav-item')[1]);
             else switchTab('panel-routes', document.querySelectorAll('.nav-tab')[1]);
 
@@ -652,10 +648,9 @@
 
     function setMode(mode, el) { currentProfile = mode; document.querySelectorAll('.r-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); if(routeStartLatlng && routeEndLatlng) calculateRoute(); }
 
-    // УПРАВЛЯЕМЫЕ КНОПКИ УВЕДОМЛЕНИЙ (КОНТРОЛИРУЮТСЯ ТУМБЛЕРОМ)
     function showToast(msg) {
         const allowed = document.getElementById('cb-show-toasts').checked;
-        if (!allowed) return; // Если тосты выключены в настройках — прерываем выполнение
+        if (!allowed) return;
 
         const c = document.getElementById('toast-container');
         const t = document.createElement('div');
