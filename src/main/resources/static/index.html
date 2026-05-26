@@ -54,18 +54,31 @@
         .result-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
         .result-desc { font-size: 13px; color: var(--text-muted); }
 
-        /* МАРШРУТЫ - ИСПРАВЛЕННЫЙ UI И РЕЖИМЫ */
+        /* СПЕЦИАЛЬНАЯ ДИНАМИЧЕСКАЯ КАРТОЧКА ОБЪЕКТА В СПИСКЕ */
+        .place-detail-card { background: var(--bg-input); border-radius: 18px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; }
+        .place-detail-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #e5e5ea; }
+        .place-detail-card .close-card { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-weight: bold; color: var(--text-main); }
+        .place-detail-card .accessibility-badge { display: inline-block; padding: 6px 12px; background: var(--primary); color: white; border-radius: 10px; font-size: 13px; font-weight: 600; margin-top: 8px; }
+
+        /* БЛОК ФИЛЬТРОВ ДОСТУПНОСТИ */
+        .access-filters-box { background: var(--bg-input); border-radius: 14px; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .access-filters-header { margin: 0; font-size: 14px; font-weight: 700; display: flex; justify-content: justify; align-items: center; cursor: pointer; justify-content: space-between; }
+        .filter-content-wrapper { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; transition: 0.2s; }
+        .filter-content-wrapper.collapsed { display: none; }
+        .access-cb-label { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+        /* МАРШРУТЫ */
         .route-tabs { display: flex; justify-content: space-between; background: var(--bg-input); padding: 6px; border-radius: 14px; margin-bottom: 20px;}
         .r-tab { flex: 1; text-align: center; font-size: 22px; padding: 10px 0; cursor: pointer; border-radius: 10px; color: var(--text-muted); transition: 0.2s;}
         .r-tab.active { background: var(--bg-panel); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05);}
 
         .route-input-group { background: var(--bg-input); border-radius: 18px; padding: 5px; margin-bottom: 20px; position: relative; border: 1px solid var(--border-color);}
-        .route-point { display: flex; align-items: center; padding: 14px; border-bottom: 1px solid var(--border-color); cursor: pointer; } /* Добавлен курсор */
+        .route-point { display: flex; align-items: center; padding: 14px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
         .route-point:last-child { border-bottom: none; }
         .point-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white; margin-left: 5px; margin-right: 12px;}
         .point-icon.a { background: var(--primary); }
         .point-icon.b { background: #ff3b30; }
-        .route-input { border: none; padding: 0; flex-grow: 1; outline: none; font-size: 16px !important; font-weight: 500; background: transparent; color: var(--text-main); cursor: pointer;} /* Запрет ввода руками, только выбор */
+        .route-input { border: none; padding: 0; flex-grow: 1; outline: none; font-size: 16px !important; font-weight: 500; background: transparent; color: var(--text-main); cursor: pointer;}
         .swap-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; background: var(--bg-panel); border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); z-index: 2;}
 
         .route-result-box { display: none; padding: 20px; background: var(--bg-input); border-radius: 18px; text-align: center;}
@@ -134,7 +147,7 @@
             .sidebar-content {
                 width: 100% !important; min-width: 100% !important;
                 position: fixed; top: auto; bottom: 75px; left: 0;
-                height: 55dvh; /* СДЕЛАЛ ВЫШЕ, ЧТОБЫ ВМЕЩАЛСЯ ИНТЕРФЕЙС */
+                height: 55dvh;
                 border-radius: 24px 24px 0 0;
                 transform: translateY(120%); border-right: none;
                 box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
@@ -153,7 +166,8 @@
 </head>
 <body ondblclick="handleDoubleTap()">
 <div id="toast-container"></div>
-<div id="map-picking-overlay">Нажмите на карту для выбора</div> <div id="traffic-light-overlay">
+<div id="map-picking-overlay">Нажмите на карту для выбора</div>
+<div id="traffic-light-overlay">
     <video id="camera-feed" autoplay playsinline></video>
     <canvas id="cv-canvas" style="display:none;"></canvas>
     <div class="traffic-status-box" id="trafficStatusBox">
@@ -189,7 +203,7 @@
 
             <div class="access-filters-box">
                 <h4 class="access-filters-header" onclick="document.getElementById('filterContent').classList.toggle('collapsed');">
-                    <span>Фильтры доступности</span> ▼
+                    <span>Фильтры доступности</span> <span>▼</span>
                 </h4>
                 <div class="filter-content-wrapper collapsed" id="filterContent">
                     <label class="access-cb-label"><input type="checkbox" id="f-full" checked onchange="window.loadPlaces()"> ✅ С пандусом</label>
@@ -208,7 +222,6 @@
                 <span class="r-tab active" data-mode="driving-car" onclick="setMode('driving-car', this)">🚗</span>
                 <span class="r-tab" data-mode="foot-walking" onclick="setMode('foot-walking', this)">🚶‍♂️</span>
                 <span class="r-tab" data-mode="wheelchair" onclick="setMode('wheelchair', this)" style="display: none;" id="tabWheelchair">♿</span>
-                <span class="r-tab" data-mode="custom-astar" onclick="setMode('custom-astar', this)">🧠 A*</span>
             </div>
 
             <div class="route-input-group">
@@ -239,7 +252,7 @@
             <div class="form-group">
                 <label>Потребности (Инклюзивность)</label>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-wheelchair" style="width:22px; height:22px;" onchange="applySettings()"> 👨‍🦽 На коляске</label>
+                    <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-wheelchair" style="width:22px; height:22px;" onchange="syncGlobalFilters('profile')"> 👨‍🦽 На коляске</label>
                     <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-input); border-radius:14px;"><input type="checkbox" id="cb-vision" style="width:22px; height:22px;" onchange="applySettings()"> 🦯 Слабовидящий</label>
                 </div>
             </div>
@@ -283,26 +296,25 @@
     const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
     const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 
+    // База данных с добавленными ссылками на заглушки картинок
     const localDatabase = [
-        { id: 1, name: "ТРЦ MEGA Alma-Ata", lat: 43.2018, lng: 76.8923, category: "shop", accessLevel: "full", desc: "Крупный торговый центр с пандусами и лифтами." },
-        { id: 2, name: "Magnum Cash&Carry", lat: 43.2375, lng: 76.8875, category: "shop", accessLevel: "full", desc: "Продуктовый супермаркет." },
-        { id: 3, name: "Magnum Express", lat: 43.2420, lng: 76.9010, category: "shop", accessLevel: "partial", desc: "Небольшой филиал, есть кнопка вызова." },
-        { id: 4, name: "Аптека Садыхан", lat: 43.2380, lng: 76.8890, category: "pharmacy", accessLevel: "full", desc: "Круглосуточная аптека." },
-        { id: 5, name: "Центральная Аптека", lat: 43.2450, lng: 76.9120, category: "pharmacy", accessLevel: "partial", desc: "Аптека на углу (узкие двери)." },
-        { id: 6, name: "Старая Аптека №4", lat: 43.2405, lng: 76.8885, category: "pharmacy", accessLevel: "none", desc: "Старое здание, высокие ступеньки." },
-        { id: 7, name: "Ресторан Navat", lat: 43.2395, lng: 76.8905, category: "food", accessLevel: "full", desc: "Национальная кухня, удобный вход." },
-        { id: 8, name: "Кафе Пекарь", lat: 43.2410, lng: 76.8950, category: "food", accessLevel: "none", desc: "Пекарня в подвальном помещении." },
-        { id: 9, name: "Городская больница №12", lat: 43.2280, lng: 76.9050, category: "hospital", accessLevel: "full", desc: "Медицинское учреждение." }
+        { id: 1, name: "ТРЦ MEGA Alma-Ata", lat: 43.2018, lng: 76.8923, category: "shop", accessLevel: "full", desc: "Крупный торговый центр с пандусами и лифтами.", image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400" },
+        { id: 2, name: "Magnum Cash&Carry", lat: 43.2375, lng: 76.8875, category: "shop", accessLevel: "full", desc: "Продуктовый супермаркет.", image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400" },
+        { id: 3, name: "Magnum Express", lat: 43.2420, lng: 76.9010, category: "shop", accessLevel: "partial", desc: "Небольшой филиал, есть кнопка вызова.", image: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=400" },
+        { id: 4, name: "Аптека Садыхан", lat: 43.2380, lng: 76.8890, category: "pharmacy", accessLevel: "full", desc: "Круглосуточная аптека.", image: "https://images.unsplash.com/photo-1631549916768-411d643a54ef?w=400" },
+        { id: 5, name: "Центральная Аптека", lat: 43.2450, lng: 76.9120, category: "pharmacy", accessLevel: "partial", desc: "Аптека на углу (узкие двери).", image: "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?w=400" },
+        { id: 6, name: "Старая Аптека №4", lat: 43.2405, lng: 76.8885, category: "pharmacy", accessLevel: "none", desc: "Старое здание, высокие ступеньки.", image: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?w=400" },
+        { id: 7, name: "Ресторан Navat", lat: 43.2395, lng: 76.8905, category: "food", accessLevel: "full", desc: "Национальная кухня, удобный вход.", image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400" },
+        { id: 8, name: "Кафе Пекарь", lat: 43.2410, lng: 76.8950, category: "food", accessLevel: "none", desc: "Пекарня в подвальном помещении.", image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400" },
+        { id: 9, name: "Городская больница №12", lat: 43.2280, lng: 76.9050, category: "hospital", accessLevel: "full", desc: "Медицинское учреждение.", image: "https://images.unsplash.com/photo-1586773860418-d3b3de97e663?w=400" }
     ];
 
     let voiceEnabled = false; let is3D = false;
-    let currentProfile = 'driving-car'; // По умолчанию теперь машина
+    let currentProfile = 'driving-car';
     let routeStartLatlng = null; let routeEndLatlng = null;
     let gpsWatchId = null; let gpsMarker = null; let routeStartMarker = null; let routeEndMarker = null;
     let lastTapTime = 0; let lastSosTime = 0;
-
-    // Переменная для контроля кликов по карте (ИСКЛЮЧАЕТ СЛУЧАЙНЫЕ КЛИКИ)
-    let mapPickingMode = null; // может быть 'start', 'end' или null
+    let mapPickingMode = null;
 
     let isMobile = window.innerWidth <= 768;
     window.addEventListener('resize', () => {
@@ -329,7 +341,9 @@
             map.addLayer({ 'id': '3d-buildings', 'source': 'v3', 'source-layer': 'building', 'filter': ['!=', ['get', 'hide_3d'], true], 'type': 'fill-extrusion', 'minzoom': 15, 'paint': { 'fill-extrusion-color': bColor, 'fill-extrusion-height': ['get', 'render_height'], 'fill-extrusion-opacity': 0.8 } });
         }
     }
-    map.on('load', () => { addCustomMapLayers(); window.loadPlaces(); });
+
+    // ВАЖНО: При загрузке больше не вызываем автоматический рендер всех точек! Карта пустая до ввода.
+    map.on('load', () => { addCustomMapLayers(); window.clearMarkers(); });
 
     function switchTab(targetId, el) {
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active')); el.classList.add('active');
@@ -354,7 +368,6 @@
         document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
         activeMobileMenu = null; updateMobileControlsPosition();
 
-        // Если закрыли шторку - отменяем режим выбора на карте
         if (mapPickingMode) {
             mapPickingMode = null;
             document.getElementById('map-picking-overlay').style.display = 'none';
@@ -373,57 +386,116 @@
         if(isMobile && activeMobileMenu !== 'panel-search') openMobileMenu('panel-search', document.querySelectorAll('.mob-nav-item')[0]);
     }
 
+    window.clearMarkers = function() {
+        currentMarkers.forEach(m => m.remove()); currentMarkers = [];
+    }
+
+    // СИНХРОНИЗАЦИЯ ФИЛЬТРОВ И ОПЦИЙ (Исправляет баг удаления «инвалидности»)
+    window.syncGlobalFilters = function(source) {
+        const cbProfile = document.getElementById('cb-wheelchair');
+        const fFull = document.getElementById('f-full');
+        const fPartial = document.getElementById('f-partial');
+        const fNone = document.getElementById('f-none');
+
+        if (source === 'profile') {
+            // Если включили "На коляске" в Опциях
+            if (cbProfile.checked) {
+                fFull.checked = true;
+                fPartial.checked = false; // Отключаем места только с кнопками вызова
+                fNone.checked = false;    // Отключаем лестницы без пандусов
+            } else {
+                fFull.checked = true; fPartial.checked = true; fNone.checked = true;
+            }
+        }
+
+        // Применяем изменения профиля
+        applySettings();
+    }
+
+    // РЕНДЕР СПИСКА И МЕТОК (КОГДА ЧТО-ТО ВВЕДЕНО)
     window.loadPlaces = function() {
         const query = document.getElementById('searchInput').value.toLowerCase().trim();
-        const fFull = document.getElementById('f-full').checked; const fPartial = document.getElementById('f-partial').checked; const fNone = document.getElementById('f-none').checked;
+        const fFull = document.getElementById('f-full').checked;
+        const fPartial = document.getElementById('f-partial').checked;
+        const fNone = document.getElementById('f-none').checked;
         const isW = document.getElementById('cb-wheelchair').checked;
-        const lc = document.getElementById('searchResultsList'); lc.innerHTML = '';
-        currentMarkers.forEach(m => m.remove()); currentMarkers = [];
+        const lc = document.getElementById('searchResultsList');
+
+        lc.innerHTML = '';
+        window.clearMarkers();
+
+        // 2ГИС Логика: если ничего не ищут — карта чистая, результатов нет
+        if (query === '') {
+            return;
+        }
 
         let filtered = localDatabase.filter(p => {
-            let textMatch = query === '' || p.name.toLowerCase().includes(query) || p.category.includes(query) || p.desc.toLowerCase().includes(query);
+            let textMatch = p.name.toLowerCase().includes(query) || p.category.includes(query) || p.desc.toLowerCase().includes(query);
             let accessMatch = false;
-            if(p.accessLevel === 'full' && fFull) accessMatch = true; if(p.accessLevel === 'partial' && fPartial) accessMatch = true; if(p.accessLevel === 'none' && fNone) accessMatch = true;
+            if(p.accessLevel === 'full' && fFull) accessMatch = true;
+            if(p.accessLevel === 'partial' && fPartial) accessMatch = true;
+            if(p.accessLevel === 'none' && fNone) accessMatch = true;
             if(isW && p.accessLevel === 'none') accessMatch = false;
             return textMatch && accessMatch;
         });
 
-        if(filtered.length === 0) { lc.innerHTML = '<p style="padding:15px; text-align:center; color:var(--text-muted);">Ничего не найдено.</p>'; return; }
+        if(filtered.length === 0) {
+            lc.innerHTML = '<p style="padding:15px; text-align:center; color:var(--text-muted);">Ничего не найдено.</p>';
+            return;
+        }
 
         filtered.forEach(p => {
             let el = document.createElement('div'); el.className = 'result-item';
-            let aIcon = p.accessLevel === 'full' ? '✅' : (p.accessLevel === 'partial' ? '🤝' : '❌');
-            el.innerHTML = `<div class="result-title">${p.name} <span style="font-size:12px">${aIcon}</span></div><div class="result-desc">${p.desc}</div>`;
-            el.onclick = () => { map.flyTo({center: [p.lng, p.lat], zoom: 16}); if(isMobile) closeMobileMenu(); openPlaceCardPopup(p); };
+            let aIcon = p.accessLevel === 'full' ? '✅ С пандусом' : (p.accessLevel === 'partial' ? '🤝 Кнопка вызова' : '❌ Ступеньки');
+
+            el.innerHTML = `
+                <div class="result-title">${p.name}</div>
+                <div class="result-desc" style="margin-bottom: 4px;">${p.desc}</div>
+                <div style="font-size:12px; font-weight:700; color:var(--primary);">${aIcon}</div>
+            `;
+
+            el.onclick = () => {
+                map.flyTo({center: [p.lng, p.lat], zoom: 16});
+                renderDetailsInline(p);
+            };
             lc.appendChild(el);
 
             let mEl = document.createElement('div'); mEl.className = 'custom-icon-wrapper';
             mEl.style.background = p.accessLevel === 'none' ? '#ff3b30' : (p.accessLevel === 'partial' ? '#ff9500' : '#34c759');
             mEl.innerHTML = p.category === 'pharmacy' ? '💊' : (p.category === 'shop' ? '🛒' : '📍');
-            mEl.onclick = (e) => { e.stopPropagation(); openPlaceCardPopup(p); };
+            mEl.onclick = (e) => {
+                e.stopPropagation();
+                if (isMobile) openMobileMenu('panel-search', document.querySelectorAll('.mob-nav-item')[0]);
+                renderDetailsInline(p);
+            };
             currentMarkers.push(new maplibregl.Marker(mEl).setLngLat([p.lng, p.lat]).addTo(map));
         });
     }
 
-    function openPlaceCardPopup(p) {
-        const html = `
-                <div class="map-popup-card">
-                    <div class="map-popup-body">
-                        <h4 style="margin:0 0 6px 0; font-size:16px;">${p.name}</h4>
-                        <p style="margin:0 0 12px 0; font-size:12px; color:var(--text-muted);">${p.desc}</p>
-                        <button class="map-popup-btn" onclick="window.setupDestinationRoute(${p.lat}, ${p.lng}, '${p.name.replace(/'/g, "\\'")}')">Сюда</button>
-                    </div>
-                </div>
-            `;
-        new maplibregl.Popup({ offset: 15 }).setLngLat([p.lng, p.lat]).setHTML(html).addTo(map);
-        speakAssist(p.name);
+    // ПОКАЗ ОПИСАНИЯ, УДОБСТВ ДЛЯ ИНВАЛИДОВ И ФОТО (Инлайн-карточка в стиле 2ГИС)
+    function renderDetailsInline(p) {
+        const lc = document.getElementById('searchResultsList');
+        lc.innerHTML = ''; // Сворачиваем общий список, показывая только детальную карточку
+
+        let aBadge = p.accessLevel === 'full' ? '♿ Полностью доступно (Пандус)' : (p.accessLevel === 'partial' ? '🤝 Частично (Есть кнопка вызова)' : '❌ Недоступно (Только ступени)');
+
+        let detailCard = document.createElement('div');
+        detailCard.className = 'place-detail-card';
+        detailCard.innerHTML = `
+            <button class="close-card" onclick="window.loadPlaces()">✕</button>
+            <img src="${p.image}" alt="${p.name}">
+            <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight:800;">${p.name}</h3>
+            <p style="margin: 0 0 12px 0; font-size: 14px; color: var(--text-muted); line-height:1.4;">${p.desc}</p>
+            <div class="accessibility-badge">${aBadge}</div>
+            <button class="map-popup-btn" style="width:100%; margin-top:15px;" onclick="window.setupDestinationRoute(${p.lat}, ${p.lng}, '${p.name.replace(/'/g, "\\'")}')">Построить маршрут сюда</button>
+        `;
+        lc.appendChild(detailCard);
+        speakAssist(p.name + ". " + p.desc);
     }
 
-    // --- МАРШРУТЫ И ЗАПРЕТ СЛУЧАЙНЫХ КЛИКОВ ---
-
-    // 1. Функция запуска режима выбора на карте (Вызывается по клику на инпуты в панели маршрута)
+    // --- МАРШРУТЫ ---
     window.startPickingMode = function(type) {
-        mapPickingMode = type; // 'start' или 'end'
+        mapPickingMode = type;
         if(isMobile) closeMobileMenu();
 
         document.getElementById('map-picking-overlay').innerText = type === 'start' ? "Нажмите на карту (Точка А)" : "Нажмите на карту (Точка Б)";
@@ -431,9 +503,8 @@
         showToast("Укажите точку на карте");
     }
 
-    // 2. Обработка клика по карте работает ТОЛЬКО если активирован mapPickingMode
     map.on('click', function(e) {
-        if (!mapPickingMode) return; // ИГНОРИРУЕМ СЛУЧАЙНЫЕ КЛИКИ!
+        if (!mapPickingMode) return;
 
         if (mapPickingMode === 'start') {
             routeStartLatlng = [e.lngLat.lng, e.lngLat.lat];
@@ -449,7 +520,6 @@
             routeEndMarker = new maplibregl.Marker(el).setLngLat(routeEndLatlng).addTo(map);
         }
 
-        // Выключаем режим выбора и открываем панель маршрутов обратно
         mapPickingMode = null;
         document.getElementById('map-picking-overlay').style.display = 'none';
 
@@ -459,18 +529,13 @@
         if(routeStartLatlng && routeEndLatlng) calculateRoute();
     });
 
-    // 3. Выбор маршрута через карточку места (кнопка "Сюда")
     window.setupDestinationRoute = function(lat, lng, name) {
         routeEndLatlng = [lng, lat];
         document.getElementById('routeEnd').value = name;
 
-        const popups = document.getElementsByClassName('maplibregl-popup');
-        if(popups.length) popups[0].remove();
-
         if(!isMobile) switchTab('panel-routes', document.querySelectorAll('.nav-tab')[1]);
         else openMobileMenu('panel-routes', document.querySelectorAll('.mob-nav-item')[1]);
 
-        // Если включен GPS, автоматически ставим его в точку А
         if(gpsMarker && !routeStartLatlng) {
             routeStartLatlng = [gpsMarker.getLngLat().lng, gpsMarker.getLngLat().lat];
             document.getElementById('routeStart').value = "Мое местоположение";
@@ -621,6 +686,26 @@
         };
     }
     function stopTrafficLightAssist() { if(cvInterval) clearInterval(cvInterval); if(videoStream) videoStream.getTracks().forEach(t=>t.stop()); document.getElementById('traffic-light-overlay').style.display = 'none'; }
+
+    // РЕГИСТРАЦИЯ SERVICE WORKER (Перемещено в логичный блок инициализации)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            const swCode = `
+                const CACHE_NAME = 'openpath-v1';
+                const urlsToCache = [
+                    './index.html',
+                    './manifest.json',
+                    'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css',
+                    'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js'
+                ];
+                self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache))); });
+                self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(res => res || fetch(e.request))); });
+            `;
+            const blob = new Blob([swCode], { type: 'text/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).catch(err => console.log('SW error:', err));
+        });
+    }
 </script>
 </body>
 </html>
