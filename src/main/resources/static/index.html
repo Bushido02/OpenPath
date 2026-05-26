@@ -19,7 +19,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 
     <style>
-        /* ПОЛНЫЙ ВОЗВРАТ ТЕМ ОФОРМЛЕНИЯ */
         :root { --bg-main: #f2f2f7; --bg-panel: #ffffff; --bg-input: #f2f2f7; --text-main: #333333; --text-muted: #8a8a8e; --border-color: #e5e5ea; --primary: #28a745; --primary-text: #ffffff; }
         [data-theme="dark"] { --bg-main: #000000; --bg-panel: #1c1c1e; --bg-input: #2c2c2e; --text-main: #f2f2f7; --text-muted: #a1a1a6; --border-color: #3a3a3c; --primary: #34c759; --primary-text: #000000; }
         [data-theme="contrast"] { --bg-main: #000000; --bg-panel: #000000; --bg-input: #000000; --text-main: #ffff00; --text-muted: #ffffff; --border-color: #ffff00; --primary: #ffff00; --primary-text: #000000; }
@@ -27,14 +26,12 @@
         body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; overflow: hidden; background-color: var(--bg-main); color: var(--text-main); overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent;}
         .wrapper { display: flex; height: 100dvh; width: 100%; position: relative; }
 
-        /* ДЕСКТОПНАЯ НАВИГАЦИЯ */
         .sidebar-nav { width: 72px; min-width: 72px; height: 100%; background-color: var(--bg-panel); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding-top: 15px; z-index: 1020; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
         .nav-tab { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 14px 0; cursor: pointer; color: var(--text-muted); transition: 0.2s; border-left: 3px solid transparent; }
         .nav-tab.active { color: var(--primary); border-left-color: var(--primary); background: rgba(40, 167, 69, 0.05); }
         .nav-tab .icon { font-size: 24px; margin-bottom: 6px; }
         .nav-tab .label { font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; }
 
-        /* ДЕСКТОПНЫЕ ПАНЕЛИ */
         .sidebar-content { width: 380px; min-width: 380px; height: 100%; background-color: var(--bg-panel); z-index: 1010; box-shadow: 4px 0 20px rgba(0,0,0,0.08); display: flex; flex-direction: column; position: relative; transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1); border-right: 1px solid var(--border-color); }
         .sidebar-content.collapsed { width: 0; min-width: 0; transform: translateX(-100%); }
         .toggle-btn { position: absolute; right: -28px; top: 20px; width: 28px; height: 44px; background: var(--bg-panel); border: 1px solid var(--border-color); border-left: none; border-radius: 0 10px 10px 0; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1030; color: var(--text-muted); font-weight: bold; font-size: 18px; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
@@ -47,7 +44,6 @@
         #panel-routes { padding: 0; }
         #panel-profile { padding: 20px; }
 
-        /* ЭЛЕМЕНТЫ ПАНЕЛИ */
         .header-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-shrink: 0; }
         .search-wrapper { position: relative; margin-bottom: 15px; display: flex; align-items: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-radius: 16px;}
         .search-box { width: 100%; padding: 16px 85px 16px 45px; border-radius: 16px; border: 1px solid var(--border-color); background-color: var(--bg-input); font-size: 16px !important; outline: none; box-sizing: border-box; color: var(--text-main); font-weight: 500;}
@@ -90,14 +86,12 @@
         .reset-btn { flex: 1; padding: 16px 10px; background: var(--bg-input); color: #dc3545; border: 1px solid var(--border-color); border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; text-align: center;}
         .start-nav-btn { flex: 2; padding: 16px; background: var(--primary); color: var(--primary-text); border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; text-align: center;}
 
-        /* НАСТРОЙКИ (ВЕРНУЛАСЬ ВЕРСТКА) */
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
         .form-input { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-input); font-size: 16px !important; outline: none; color: var(--text-main); font-weight: 500;}
 
-        /* КАРТА И КНОПКИ */
         #map-container { flex-grow: 1; height: 100%; width: 100%; position: relative; z-index: 1; }
-        #map { height: 100%; width: 100%; background-color: #e5e5ea; }
+        #map { height: 100%; width: 100%; background-color: var(--border-color); }
 
         .map-controls-right { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); z-index: 200; display: flex; flex-direction: column; gap: 15px; }
         .map-btn-group { background: var(--bg-panel); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border-color); }
@@ -115,18 +109,15 @@
 
         .custom-icon-wrapper { border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer;}
 
-        /* ВОЗВРАЩЕНА КРАСИВАЯ АНИМАЦИЯ GPS (Вместо скучного кружка) */
         .gps-pulse { width: 20px; height: 20px; background: #007bff; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,123,255,0.5); position: relative; }
         .gps-pulse::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: rgba(0,123,255,0.4); border-radius: 50%; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
 
-        /* ИНТЕРФЕЙС УМНОГО СВЕТОФОРА */
         #traffic-light-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
         #camera-feed { width: 100%; height: 100%; object-fit: cover; position: absolute; opacity: 0.6; }
         .traffic-status-box { position: relative; z-index: 10000; background: rgba(0,0,0,0.8); padding: 30px; border-radius: 24px; text-align: center; border: 2px solid #333; backdrop-filter: blur(10px); width: 80%; }
         .close-traffic-btn { position: absolute; bottom: 40px; z-index: 10000; background: #fff; color: #000; padding: 16px 40px; border-radius: 30px; font-size: 18px; font-weight: 800; border: none; cursor: pointer; }
 
-        /* === СПЕЦИАЛЬНО ДЛЯ ТЕЛЕФОНОВ (BOTTOM SHEET) === */
         .mobile-bottom-nav { display: none; }
 
         @media (max-width: 768px) {
@@ -268,7 +259,7 @@
                         <input type="checkbox" id="cb-wheelchair" style="width:22px; height:22px;" onchange="applySettings()"> <span data-i18n="need_wheelchair">👨‍🦽 На коляске</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-panel); border-radius:12px; border:1px solid var(--border-color);">
-                        <input type="checkbox" id="cb-vision" style="width:22px; height:22px;" onchange="applySettings()"> <span data-i18n="need_vision">🦯 Слабовидящий (Голос)</span>
+                        <input type="checkbox" id="cb-vision" style="width:22px; height:22px;" onchange="applySettings()"> <span data-i18n="need_vision">🦯 Слабовидящий</span>
                     </label>
                     <label style="display:flex; align-items:center; gap:12px; padding:14px; background:var(--bg-panel); border-radius:12px; border:1px solid var(--border-color);">
                         <input type="checkbox" id="cb-hearing" style="width:22px; height:22px;" onchange="applySettings()"> <span data-i18n="need_hearing">🧏 Глухой (Текст)</span>
@@ -316,7 +307,6 @@
     const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
     const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 
-    // --- ВОЗВРАТ ПОЛНОГО СЛОВАРЯ ---
     const i18n = {
         ru: { nav_search: "Поиск", nav_route: "Маршрут", nav_settings: "Настройки", search_ph: "Поиск (Голос: Где я?)", chip_food: "Рестораны", chip_shop: "Магазины", chip_pharmacy: "Аптеки", filter_title: "Фильтры доступности", f_full: "С пандусом", f_none: "Ступеньки", route_title: "Маршрут", route_from: "Откуда", route_to: "Куда", route_done: "Маршрут построен", btn_reset: "Сброс", btn_go: "▶ Поехали", settings_title: "Настройки", lang_title: "Язык", needs_title: "Потребности", need_wheelchair: "👨‍🦽 На коляске", need_vision: "🦯 Слабовидящий", need_hearing: "🧏 Глухой", theme_title: "Тема", theme_light: "Светлая", theme_dark: "Темная", theme_contrast: "Контраст", btn_stop: "Завершить маршрут" },
         kz: { nav_search: "Іздеу", nav_route: "Бағыт", nav_settings: "Баптаулар", search_ph: "Іздеу...", chip_food: "Мейрамханалар", chip_shop: "Дүкендер", chip_pharmacy: "Дәріханалар", filter_title: "Сүзгілер", f_full: "Пандуспен", f_none: "Баспалдақпен", route_title: "Бағыт құру", route_from: "Қайдан", route_to: "Қайда", route_done: "Бағыт құрылды", btn_reset: "Қалпына келтіру", btn_go: "▶ Бастау", settings_title: "Баптаулар", lang_title: "Тіл", needs_title: "Қажеттіліктер", need_wheelchair: "👨‍🦽 Арбада", need_vision: "🦯 Нашар көретін", need_hearing: "🧏 Естімейтін", theme_title: "Тақырып", theme_light: "Жарық", theme_dark: "Қараңғы", theme_contrast: "Контраст", btn_stop: "Аяқтау" },
@@ -324,9 +314,10 @@
     };
 
     let allPlacesFromDB = [];
-    let voiceEnabled = false; window.isHearingImpaired = false;
+    let voiceEnabled = false; window.isHearingImpaired = false; let is3D = false;
     let currentProfile = 'foot-walking';
     let routeStartLatlng = null; let routeEndLatlng = null; let isNavigating = false;
+    let routeCoordinates = []; // Сохраняем координаты для перерисовки слоев
 
     // КУЛДАУНЫ
     let lastTapTime = 0; let lastSosTime = 0; let lastAiCallTime = 0;
@@ -355,12 +346,22 @@
     function closeMobileMenu() { document.getElementById('sidebarContent').classList.remove('open'); document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active')); activeMobileMenu = null; }
     function toggleDesktopSidebar() { document.getElementById('sidebarContent').classList.toggle('collapsed'); }
 
+    // Инициализация карты (Светлая по умолчанию)
     const map = new maplibregl.Map({ container: 'map', style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`, center: [76.8897, 43.2389], zoom: 14.5, pitch: 0, antialias: true, doubleClickZoom: false });
 
-    map.on('load', () => {
-        map.addSource('route', { 'type': 'geojson', 'data': { "type": "FeatureCollection", "features": [] } });
-        map.addLayer({ 'id': 'route-layer', 'type': 'line', 'source': 'route', 'layout': { 'line-join': 'round', 'line-cap': 'round' }, 'paint': { 'line-color': '#007aff', 'line-width': 8 } });
-    });
+    // ФУНКЦИЯ ДОБАВЛЕНИЯ СЛОЕВ (Так как смена стиля удаляет кастомные слои)
+    function addCustomMapLayers() {
+        if(!map.getSource('route')) map.addSource('route', { 'type': 'geojson', 'data': { "type": "FeatureCollection", "features": [] } });
+        if(!map.getLayer('route-layer')) map.addLayer({ 'id': 'route-layer', 'type': 'line', 'source': 'route', 'layout': { 'line-join': 'round', 'line-cap': 'round' }, 'paint': { 'line-color': '#007aff', 'line-width': 8 } });
+
+        // 3D здания зависят от темы: в темной теме они должны быть темнее
+        const bColor = document.getElementById('settingTheme').value === 'dark' ? '#333333' : '#d1d1d6';
+        if(!map.getLayer('3d-buildings')) {
+            map.addLayer({ 'id': '3d-buildings', 'source': 'v3', 'source-layer': 'building', 'filter': ['!=', ['get', 'hide_3d'], true], 'type': 'fill-extrusion', 'minzoom': 15, 'paint': { 'fill-extrusion-color': bColor, 'fill-extrusion-height': ['get', 'render_height'], 'fill-extrusion-opacity': 0.85 } });
+        }
+    }
+
+    map.on('load', () => { addCustomMapLayers(); });
 
     function showToast(msg) {
         const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg;
@@ -384,17 +385,41 @@
         if(document.getElementById('cb-vision').checked) { startVoiceSearch(); }
     }
 
+    // === ОБНОВЛЕННЫЙ ГОЛОСОВОЙ ПОМОЩНИК (VOICE OS 3.0) ===
     function startVoiceSearch() {
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SR) return showToast("Нет поддержки микрофона");
         const rec = new SR(); rec.lang = document.getElementById('settingLang').value === 'uk' ? 'en-US' : 'ru-RU';
         document.getElementById('micBtn').style.color = "red";
-        if (navigator.vibrate) navigator.vibrate(50); speakAssist("Говорите...");
+        if (navigator.vibrate) navigator.vibrate(50); speakAssist("Слушаю вас...");
+
         rec.onresult = (e) => {
             const q = e.results[0][0].transcript.toLowerCase();
-            if(q.includes('где я') && gpsMarker) speakAssist("GPS Активен, ваши координаты загружены");
-            else if(q.includes('отмена')) clearRoute();
-            else { document.getElementById('searchInput').value = q; openMobileMenu('panel-search', document.querySelector('.mob-nav-item')); speakAssist("Ищу " + q); }
+
+            // Распознавание команд интерфейса
+            if(q.includes('где я') || q.includes('координаты')) {
+                if (gpsMarker) speakAssist("GPS Активен, координаты определены"); else speakAssist("Включите GPS прицел");
+            }
+            else if(q.includes('отмена') || q.includes('сброс') || q.includes('очистить')) { clearRoute(); speakAssist("Сброшено"); }
+            else if(q.includes('темная тема') || q.includes('ночная тема')) {
+                document.getElementById('settingTheme').value = 'dark'; applySettings(); speakAssist("Включена тёмная тема");
+            }
+            else if(q.includes('светлая тема') || q.includes('день')) {
+                document.getElementById('settingTheme').value = 'light'; applySettings(); speakAssist("Включена светлая тема");
+            }
+            else if(q.includes('включи 3d') || q.includes('три дэ') || q.includes('объем')) {
+                if(!is3D) toggleMap3D();
+            }
+            else if(q.includes('приблизь') || q.includes('увеличь') || q.includes('ближе')) {
+                map.zoomIn(); speakAssist("Приближаю карту");
+            }
+            else if(q.includes('отдали') || q.includes('уменьшь') || q.includes('дальше')) {
+                map.zoomOut(); speakAssist("Отдаляю карту");
+            }
+            else {
+                // Если это не команда - ищем как текст
+                document.getElementById('searchInput').value = q; openMobileMenu('panel-search', document.querySelector('.mob-nav-item')); speakAssist("Ищу " + q);
+            }
         };
         rec.onend = () => { document.getElementById('micBtn').style.color = "#007bff"; }; rec.start();
     }
@@ -406,7 +431,24 @@
         speakAssist("Формируем сообщение спасателям"); window.location.href = `sms:?body=${encodeURIComponent(text)}`;
     }
 
-    // --- ВОЗВРАТ ЛОГИКИ ТЕМ И ЯЗЫКОВ ---
+    // --- ЛОГИКА ТЕМЫ КАРТЫ ---
+    function setMapTheme(theme) {
+        if (!map) return;
+        const styleUrl = theme === 'dark' || theme === 'contrast'
+            ? `https://api.maptiler.com/maps/basic-v2-dark/style.json?key=${MAPTILER_KEY}`
+            : `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`;
+
+        map.setStyle(styleUrl);
+
+        // После смены стиля нужно вернуть слои маршрута и 3D
+        map.once('styledata', () => {
+            addCustomMapLayers();
+            if(routeCoordinates && routeCoordinates.length > 0) {
+                map.getSource('route').setData({ "type": "Feature", "geometry": { "type": "LineString", "coordinates": routeCoordinates } });
+            }
+        });
+    }
+
     function applyLanguage() {
         const lang = document.getElementById('settingLang').value; localStorage.setItem('openpath_lang', lang);
         const dict = i18n[lang] || i18n['ru'];
@@ -415,10 +457,10 @@
     }
 
     function applySettings() {
-        // Применяем тему
         const theme = document.getElementById('settingTheme').value;
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('openpath_theme', theme);
+        setMapTheme(theme); // Вызов смены подложки карты
 
         const isW = document.getElementById('cb-wheelchair').checked; const tw = document.getElementById('tabWheelchair');
         const isH = document.getElementById('cb-hearing').checked;
@@ -440,9 +482,24 @@
         document.getElementById('cb-vision').checked = localStorage.getItem('openpath_vision') === 'true';
         document.getElementById('cb-hearing').checked = localStorage.getItem('openpath_hearing') === 'true';
 
-        applyLanguage();
-        applySettings();
+        applyLanguage(); applySettings();
     };
+
+    // --- УЛУЧШЕННЫЙ 3D РЕЖИМ (С АВТО-ЗУМОМ) ---
+    function toggleMap3D() {
+        const b = document.getElementById('btn3D');
+        if (is3D) {
+            map.easeTo({ pitch: 0, bearing: 0, duration: 1000 });
+            b.style.color = "var(--text-main)"; b.style.background = "var(--bg-panel)";
+            is3D = false; speakAssist("3D выключен");
+        } else {
+            // Важное исправление: если пользователь далеко, приближаем его к зданиям
+            const targetZoom = Math.max(map.getZoom(), 16.5);
+            map.easeTo({ pitch: 60, bearing: -20, zoom: targetZoom, duration: 1500 });
+            b.style.color = "#007bff"; b.style.background = "#e5f1ff";
+            is3D = true; speakAssist("3D включен. Приближаю карту.");
+        }
+    }
 
     let gpsWatchId = null; let gpsMarker = null; let routeStartMarker = null; let routeEndMarker = null;
     function setMode(mode, el) { currentProfile = mode; document.querySelectorAll('.r-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); if(routeStartLatlng && routeEndLatlng) calculateRoute(); }
@@ -463,7 +520,8 @@
         try {
             const res = await fetch(`https://api.openrouteservice.org/v2/directions/${currentProfile}?api_key=${ORS_API_KEY}&start=${routeStartLatlng[0]},${routeStartLatlng[1]}&end=${routeEndLatlng[0]},${routeEndLatlng[1]}`);
             const data = await res.json();
-            map.getSource('route').setData({ "type": "Feature", "geometry": { "type": "LineString", "coordinates": data.features[0].geometry.coordinates } });
+            routeCoordinates = data.features[0].geometry.coordinates; // Сохраняем для смены тем
+            map.getSource('route').setData({ "type": "Feature", "geometry": { "type": "LineString", "coordinates": routeCoordinates } });
             let mins = Math.round(data.features[0].properties.summary.duration / 60);
             document.getElementById('routeMethod').innerText = document.getElementById('settingLang').value === 'uk' ? "Route Built" : "Маршрут построен";
             map.setPaintProperty('route-layer', 'line-color', currentProfile === 'wheelchair' ? '#28a745' : '#007aff');
@@ -472,7 +530,6 @@
         } catch (e) { document.getElementById('routeTime').innerText = "Ошибка"; }
     }
 
-    // ВОЗВРАТ АНИМАЦИИ ВМЕСТО СТАТИЧНОЙ ТОЧКИ
     function toggleGPS() {
         const btn = document.getElementById('gpsBtn');
         if (gpsWatchId) { navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId = null; if (gpsMarker) gpsMarker.remove(); gpsMarker=null; btn.style.color = "var(--text-main)"; }
@@ -481,7 +538,7 @@
                 btn.style.color = "#007bff"; showToast("Ищу спутники");
                 gpsWatchId = navigator.geolocation.watchPosition((pos) => {
                     if (!gpsMarker) {
-                        let el = document.createElement('div'); el.className = 'gps-pulse'; // КЛАСС ВЕРНУЛСЯ
+                        let el = document.createElement('div'); el.className = 'gps-pulse';
                         gpsMarker = new maplibregl.Marker(el).setLngLat([pos.coords.longitude, pos.coords.latitude]).addTo(map);
                         map.flyTo({center: [pos.coords.longitude, pos.coords.latitude], zoom:17});
                     }
@@ -491,7 +548,7 @@
         }
     }
 
-    window.clearRoute = function() { map.getSource('route').setData({ "type": "FeatureCollection", "features": [] }); if(routeStartMarker) routeStartMarker.remove(); if(routeEndMarker) routeEndMarker.remove(); routeStartLatlng = null; routeEndLatlng = null; document.getElementById('routeStart').value = ''; document.getElementById('routeEnd').value = ''; document.getElementById('routeResult').style.display = 'none'; }
+    window.clearRoute = function() { map.getSource('route').setData({ "type": "FeatureCollection", "features": [] }); routeCoordinates=[]; if(routeStartMarker) routeStartMarker.remove(); if(routeEndMarker) routeEndMarker.remove(); routeStartLatlng = null; routeEndLatlng = null; document.getElementById('routeStart').value = ''; document.getElementById('routeEnd').value = ''; document.getElementById('routeResult').style.display = 'none'; }
 
     window.startNavigatorMode = function() {
         if(!routeStartLatlng || !routeEndLatlng) { speakAssist("Сначала укажите точки А и Б на карте!"); return; }
