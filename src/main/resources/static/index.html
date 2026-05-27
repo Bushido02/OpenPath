@@ -14,9 +14,6 @@
     <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
     <script src="https://unpkg.com/supercluster@8.0.1/dist/supercluster.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-
     <style>
         :root { --bg-main: #f4f4f5; --bg-panel: #ffffff; --bg-input: #f4f4f5; --text-main: #1d1d1f; --text-muted: #86868b; --border-color: #e5e5ea; --primary: #007aff; --primary-text: #ffffff; --fab-bg: #ffffff; }
         [data-theme="dark"] { --bg-main: #000000; --bg-panel: #1c1c1e; --bg-input: #2c2c2e; --text-main: #f5f5f7; --text-muted: #98989d; --border-color: #38383a; --primary: #0a84ff; --primary-text: #ffffff; --fab-bg: #2c2c2e; }
@@ -24,7 +21,6 @@
         body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; background-color: var(--bg-main); color: var(--text-main); -webkit-tap-highlight-color: transparent;}
         .wrapper { display: flex; height: 100dvh; width: 100%; position: relative; }
 
-        /* НАВИГАЦИЯ И БОКОВАЯ ПАНЕЛЬ */
         .sidebar-nav { width: 72px; min-width: 72px; height: 100%; background-color: var(--bg-panel); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding-top: 15px; z-index: 1020; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
         .nav-tab { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 14px 0; cursor: pointer; color: var(--text-muted); transition: 0.2s; border-left: 3px solid transparent; }
         .nav-tab.active { color: var(--primary); border-left-color: var(--primary); background: rgba(0, 122, 255, 0.05); }
@@ -38,7 +34,6 @@
         .panel.active { display: flex !important; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* ПОИСК */
         .search-wrapper { position: relative; margin-bottom: 15px; display: flex; align-items: center; flex-shrink: 0; }
         .search-box { width: 100%; padding: 16px 45px 16px 40px; border-radius: 14px; border: 1px solid var(--border-color); background-color: var(--bg-input); font-size: 16px !important; outline: none; box-sizing: border-box; color: var(--text-main); font-weight: 500; transition: 0.2s;}
         .search-box:focus { border-color: var(--primary); background: var(--bg-panel); box-shadow: 0 0 0 3px rgba(0,122,255,0.1);}
@@ -48,7 +43,6 @@
         .quick-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; flex-shrink: 0;}
         .chip-btn { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 20px; font-size: 14px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
 
-        /* ПОЛЗУНОК ДЛЯ ПРОКРУТКИ МЕСТ */
         .results-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 25px; padding-right: 4px; max-height: 100%; }
         .results-list::-webkit-scrollbar { width: 6px; }
         .results-list::-webkit-scrollbar-track { background: transparent; }
@@ -59,7 +53,6 @@
         .result-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
         .result-desc { font-size: 13px; color: var(--text-muted); }
 
-        /* КАРТОЧКА МЕСТА */
         .place-detail-card { background: var(--bg-input); border-radius: 18px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; flex-shrink: 0;}
         .place-detail-card img { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #e5e5ea; display: block; }
         .place-detail-card .close-card { position: absolute; top: 22px; right: 22px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; z-index: 10;}
@@ -71,7 +64,6 @@
         .filter-content-wrapper.collapsed { display: none; }
         .access-cb-label { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
 
-        /* МАРШРУТЫ */
         .route-tabs { display: flex; justify-content: space-between; background: var(--bg-input); padding: 6px; border-radius: 14px; margin-bottom: 20px;}
         .r-tab { flex: 1; text-align: center; font-size: 22px; padding: 10px 0; cursor: pointer; border-radius: 10px; color: var(--text-muted); transition: 0.2s;}
         .r-tab.active { background: var(--bg-panel); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05);}
@@ -90,12 +82,10 @@
         .start-nav-btn { flex: 2; padding: 16px; background: #34c759; color: white; border: none; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; }
         .reset-btn { flex: 1; padding: 16px; background: var(--border-color); color: var(--text-main); border: none; border-radius: 14px; font-weight: 600; font-size: 15px; cursor: pointer;}
 
-        /* НАСТРОЙКИ */
         .form-group { margin-bottom: 25px; }
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase;}
         .form-input { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--bg-input); font-size: 16px !important; outline: none; color: var(--text-main); font-weight: 500;}
 
-        /* КАРТА */
         #map-container { flex-grow: 1; height: 100%; width: 100%; position: relative; z-index: 1; }
         #map { height: 100%; width: 100%; background-color: var(--border-color); }
 
@@ -114,8 +104,6 @@
         .toast { background-color: rgba(28, 28, 30, 0.9); color: #fff; padding: 14px 20px; border-radius: 12px; font-size: 15px; font-weight: 500; backdrop-filter: blur(10px); animation: fadeIn 0.3s;}
 
         .custom-icon-wrapper { border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.25); cursor: pointer;}
-
-        /* ПУЛЬСИРУЮЩИЙ КРУГ GPS (ПОЛНОСТЬЮ ИЗОЛИРОВАН ОТ КЛИКОВ) */
         .gps-pulse { width: 20px; height: 20px; background: #007aff; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 14px rgba(0,122,255,0.6); position: relative; pointer-events: none; }
         .gps-pulse::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: rgba(0,122,255,0.3); border-radius: 50%; animation: pulseCircle 1.8s infinite; }
         @keyframes pulseCircle { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
@@ -136,7 +124,6 @@
             .mob-nav-item .icon { font-size: 24px; display: block; margin-bottom: 4px; }
             .mob-nav-item.active { color: var(--primary); }
 
-            /* РУЧНОЕ ВЫТЯГИВАНИЕ ШТОРКИ (По дефолту свернута на 60px — только строка поиска) */
             .sidebar-content {
                 width: 100% !important; min-width: 100% !important;
                 position: fixed; top: auto; bottom: 75px; left: 0;
@@ -147,10 +134,9 @@
                 transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
             .sidebar-content.open { height: 50dvh; }
-            .sidebar-content.expanded { height: 93dvh !important; } /* ПОЛНЫЙ ЭКРАН КАК В 2ГИС ПРИ ВВОДЕ */
+            .sidebar-content.expanded { height: 93dvh !important; }
             .panel { padding: 20px; }
             .mobile-drag-handle { display: block; width: 40px; height: 5px; background: var(--border-color); border-radius: 3px; margin: 12px auto; cursor: pointer; }
-
             .map-controls-right { top: auto; bottom: 150px; transform: none; right: 15px; transition: 0.3s; }
         }
     </style>
@@ -158,16 +144,6 @@
 <body>
 <div id="toast-container"></div>
 <div id="map-picking-overlay">Нажмите на карту для выбора</div>
-<div id="traffic-light-overlay">
-    <video id="camera-feed" autoplay playsinline></video>
-    <canvas id="cv-canvas" style="display:none;"></canvas>
-    <div class="traffic-status-box" id="trafficStatusBox">
-        <div style="font-size: 40px; margin-bottom: 10px;" id="trafficIcon">👀</div>
-        <div style="color: white; font-size: 18px; font-weight: 700;" id="trafficText">Наведите камеру...</div>
-        <div style="color: #ffcc00; font-size: 13px; margin-top: 8px;" id="aiWarning">Ищем светофор (AI Радар)</div>
-    </div>
-    <button class="close-traffic-btn" onclick="stopTrafficLightAssist()">Закрыть сканер</button>
-</div>
 
 <div class="wrapper">
     <div class="sidebar-nav">
@@ -269,7 +245,6 @@
         <div id="map"></div>
         <div class="map-controls-right" id="mapControls">
             <div class="map-fab sos-btn" onclick="sendSOS()">SOS</div>
-            <div class="map-fab" onclick="startTrafficLightAssist()" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">🤖</div>
             <div class="map-fab" onclick="toggleGPS()" id="gpsBtn">🎯</div>
             <div class="map-fab" onclick="toggleVoice()" id="voiceBtn">🔊</div>
             <div class="map-btn-group" id="desktopZoom">
@@ -653,7 +628,6 @@
     }
     window.stopNavigatorMode = function() { document.getElementById('stopNavBtn').style.display = 'none'; map.easeTo({pitch: 0, zoom: 15}); clearRoute(); }
 
-    /* ИСПРАВЛЕНО: el.classList.add('active') вместо ошибочной el.add(active) */
     function setMode(mode, el) { currentProfile = mode; document.querySelectorAll('.r-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); if(routeStartLatlng && routeEndLatlng) calculateRoute(); }
 
     function showToast(msg) {
@@ -698,24 +672,6 @@
     }
 
     function toggleMap3D() { if (is3D) { map.easeTo({ pitch: 0, bearing: 0 }); is3D = false; } else { map.easeTo({ pitch: 60, bearing: -20 }); is3D = true; } }
-
-    let cvInterval = null; let videoStream = null; let aiModel = null;
-    async function startTrafficLightAssist() {
-        if(!aiModel) { showToast("Гружу ИИ..."); aiModel = await cocoSsd.load(); }
-        document.getElementById('traffic-light-overlay').style.display = 'flex';
-        const video = document.getElementById('camera-feed'); const canvas = document.getElementById('cv-canvas'); const ctx = canvas.getContext('2d');
-        videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); video.srcObject = videoStream;
-        video.onloadedmetadata = () => {
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            cvInterval = setInterval(async () => {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height); const predictions = await aiModel.detect(canvas);
-                let tl = predictions.find(p => p.class === 'traffic light' && p.score > 0.5);
-                if(tl) { document.getElementById('trafficIcon').innerText = "🚦"; document.getElementById('trafficText').innerText = "СВЕТОФОР!"; }
-                else { document.getElementById('trafficIcon').innerText = "👀"; document.getElementById('trafficText').innerText = "Наведите камеру..."; }
-            }, 1000);
-        };
-    }
-    function stopTrafficLightAssist() { if(cvInterval) clearInterval(cvInterval); if(videoStream) videoStream.getTracks().forEach(t=>t.stop()); document.getElementById('traffic-light-overlay').style.display = 'none'; }
 </script>
 </body>
 </html>
