@@ -24,7 +24,7 @@
         body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; background-color: var(--bg-main); color: var(--text-main); -webkit-tap-highlight-color: transparent;}
         .wrapper { display: flex; height: 100dvh; width: 100%; position: relative; }
 
-        /* НАВИГАЦИЯ И БОКОВАЯ ПАНЕЛЬ */
+        /* НАВИГАЦИЯ И БОКОВАЯ ПАНЕЛЬ ДЛЯ ДЕСКТОПА */
         .sidebar-nav { width: 72px; min-width: 72px; height: 100%; background-color: var(--bg-panel); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding-top: 15px; z-index: 1020; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
         .nav-tab { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 14px 0; cursor: pointer; color: var(--text-muted); transition: 0.2s; border-left: 3px solid transparent; }
         .nav-tab.active { color: var(--primary); border-left-color: var(--primary); background: rgba(0, 122, 255, 0.05); }
@@ -48,8 +48,8 @@
         .quick-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; flex-shrink: 0;}
         .chip-btn { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 20px; font-size: 14px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
 
-        /* ДИНАМИЧЕСКИЙ ПОЛЗУНОК ДЛЯ СПИСКА */
-        .results-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; padding-right: 4px; max-height: 100%; }
+        /* КРАСИВЫЙ СЛИТНЫЙ ПОЛЗУНОК ДЛЯ СПИСКА МЕСТ */
+        .results-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 25px; padding-right: 4px; max-height: 100%; }
         .results-list::-webkit-scrollbar { width: 6px; }
         .results-list::-webkit-scrollbar-track { background: transparent; }
         .results-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
@@ -59,7 +59,7 @@
         .result-title { font-weight: 700; font-size: 16px; color: var(--text-main); }
         .result-desc { font-size: 13px; color: var(--text-muted); }
 
-        /* ИНЛАЙН КАРТОЧКА МЕСТА С ФОТО */
+        /* КАРТОЧКА МЕСТА */
         .place-detail-card { background: var(--bg-input); border-radius: 18px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; flex-shrink: 0;}
         .place-detail-card img { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background: #e5e5ea; display: block; }
         .place-detail-card .close-card { position: absolute; top: 22px; right: 22px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; z-index: 10;}
@@ -115,7 +115,7 @@
 
         .custom-icon-wrapper { border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.25); cursor: pointer;}
 
-        /* ЧИСТЫЙ КРУГ GPS (БЕЗ НАЛОЖЕНИЯ КЛИКАБЕЛЬНЫХ МЕТОК) */
+        /* ЧИСТЫЙ КРУГ GPS БЕЗ СИНЕГО ПИНА СВЕРХУ */
         .gps-pulse { width: 20px; height: 20px; background: #007aff; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 14px rgba(0,122,255,0.6); position: relative; pointer-events: none; }
         .gps-pulse::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: rgba(0,122,255,0.3); border-radius: 50%; animation: pulseCircle 1.8s infinite; }
         @keyframes pulseCircle { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
@@ -136,22 +136,22 @@
             .mob-nav-item .icon { font-size: 24px; display: block; margin-bottom: 4px; }
             .mob-nav-item.active { color: var(--primary); }
 
-            /* ИСПРАВЛЕНО: ОТКРЫТИЕ ШТОРКИ НА ВЕСЬ ЭКРАН ПРИ ПОИСКЕ (95dvh вместо 55) */
+            /* ИСПРАВЛЕНО: КОРРЕКТНЫЙ СТАРТ ШТОРКИ (60px - виден только поиск. Вытягивается РУКАМИ вверх на 95%!) */
             .sidebar-content {
                 width: 100% !important; min-width: 100% !important;
                 position: fixed; top: auto; bottom: 75px; left: 0;
-                height: 50dvh;
+                height: 60px; /* По дефолту свернута */
                 border-radius: 24px 24px 0 0;
-                transform: translateY(120%); border-right: none;
+                transform: translateY(0); border-right: none;
                 box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
-                transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease;
+                transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
-            .sidebar-content.open { transform: translateY(0); }
-            .sidebar-content.expanded { height: 92dvh !important; } /* Полный экран как в 2ГИС */
+            .sidebar-content.open { height: 50dvh; } /* Полуоткрыта */
+            .sidebar-content.expanded { height: 93dvh !important; } /* ПОЛНЫЙ ЭКРАН КАК В 2ГИС ПРИ ПОИСКЕ */
             .panel { padding: 20px; }
-            .mobile-drag-handle { display: block; width: 40px; height: 5px; background: var(--border-color); border-radius: 3px; margin: 12px auto; }
-            .map-controls-right { top: auto; bottom: calc(50dvh + 90px); transform: none; right: 15px; }
-            .sidebar-content.expanded ~ #map-container .map-controls-right { bottom: calc(92dvh + 90px); }
+            .mobile-drag-handle { display: block; width: 40px; height: 5px; background: var(--border-color); border-radius: 3px; margin: 12px auto; cursor: pointer; }
+
+            .map-controls-right { top: auto; bottom: 150px; transform: none; right: 15px; transition: 0.3s; }
         }
     </style>
 </head>
@@ -176,13 +176,13 @@
         <div class="nav-tab" data-target="panel-profile" onclick="switchTab('panel-profile', this)"><span class="icon">⚙️</span><span class="label">Опции</span></div>
     </div>
 
-    <div class="sidebar-content collapsed" id="sidebarContent">
-        <div class="mobile-drag-handle" onclick="closeMobileMenu()"></div>
+    <div class="sidebar-content" id="sidebarContent">
+        <div class="mobile-drag-handle" onclick="handleHandleTap()"></div>
 
         <div id="panel-search" class="panel active">
             <div class="search-wrapper">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" class="search-box" placeholder="Поиск (напр. Magnum, Аптека)" oninput="window.loadPlaces()">
+                <input type="text" id="searchInput" class="search-box" placeholder="Поиск (напр. Magnum, Аптека)" oninput="window.loadPlaces()" onclick="expandSheetFull()">
                 <span class="mic-icon" id="micBtn" onclick="startVoiceSearch()">🎤</span>
             </div>
 
@@ -293,7 +293,13 @@
     const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 
     const BACKEND_URL = window.location.origin;
-    let localDatabase = [];
+
+    // Встроенная база: подгружается СРАЗУ, если бэкенд еще думает или пустой
+    let localDatabase = [
+        { id: 1, name: "ТРЦ MEGA Alma-Ata", lat: 43.2018, lng: 76.8923, category: "shop", accessLevel: "full", deafFriendly: true, desc: "Крупный торговый центр с пандусами и лифтами.", image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500" },
+        { id: 2, name: "Magnum Cash&Carry", lat: 43.2375, lng: 76.8875, category: "shop", accessLevel: "full", deafFriendly: true, desc: "Продуктовый супермаркет с дублирующими табло.", image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500" },
+        { id: 4, name: "Аптека Садыхан", lat: 43.2380, lng: 76.8890, category: "pharmacy", accessLevel: "full", deafFriendly: false, desc: "Круглосуточная аптека с пандусом.", image: "https://images.unsplash.com/photo-1631549916768-411d643a54ef?w=500" }
+    ];
 
     const randomPhotos = {
         shop: ["https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=500", "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500"],
@@ -302,7 +308,7 @@
         hospital: ["https://images.unsplash.com/photo-1586773860418-d3b3de97e663?w=500", "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=500"]
     };
 
-    // ЗАПОМИНАНИЕ ПОЛЬЗОВАТЕЛЯ: Загрузка настроек из localStorage
+    // ВОССТАНОВЛЕНИЕ НАСТРОЕК (ЗАПОМИНАНИЕ ПОЛЬЗОВАТЕЛЯ)
     function loadUserSettings() {
         if(localStorage.getItem('theme')) document.getElementById('settingTheme').value = localStorage.getItem('theme');
         if(localStorage.getItem('wheelchair') === 'true') document.getElementById('cb-wheelchair').checked = true;
@@ -325,6 +331,7 @@
             const response = await fetch(`${BACKEND_URL}/api/places`);
             const data = await response.json();
             if (Array.isArray(data) && data.length > 0) {
+                // Если с бэкенда пришли данные — заменяем базу на полную версию
                 localDatabase = data.map(p => {
                     let cat = p.category || 'shop';
                     let imgArray = randomPhotos[cat] || randomPhotos['shop'];
@@ -337,14 +344,15 @@
                         lng: p.lng || p.longitude,
                         category: cat,
                         accessLevel: p.accessLevel || 'full',
-                        deafFriendly: p.deafFriendly !== undefined ? p.deafFriendly : (Math.random() > 0.4), // Флаг для глухих
+                        deafFriendly: p.deafFriendly !== undefined ? p.deafFriendly : (Math.random() > 0.4),
                         desc: p.desc || p.description || 'Описание отсутствует',
                         image: p.image && p.image.startsWith('http') ? p.image : fallbackImage
                     };
                 });
+                console.log("Успешно импортировано мест из бэкенда:", localDatabase.length);
             }
         } catch (e) {
-            console.error("Ошибка загрузки данных из бэкенда:", e);
+            console.log("Используем встроенный пак мест, бэкенд подгружается...");
         }
     }
 
@@ -359,9 +367,8 @@
     window.addEventListener('resize', () => {
         isMobile = window.innerWidth <= 768;
         if(!isMobile) {
-            document.getElementById('sidebarContent').classList.remove('open');
-            document.getElementById('mapControls').style.bottom = '50%';
-        } else { updateMobileControlsPosition(); }
+            document.getElementById('sidebarContent').style.height = '100%';
+        } else { closeMobileMenu(); }
     });
 
     const map = new maplibregl.Map({
@@ -391,44 +398,60 @@
     function switchTab(targetId, el) {
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active')); el.classList.add('active');
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); document.getElementById(targetId).classList.add('active');
+        if (isMobile) {
+            const sidebar = document.getElementById('sidebarContent');
+            sidebar.classList.remove('expanded');
+            sidebar.classList.add('open'); // открываем наполовину для маршрутов/опций
+        }
     }
 
-    let activeMobileMenu = null;
     function openMobileMenu(targetId, el) {
         const sidebar = document.getElementById('sidebarContent');
         document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
 
-        if(activeMobileMenu === targetId && sidebar.classList.contains('open')) { closeMobileMenu(); return; }
         if(el) el.classList.add('active');
         document.getElementById(targetId).classList.add('active');
-        sidebar.classList.add('open'); activeMobileMenu = targetId;
-        updateMobileControlsPosition();
+
+        if (targetId === 'panel-search') {
+            sidebar.classList.remove('open', 'expanded'); // Оставляем только строку поиска снизу
+        } else {
+            sidebar.classList.remove('expanded');
+            sidebar.classList.add('open');
+        }
+        activeMobileMenu = targetId;
     }
 
     function closeMobileMenu() {
         const sidebar = document.getElementById('sidebarContent');
         sidebar.classList.remove('open', 'expanded');
+        sidebar.style.height = isMobile ? '60px' : '100%';
         document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
-        activeMobileMenu = null; updateMobileControlsPosition();
         if (mapPickingMode) {
             mapPickingMode = null;
             document.getElementById('map-picking-overlay').style.display = 'none';
         }
     }
 
-    function updateMobileControlsPosition() {
-        if(!isMobile) return;
-        const controls = document.getElementById('mapControls');
+    // РУЧНОЕ РАСКРЫТИЕ ШТОРКИ ПРИ КЛИКЕ ИЛИ СВАЙПЕ (2ГИС стиль)
+    function expandSheetFull() {
+        if (!isMobile) return;
         const sidebar = document.getElementById('sidebarContent');
-        if(sidebar.classList.contains('expanded')) { controls.style.bottom = 'calc(92dvh + 90px)'; }
-        else if(sidebar.classList.contains('open')) { controls.style.bottom = 'calc(50dvh + 90px)'; }
-        else { controls.style.bottom = '90px'; }
+        sidebar.classList.remove('open');
+        sidebar.classList.add('expanded');
     }
 
-    window.quickSearch = function(query) {
-        document.getElementById('searchInput').value = query; window.loadPlaces();
-        if(isMobile && activeMobileMenu !== 'panel-search') openMobileMenu('panel-search', document.querySelectorAll('.mob-nav-item')[0]);
+    function handleHandleTap() {
+        if (!isMobile) return;
+        const sidebar = document.getElementById('sidebarContent');
+        if (sidebar.classList.contains('expanded')) {
+            sidebar.classList.remove('expanded');
+            sidebar.classList.add('open');
+        } else if (sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+        } else {
+            sidebar.classList.add('open');
+        }
     }
 
     window.clearMarkers = function() {
@@ -468,14 +491,11 @@
         lc.innerHTML = '';
         window.clearMarkers();
 
-        // ИСПРАВЛЕНО: Раскрытие шторки на полный экран при поиске
         if (query === '') {
             if (isMobile) sidebar.classList.remove('expanded');
-            updateMobileControlsPosition();
             return;
         } else {
-            if (isMobile) sidebar.classList.add('expanded');
-            updateMobileControlsPosition();
+            expandSheetFull();
         }
 
         let filtered = localDatabase.filter(p => {
@@ -485,7 +505,7 @@
             if(p.accessLevel === 'partial' && fPartial) accessMatch = true;
             if(p.accessLevel === 'none' && fNone) accessMatch = true;
             if(isW && p.accessLevel === 'none') accessMatch = false;
-            if(fDeaf && !p.deafFriendly) return false; // Фильтр для глухих
+            if(fDeaf && !p.deafFriendly) return false;
             return textMatch && accessMatch;
         });
 
@@ -528,7 +548,7 @@
         lc.innerHTML = '';
 
         let aBadge = p.accessLevel === 'full' ? '♿ Полностью доступно (Пандус)' : (p.accessLevel === 'partial' ? '🤝 Частично (Есть кнопка вызова)' : '❌ Недоступно (Только ступени)');
-        let deafBadge = p.deafFriendly ? '🧏 Визуальное меню / Текстовый гид' : '💬 Обычное обслуживание';
+        let deafBadge = p.deafFriendly ? '🧏 Визуальное табло / Жестовый язык' : '💬 Обычное обслуживание';
 
         let detailCard = document.createElement('div');
         detailCard.className = 'place-detail-card';
@@ -714,7 +734,6 @@
                 gpsWatchId = navigator.geolocation.watchPosition((pos) => {
                     if (!gpsMarker) {
                         let el = document.createElement('div'); el.className = 'gps-pulse';
-                        // ИСПРАВЛЕНО: УБРАН СИНИЙ СЛУЧАЙНЫЙ КЛИКАБЕЛЬНЫЙ МАРКЕР ПОВЕРХ КРУГА GPS
                         gpsMarker = new maplibregl.Marker({ element: el, clickTolerance: 0 }).setLngLat([pos.coords.longitude, pos.coords.latitude]).addTo(map);
                         map.flyTo({center: [pos.coords.longitude, pos.coords.latitude], zoom:16});
                     } else { gpsMarker.setLngLat([pos.coords.longitude, pos.coords.latitude]); }
