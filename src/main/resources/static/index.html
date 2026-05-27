@@ -14,6 +14,9 @@
     <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
     <script src="https://unpkg.com/supercluster@8.0.1/dist/supercluster.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
     <style>
         :root { --bg-main: #f4f4f5; --bg-panel: #ffffff; --bg-input: #f4f4f5; --text-main: #1d1d1f; --text-muted: #86868b; --border-color: #e5e5ea; --primary: #007aff; --primary-text: #ffffff; --fab-bg: #ffffff; }
         [data-theme="dark"] { --bg-main: #000000; --bg-panel: #1c1c1e; --bg-input: #2c2c2e; --text-main: #f5f5f7; --text-muted: #98989d; --border-color: #38383a; --primary: #0a84ff; --primary-text: #ffffff; --fab-bg: #2c2c2e; }
@@ -30,7 +33,7 @@
         .sidebar-content { width: 380px; min-width: 380px; height: 100%; background-color: var(--bg-panel); z-index: 1010; box-shadow: 4px 0 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; position: relative; border-right: 1px solid var(--border-color); transition: 0.3s; }
         .mobile-drag-handle { display: none; }
 
-        .panel { display: none !important; padding: 20px; flex-grow: 1; overflow: hidden; flex-direction: column; box-sizing: border-box; height: 100%; }
+        .panel { display: none !important; padding: 20px; flex-grow: 1; overflow-y: auto; flex-direction: column; box-sizing: border-box; height: 100%; }
         .panel.active { display: flex !important; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -43,10 +46,7 @@
         .quick-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; flex-shrink: 0;}
         .chip-btn { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 20px; font-size: 14px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
 
-        .results-list { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 25px; padding-right: 4px; max-height: 100%; }
-        .results-list::-webkit-scrollbar { width: 6px; }
-        .results-list::-webkit-scrollbar-track { background: transparent; }
-        .results-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        .results-list { flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding-bottom: 25px; padding-right: 4px; }
 
         .result-item { padding: 16px; border-radius: 16px; background: var(--bg-input); cursor: pointer; border: 1px solid transparent; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;}
         .result-item:active { background: var(--border-color); }
@@ -108,6 +108,12 @@
         .gps-pulse::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: rgba(0,122,255,0.3); border-radius: 50%; animation: pulseCircle 1.8s infinite; }
         @keyframes pulseCircle { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
 
+        /* ВОЗВРАЩЕНО: Оверлей камеры (по умолчанию скрыт!) */
+        #traffic-light-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        #camera-feed { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .traffic-status-box { position: absolute; bottom: 120px; background: rgba(0,0,0,0.7); padding: 20px; border-radius: 20px; text-align: center; backdrop-filter: blur(10px); width: 80%; border: 2px solid #ffcc00; }
+        .close-traffic-btn { position: absolute; bottom: 40px; background: #ff3b30; color: white; padding: 16px 30px; border-radius: 24px; font-size: 18px; font-weight: bold; border: none; }
+
         .mobile-bottom-nav { display: none; }
 
         @media (max-width: 768px) {
@@ -124,26 +130,39 @@
             .mob-nav-item .icon { font-size: 24px; display: block; margin-bottom: 4px; }
             .mob-nav-item.active { color: var(--primary); }
 
+            /* ИСПРАВЛЕНО: Базовая высота 130px, чтобы контент мог жить! */
             .sidebar-content {
                 width: 100% !important; min-width: 100% !important;
                 position: fixed; top: auto; bottom: 75px; left: 0;
-                height: 60px;
+                height: 130px; /* Свернуто, видно поиск */
                 border-radius: 24px 24px 0 0;
                 transform: translateY(0); border-right: none;
                 box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
                 transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
-            .sidebar-content.open { height: 50dvh; }
-            .sidebar-content.expanded { height: 93dvh !important; }
-            .panel { padding: 20px; }
-            .mobile-drag-handle { display: block; width: 40px; height: 5px; background: var(--border-color); border-radius: 3px; margin: 12px auto; cursor: pointer; }
-            .map-controls-right { top: auto; bottom: 150px; transform: none; right: 15px; transition: 0.3s; }
+            .sidebar-content.open { height: 50dvh; } /* Полуоткрыто */
+            .sidebar-content.expanded { height: 93dvh !important; } /* Полный экран */
+
+            .panel { padding: 15px 20px; }
+            .mobile-drag-handle { display: block; width: 40px; height: 5px; background: var(--border-color); border-radius: 3px; margin: 0 auto 15px auto; cursor: pointer; }
+            .map-controls-right { top: auto; bottom: 220px; transform: none; right: 15px; transition: 0.3s; }
         }
     </style>
 </head>
 <body>
 <div id="toast-container"></div>
-<div id="map-picking-overlay">Нажмите на карту для выбора</div>
+<div id="map-picking-overlay" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff3b30; color: white; padding: 12px 24px; border-radius: 20px; font-weight: bold; display: none; z-index: 9999;">Нажмите на карту для выбора</div>
+
+<div id="traffic-light-overlay">
+    <video id="camera-feed" autoplay playsinline></video>
+    <canvas id="cv-canvas" style="display:none;"></canvas>
+    <div class="traffic-status-box" id="trafficStatusBox">
+        <div style="font-size: 40px; margin-bottom: 10px;" id="trafficIcon">👀</div>
+        <div style="color: white; font-size: 18px; font-weight: 700;" id="trafficText">Наведите камеру...</div>
+        <div style="color: #ffcc00; font-size: 13px; margin-top: 8px;" id="aiWarning">Ищем светофор (AI Радар)</div>
+    </div>
+    <button class="close-traffic-btn" onclick="stopTrafficLightAssist()">Закрыть сканер</button>
+</div>
 
 <div class="wrapper">
     <div class="sidebar-nav">
@@ -158,7 +177,7 @@
         <div id="panel-search" class="panel active">
             <div class="search-wrapper">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" class="search-box" placeholder="Поиск (напр. Magnum, Аптека)" oninput="window.loadPlaces()" onfocus="expandSheetFull()">
+                <input type="text" id="searchInput" class="search-box" placeholder="Поиск (напр. Magnum)" oninput="window.loadPlaces()" onfocus="expandSheetFull()">
                 <span class="mic-icon" id="micBtn" onclick="startVoiceSearch()">🎤</span>
             </div>
 
@@ -245,6 +264,7 @@
         <div id="map"></div>
         <div class="map-controls-right" id="mapControls">
             <div class="map-fab sos-btn" onclick="sendSOS()">SOS</div>
+            <div class="map-fab" onclick="startTrafficLightAssist()" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">🤖</div>
             <div class="map-fab" onclick="toggleGPS()" id="gpsBtn">🎯</div>
             <div class="map-fab" onclick="toggleVoice()" id="voiceBtn">🔊</div>
             <div class="map-btn-group" id="desktopZoom">
@@ -323,7 +343,7 @@
                 });
             }
         } catch (e) {
-            console.log("Локальный пак запущен.");
+            console.log("Используется локальная база данных.");
         }
     }
 
@@ -337,7 +357,7 @@
     let isMobile = window.innerWidth <= 768;
     window.addEventListener('resize', () => {
         isMobile = window.innerWidth <= 768;
-        if(!isMobile) { document.getElementById('sidebarContent').style.height = '100%'; }
+        if(!isMobile) { document.getElementById('sidebarContent').style.height = '100%'; document.getElementById('sidebarContent').classList.remove('open', 'expanded'); }
         else { closeMobileMenu(); }
     });
 
@@ -375,6 +395,7 @@
         }
     }
 
+    // ИСПРАВЛЕНО: Четкое управление состояниями при клике по нижнему меню
     function openMobileMenu(targetId, el) {
         const sidebar = document.getElementById('sidebarContent');
         document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
@@ -383,14 +404,17 @@
         if(el) el.classList.add('active');
         document.getElementById(targetId).classList.add('active');
 
-        if (targetId === 'panel-search') { sidebar.classList.remove('open', 'expanded'); }
-        else { sidebar.classList.remove('expanded'); sidebar.classList.add('open'); }
+        if (targetId === 'panel-search') {
+            sidebar.classList.remove('open', 'expanded');
+        } else {
+            sidebar.classList.remove('expanded');
+            sidebar.classList.add('open');
+        }
     }
 
     function closeMobileMenu() {
         const sidebar = document.getElementById('sidebarContent');
         sidebar.classList.remove('open', 'expanded');
-        sidebar.style.height = isMobile ? '60px' : '100%';
         document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
         if (mapPickingMode) {
             mapPickingMode = null;
@@ -672,6 +696,25 @@
     }
 
     function toggleMap3D() { if (is3D) { map.easeTo({ pitch: 0, bearing: 0 }); is3D = false; } else { map.easeTo({ pitch: 60, bearing: -20 }); is3D = true; } }
+
+    /* ВОЗВРАЩЕНО: Логика сканера светофоров */
+    let cvInterval = null; let videoStream = null; let aiModel = null;
+    async function startTrafficLightAssist() {
+        if(!aiModel) { showToast("Гружу ИИ..."); aiModel = await cocoSsd.load(); }
+        document.getElementById('traffic-light-overlay').style.display = 'flex';
+        const video = document.getElementById('camera-feed'); const canvas = document.getElementById('cv-canvas'); const ctx = canvas.getContext('2d');
+        videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); video.srcObject = videoStream;
+        video.onloadedmetadata = () => {
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            cvInterval = setInterval(async () => {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height); const predictions = await aiModel.detect(canvas);
+                let tl = predictions.find(p => p.class === 'traffic light' && p.score > 0.5);
+                if(tl) { document.getElementById('trafficIcon').innerText = "🚦"; document.getElementById('trafficText').innerText = "СВЕТОФОР!"; }
+                else { document.getElementById('trafficIcon').innerText = "👀"; document.getElementById('trafficText').innerText = "Наведите камеру..."; }
+            }, 1000);
+        };
+    }
+    function stopTrafficLightAssist() { if(cvInterval) clearInterval(cvInterval); if(videoStream) videoStream.getTracks().forEach(t=>t.stop()); document.getElementById('traffic-light-overlay').style.display = 'none'; }
 </script>
 </body>
 </html>
