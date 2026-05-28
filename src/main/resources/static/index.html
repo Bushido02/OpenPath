@@ -71,17 +71,31 @@
         <div id="panel-profile" class="panel">
             <h3>Опции</h3>
             <div class="form-group">
-                <label>Потребности</label>
-                <label class="cb-label"><input type="checkbox" id="cb-wheelchair"> 👨‍🦽 Без ступеней</label>
-                <label class="cb-label"><input type="checkbox" id="cb-vision"> 🦯 Слабовидящий (Голос)</label>
-                <label class="cb-label"><input type="checkbox" id="cb-deaf"> 🧏 Для глухих</label>
-            </div>
-            <div class="form-group">
-                <label>Тема карты</label>
-                <select id="settingTheme" class="form-input">
-                    <option value="light">Светлая</option>
-                    <option value="dark">Темная</option>
-                </select>
+                <label>Инклюзивность и доступная среда</label>
+
+                <div class="setting-card">
+                    <label class="cb-label">
+                        <input type="checkbox" id="cb-wheelchair">
+                        <strong>👨‍🦽 Доступная среда (Без барьеров)</strong>
+                    </label>
+                    <div class="setting-desc">Исключает маршруты со ступенями. В поиске остаются только места с пандусами и лифтами.</div>
+                </div>
+
+                <div class="setting-card">
+                    <label class="cb-label">
+                        <input type="checkbox" id="cb-vision">
+                        <strong>🦯 Аудио-ассистент (Голосовой гид)</strong>
+                    </label>
+                    <div class="setting-desc">Включает озвучку интерфейса, названий заведений и навигационных подсказок.</div>
+                </div>
+
+                <div class="setting-card">
+                    <label class="cb-label">
+                        <input type="checkbox" id="cb-deaf">
+                        <strong>🧏 Визуальная адаптация</strong>
+                    </label>
+                    <div class="setting-desc">Фильтрует заведения, оставляя те, где есть визуальные табло, кнопки вызова или обслуживание по тексту.</div>
+                </div>
             </div>
         </div>
     </div>

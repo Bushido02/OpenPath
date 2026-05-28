@@ -24,6 +24,9 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
 .quick-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
 .chip-btn { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 16px; font-size: 13px; color: var(--text-main); cursor: pointer; font-weight: 600; }
 .cb-label { display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg-input); border-radius:12px; margin-bottom: 8px; }
+.setting-card { background: var(--bg-input); border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid var(--border-color); }
+.setting-card .cb-label { margin-bottom: 0; background: transparent; border-radius: 0; padding: 12px 12px 4px 12px; }
+.setting-desc { font-size: 12px; color: var(--text-muted); padding: 0 12px 12px 42px; line-height: 1.4; }
 
 /* Списки мест */
 .results-list { flex-grow: 1; display: flex; flex-direction: column; gap: 8px; padding-bottom: 20px; }

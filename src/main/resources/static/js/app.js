@@ -270,3 +270,19 @@ document.getElementById('resetRouteBtn').onclick = () => {
     document.getElementById('routeStart').value = ''; document.getElementById('routeEnd').value = '';
     document.getElementById('routeResult').style.display = 'none';
 };
+
+// === УПРАВЛЕНИЕ КАРТОЙ (ЗУМ И 3D) ===
+document.getElementById('zoomInBtn').onclick = () => map.zoomIn();
+document.getElementById('zoomOutBtn').onclick = () => map.zoomOut();
+
+document.getElementById('btn3D').onclick = () => {
+    const btn = document.getElementById('btn3D');
+    if (state.is3D) {
+        map.easeTo({ pitch: 0, bearing: 0 });
+        btn.style.color = "var(--text-main)";
+    } else {
+        map.easeTo({ pitch: 60, bearing: -20 });
+        btn.style.color = "var(--primary)";
+    }
+    state.is3D = !state.is3D; // Не забудь добавить is3D: false в объект state в начале файла, если его там нет
+};
