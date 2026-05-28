@@ -141,7 +141,7 @@ function showPlaceCard(p) {
 }
 
 document.querySelectorAll('.chip-btn').forEach(btn => {
-    btn.onclick = () => { document.getElementById('searchInput').value = btn.getAttribute('data-query'); renderPlaces(); setSheetState('full'); };
+    btn.onclick = () => { document.getElementById('searchInput').value = btn.getAttribute('data-query'); renderPlaces(); setSheetState('half'); };
 });
 
 // === ПОМОЩНИКИ (ГОЛОС, GPS) ===
@@ -285,4 +285,60 @@ document.getElementById('btn3D').onclick = () => {
         btn.style.color = "var(--primary)";
     }
     state.is3D = !state.is3D; // Не забудь добавить is3D: false в объект state в начале файла, если его там нет
+};
+
+window.clearPoint = function(type) {
+    if (type === 'start') {
+        state.routeLatLangs.start = null;
+        document.getElementById('routeStart').value = '';
+        if (state.markers.start) state.markers.start.remove();
+    } else {
+        state.routeLatLangs.end = null;
+        document.getElementById('routeEnd').value = '';
+        if (state.markers.end) state.markers.end.remove();
+    }
+    document.getElementById('routeResult').style.display = 'none';
+    map.getSource('route').setData({ "type": "FeatureCollection", "features": [] });
+};
+
+document.getElementById('zoomInBtn').onclick = () => map.zoomIn();
+document.getElementById('zoomOutBtn').onclick = () => map.zoomOut();
+document.getElementById('btn3D').onclick = () => {
+    state.is3D = !state.is3D;
+    map.easeTo({ pitch: state.is3D ? 60 : 0, bearing: state.is3D ? -20 : 0 });
+    document.getElementById('btn3D').style.color = state.is3D ? "var(--primary)" : "var(--text-main)";
+};
+
+let cvInterval = null; let videoStream = null; let aiModel = null;
+window.startTrafficLightAssist = async function() {
+    if(!aiModel) { toast("Загрузка ИИ..."); aiModel = await cocoSsd.load(); }
+    document.getElementById('traffic-light-overlay').style.display = 'flex';
+    const video = document.getElementById('camera-feed');
+    const canvas = document.getElementById('cv-canvas');
+    const ctx = canvas.getContext('2d');
+
+    videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    video.srcObject = videoStream;
+
+    video.onloadedmetadata = () => {
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        cvInterval = setInterval(async () => {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const predictions = await aiModel.detect(canvas);
+            let tl = predictions.find(p => p.class === 'traffic light' && p.score > 0.5);
+            if(tl) {
+                document.getElementById('trafficIcon').innerText = "🚦";
+                document.getElementById('trafficText').innerText = "СВЕТОФОР!";
+            } else {
+                document.getElementById('trafficIcon').innerText = "👀";
+                document.getElementById('trafficText').innerText = "Наведите камеру...";
+            }
+        }, 1000);
+    };
+};
+
+window.stopTrafficLightAssist = function() {
+    if(cvInterval) clearInterval(cvInterval);
+    if(videoStream) videoStream.getTracks().forEach(t=>t.stop());
+    document.getElementById('traffic-light-overlay').style.display = 'none';
 };

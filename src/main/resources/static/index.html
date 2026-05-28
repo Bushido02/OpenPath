@@ -11,8 +11,19 @@
 
     <link rel="stylesheet" href="css/style.css">
     <script src="js/app.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 </head>
 <body>
+<div id="traffic-light-overlay" style="position:fixed; top:0; left:0; width:100vw; height:100dvh; background:#000; z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center;">
+    <video id="camera-feed" autoplay playsinline style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"></video>
+    <canvas id="cv-canvas" style="display:none;"></canvas>
+    <div style="position:absolute; bottom:120px; background:rgba(0,0,0,0.7); padding:20px; border-radius:20px; text-align:center; width:80%; border:2px solid #ffcc00; backdrop-filter:blur(10px);">
+        <div style="font-size:40px; margin-bottom:10px;" id="trafficIcon">👀</div>
+        <div style="color:white; font-size:18px; font-weight:700;" id="trafficText">Наведите камеру...</div>
+    </div>
+    <button onclick="stopTrafficLightAssist()" style="position:absolute; bottom:40px; background:#ff3b30; color:white; padding:16px 30px; border-radius:24px; font-size:18px; font-weight:bold; border:none;">Закрыть сканер</button>
+</div>
 <div id="toast-container"></div>
 <div id="map-picking-overlay" class="hidden-overlay">Выберите точку на карте</div>
 
@@ -48,14 +59,16 @@
                 <span class="r-tab" data-mode="wheelchair" id="tabWheelchair" style="display: none;">♿</span>
             </div>
             <div class="route-input-group">
-                <div class="swap-btn" id="swapBtn">⇅</div>
-                <div class="route-point" id="startPointBtn">
+                <div class="swap-btn" id="swapBtn" onclick="swapRoutePoints()">⇅</div>
+                <div class="route-point">
                     <span class="point-icon a">A</span>
-                    <input type="text" class="route-input" id="routeStart" placeholder="Мое местоположение" readonly>
+                    <input type="text" class="route-input" id="routeStart" placeholder="Мое местоположение" readonly onclick="enablePicking('start')">
+                    <span class="clear-btn" onclick="clearPoint('start')">✕</span>
                 </div>
-                <div class="route-point" id="endPointBtn">
+                <div class="route-point">
                     <span class="point-icon b">B</span>
-                    <input type="text" class="route-input" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly>
+                    <input type="text" class="route-input" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly onclick="enablePicking('end')">
+                    <span class="clear-btn" onclick="clearPoint('end')">✕</span>
                 </div>
             </div>
             <div class="route-result-box" id="routeResult">
@@ -114,6 +127,7 @@
     <div id="map-container">
         <div id="map"></div>
         <div class="map-controls-right" id="mapControls">
+            <div class="map-fab" onclick="startTrafficLightAssist()" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">🤖</div>
             <div class="map-fab sos-btn" id="sosBtn">SOS</div>
             <div class="map-fab" id="gpsBtn">🎯</div>
             <div class="map-fab" id="voiceBtn">🔊</div>
