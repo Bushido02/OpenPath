@@ -127,17 +127,34 @@ function renderPlaces() {
 
 function showPlaceCard(p) {
     const list = document.getElementById('searchResultsList');
-    list.innerHTML = ''; setSheetState('half');
-    speak(p.name + ". " + p.desc);
+    list.innerHTML = '';
+    setSheetState('half'); // Шторка только наполовину, карта видна!
 
-    let card = document.createElement('div'); card.className = 'place-detail-card';
+    // Собираем данные. Если их нет в БД, ставим заглушки
+    let accessBadge = p.accessLevel === 'full' ? '♿ Без ступеней (Доступно)' : (p.accessLevel === 'partial' ? '🤝 Есть кнопка вызова' : '❌ Только ступеньки');
+    let deafBadge = p.deafFriendly ? '🧏 Текстовое меню/Табло' : '';
+    let imageSrc = p.image || 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500&q=80';
+    let hours = p.hours || '09:00 - 22:00';
+
+    let card = document.createElement('div');
+    card.className = 'place-detail-card';
     card.innerHTML = `
         <button class="close-card" onclick="renderPlaces(); setSheetState('collapsed');">✕</button>
-        <h3 style="margin:0 0 5px 0;">${p.name}</h3>
-        <p style="margin:0 0 10px 0; font-size:13px; color:gray;">${p.desc}</p>
-        <button class="start-nav-btn" style="width:100%;" onclick="buildRouteTo(${p.lat}, ${p.lng}, '${p.name}')">Сюда</button>
+        <img src="${imageSrc}" alt="${p.name}" style="width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:12px;">
+        <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight:800;">${p.name}</h3>
+        <p style="margin: 0 0 10px 0; font-size: 13px; color: var(--text-muted); line-height:1.4;">${p.desc}</p>
+        
+        <div style="margin-bottom: 12px; font-size: 13px; font-weight: 600;">🕒 Открыто: ${hours}</div>
+        
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:15px;">
+            <span class="accessibility-badge">${accessBadge}</span>
+            ${deafBadge ? `<span class="accessibility-badge" style="background:#ac34c7;">${deafBadge}</span>` : ''}
+        </div>
+        
+        <button class="start-nav-btn" style="width:100%;" onclick="buildRouteTo(${p.lat}, ${p.lng}, '${p.name.replace(/'/g, "\\'")}')">Построить маршрут сюда</button>
     `;
     list.appendChild(card);
+    speak(p.name + ". " + p.desc);
 }
 
 document.querySelectorAll('.chip-btn').forEach(btn => {
@@ -332,6 +349,66 @@ window.startTrafficLightAssist = async function() {
             } else {
                 document.getElementById('trafficIcon').innerText = "👀";
                 document.getElementById('trafficText').innerText = "Наведите камеру...";
+            }
+        }, 1000);
+    };
+};
+
+window.stopTrafficLightAssist = function() {
+    if(cvInterval) clearInterval(cvInterval);
+    if(videoStream) videoStream.getTracks().forEach(t=>t.stop());
+    document.getElementById('traffic-light-overlay').style.display = 'none';
+};
+
+// === КНОПКИ КАРТЫ (+, -, 3D) ===
+document.getElementById('zoomInBtn').onclick = () => map.zoomIn();
+document.getElementById('zoomOutBtn').onclick = () => map.zoomOut();
+
+document.getElementById('btn3D').onclick = () => {
+    state.is3D = !state.is3D;
+    map.easeTo({ pitch: state.is3D ? 60 : 0, bearing: state.is3D ? -20 : 0 });
+    document.getElementById('btn3D').style.color = state.is3D ? "var(--primary)" : "var(--text-main)";
+};
+
+// === ОЧИСТКА ТОЧЕК МАРШРУТА (КРЕСТИКИ) ===
+window.clearPoint = function(type) {
+    if (type === 'start') {
+        state.routeLatLangs.start = null;
+        document.getElementById('routeStart').value = '';
+        if (state.markers.start) state.markers.start.remove();
+    } else {
+        state.routeLatLangs.end = null;
+        document.getElementById('routeEnd').value = '';
+        if (state.markers.end) state.markers.end.remove();
+    }
+    document.getElementById('routeResult').style.display = 'none';
+    map.getSource('route').setData({ "type": "FeatureCollection", "features": [] });
+};
+
+// === ИИ КАМЕРА (РОБОТ) ===
+let cvInterval = null; let videoStream = null; let aiModel = null;
+window.startTrafficLightAssist = async function() {
+    if(!aiModel) { toast("Загрузка ИИ..."); aiModel = await cocoSsd.load(); }
+    document.getElementById('traffic-light-overlay').style.display = 'flex';
+    const video = document.getElementById('camera-feed');
+    const canvas = document.getElementById('cv-canvas');
+    const ctx = canvas.getContext('2d');
+
+    videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    video.srcObject = videoStream;
+
+    video.onloadedmetadata = () => {
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        cvInterval = setInterval(async () => {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const predictions = await aiModel.detect(canvas);
+            let tl = predictions.find(p => p.class === 'traffic light' && p.score > 0.5);
+            if(tl) {
+                document.getElementById('trafficIcon').innerText = "🚦";
+                document.getElementById('trafficText').innerText = "СВЕТОФОР!";
+            } else {
+                document.getElementById('trafficIcon').innerText = "👀";
+                document.getElementById('trafficText').innerText = "Наведите камеру на дорогу";
             }
         }, 1000);
     };
