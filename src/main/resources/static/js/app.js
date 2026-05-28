@@ -3,21 +3,22 @@ const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
 const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 const BACKEND_URL = window.location.origin;
 
-// Локальный Fallback (срабатывает сразу, пока Vercel спит)
+// Локальная база (Резерв, если Vercel спит)
 let placesDB = [
-    { id: 1, name: "MEGA Alma-Ata", lat: 43.2018, lng: 76.8923, category: "shop", accessLevel: "full", deafFriendly: true, desc: "ТЦ с лифтами." },
-    { id: 2, name: "Magnum", lat: 43.2375, lng: 76.8875, category: "shop", accessLevel: "full", deafFriendly: true, desc: "Супермаркет." },
-    { id: 3, name: "Аптека Садыхан", lat: 43.2380, lng: 76.8890, category: "pharmacy", accessLevel: "full", deafFriendly: false, desc: "Круглосуточная аптека." },
-    { id: 4, name: "Ресторан Navat", lat: 43.2420, lng: 76.9010, category: "food", accessLevel: "partial", deafFriendly: false, desc: "Есть кнопка." }
+    { id: 1, name: "MEGA Alma-Ata", lat: 43.2018, lng: 76.8923, category: "shop", accessLevel: "full", deafFriendly: true, desc: "Крупный торговый центр с пандусами и лифтами.", hours: "10:00 - 22:00", image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500&q=80" },
+    { id: 2, name: "Magnum", lat: 43.2375, lng: 76.8875, category: "shop", accessLevel: "full", deafFriendly: true, desc: "Продуктовый супермаркет с дублирующими табло.", hours: "Круглосуточно", image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&q=80" },
+    { id: 3, name: "Аптека Садыхан", lat: 43.2380, lng: 76.8890, category: "pharmacy", accessLevel: "full", deafFriendly: false, desc: "Круглосуточная аптека.", hours: "Круглосуточно", image: "https://images.unsplash.com/photo-1631549916768-411d643a54ef?w=500&q=80" },
+    { id: 4, name: "Ресторан Navat", lat: 43.2420, lng: 76.9010, category: "food", accessLevel: "partial", deafFriendly: false, desc: "Восточная кухня, есть кнопка вызова персонала.", hours: "11:00 - 23:00", image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&q=80" }
 ];
 
-// === СОСТОЯНИЕ ПРИЛОЖЕНИЯ ===
+// === СОСТОЯНИЕ ===
 let state = {
     isMobile: window.innerWidth <= 768,
     voice: false,
     gpsActive: false,
+    is3D: false,
     mode: 'driving-car',
-    picking: null, // 'start' | 'end' | null
+    picking: null,
     routeLatLangs: { start: null, end: null },
     markers: { gps: null, start: null, end: null, places: [] }
 };
@@ -26,7 +27,7 @@ let state = {
 const map = new maplibregl.Map({
     container: 'map',
     style: `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`,
-    center: [76.8897, 43.2389], zoom: 13.5, doubleClickZoom: false
+    center: [76.8897, 43.2389], zoom: 13.5, pitch: 0, doubleClickZoom: false
 });
 
 map.on('load', () => {
@@ -38,7 +39,7 @@ map.on('load', () => {
     renderPlaces();
 });
 
-// === СЕТЬ И ДАННЫЕ ===
+// === СЕТЬ ===
 async function fetchPlacesFromVercel() {
     try {
         const res = await fetch(`${BACKEND_URL}/api/places`);
@@ -50,14 +51,13 @@ async function fetchPlacesFromVercel() {
             }));
             renderPlaces();
         }
-    } catch (e) { console.warn("Используется локальная база мест."); }
+    } catch (e) { console.warn("Используется локальная база."); }
 }
 
-// === ЛОГИКА UI & ШТОРКИ ===
+// === УПРАВЛЕНИЕ UI И ШТОРКОЙ ===
 function setSheetState(s) {
     if (!state.isMobile) return;
-    const sheet = document.getElementById('sidebarContent');
-    sheet.className = `sidebar-content state-${s}`;
+    document.getElementById('sidebarContent').className = `sidebar-content state-${s}`;
 }
 
 document.querySelectorAll('.nav-tab, .mob-nav-item').forEach(el => {
@@ -74,10 +74,6 @@ document.querySelectorAll('.nav-tab, .mob-nav-item').forEach(el => {
     });
 });
 
-document.getElementById('searchInput').addEventListener('focus', () => setSheetState('full'));
-document.getElementById('searchInput').addEventListener('input', renderPlaces);
-
-// Логика свайпа шторки
 let startY = 0;
 document.getElementById('dragHandle').addEventListener('touchstart', e => startY = e.touches[0].clientY, {passive: true});
 document.getElementById('dragHandle').addEventListener('touchend', e => {
@@ -88,8 +84,19 @@ document.getElementById('dragHandle').addEventListener('touchend', e => {
     else setSheetState(sheet.classList.contains('state-collapsed') ? 'half' : 'collapsed');
 });
 
-// === ОТОБРАЖЕНИЕ МЕСТ (ФИЛЬТРЫ) ===
-function renderPlaces() {
+// === ПОИСК И КАРТОЧКИ ===
+document.getElementById('searchInput').addEventListener('input', renderPlaces);
+document.getElementById('searchInput').addEventListener('focus', () => setSheetState('full'));
+
+document.querySelectorAll('.chip-btn').forEach(btn => {
+    btn.onclick = () => {
+        document.getElementById('searchInput').value = btn.getAttribute('data-query');
+        renderPlaces();
+        setSheetState('half');
+    };
+});
+
+window.renderPlaces = function() {
     const q = document.getElementById('searchInput').value.toLowerCase().trim();
     const isW = document.getElementById('cb-wheelchair').checked;
     const isDeaf = document.getElementById('cb-deaf').checked;
@@ -100,7 +107,7 @@ function renderPlaces() {
     state.markers.places = [];
 
     let filtered = placesDB.filter(p => {
-        let matchText = q === '' ? true : (p.name.toLowerCase().includes(q) || p.category.includes(q));
+        let matchText = q === '' ? true : (p.name.toLowerCase().includes(q) || p.category.includes(q) || p.desc.toLowerCase().includes(q));
         if(isW && p.accessLevel === 'none') return false;
         if(isDeaf && !p.deafFriendly) return false;
         return matchText;
@@ -113,7 +120,14 @@ function renderPlaces() {
 
     filtered.forEach(p => {
         let el = document.createElement('div'); el.className = 'result-item';
-        el.innerHTML = `<div class="result-title">${p.name}</div><div class="result-desc">${p.desc}</div>`;
+        let aIcon = p.accessLevel === 'full' ? '✅ С пандусом' : (p.accessLevel === 'partial' ? '🤝 Кнопка вызова' : '❌ Ступеньки');
+        let deafIcon = p.deafFriendly ? ' | 🧏 Доступно' : '';
+
+        el.innerHTML = `
+            <div class="result-title">${p.name}</div>
+            <div class="result-desc">${p.desc}</div>
+            <div style="font-size:11px; font-weight:700; color:var(--primary); margin-top:2px;">${aIcon}${deafIcon}</div>
+        `;
         el.onclick = () => { map.flyTo({center: [p.lng, p.lat], zoom: 17}); showPlaceCard(p); };
         list.appendChild(el);
 
@@ -123,18 +137,17 @@ function renderPlaces() {
         mEl.onclick = (e) => { e.stopPropagation(); showPlaceCard(p); };
         state.markers.places.push(new maplibregl.Marker(mEl).setLngLat([p.lng, p.lat]).addTo(map));
     });
-}
+};
 
 function showPlaceCard(p) {
     const list = document.getElementById('searchResultsList');
     list.innerHTML = '';
-    setSheetState('half'); // Шторка только наполовину, карта видна!
+    setSheetState('half');
 
-    // Собираем данные. Если их нет в БД, ставим заглушки
-    let accessBadge = p.accessLevel === 'full' ? '♿ Без ступеней (Доступно)' : (p.accessLevel === 'partial' ? '🤝 Есть кнопка вызова' : '❌ Только ступеньки');
+    let accessBadge = p.accessLevel === 'full' ? '♿ Без ступеней' : (p.accessLevel === 'partial' ? '🤝 Кнопка вызова' : '❌ Только ступеньки');
     let deafBadge = p.deafFriendly ? '🧏 Текстовое меню/Табло' : '';
     let imageSrc = p.image || 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=500&q=80';
-    let hours = p.hours || '09:00 - 22:00';
+    let hours = p.hours || 'График не указан';
 
     let card = document.createElement('div');
     card.className = 'place-detail-card';
@@ -143,32 +156,34 @@ function showPlaceCard(p) {
         <img src="${imageSrc}" alt="${p.name}" style="width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:12px;">
         <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight:800;">${p.name}</h3>
         <p style="margin: 0 0 10px 0; font-size: 13px; color: var(--text-muted); line-height:1.4;">${p.desc}</p>
-        
-        <div style="margin-bottom: 12px; font-size: 13px; font-weight: 600;">🕒 Открыто: ${hours}</div>
-        
+        <div style="margin-bottom: 12px; font-size: 13px; font-weight: 600;">🕒 ${hours}</div>
         <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:15px;">
             <span class="accessibility-badge">${accessBadge}</span>
             ${deafBadge ? `<span class="accessibility-badge" style="background:#ac34c7;">${deafBadge}</span>` : ''}
         </div>
-        
         <button class="start-nav-btn" style="width:100%;" onclick="buildRouteTo(${p.lat}, ${p.lng}, '${p.name.replace(/'/g, "\\'")}')">Построить маршрут сюда</button>
     `;
     list.appendChild(card);
     speak(p.name + ". " + p.desc);
 }
 
-document.querySelectorAll('.chip-btn').forEach(btn => {
-    btn.onclick = () => { document.getElementById('searchInput').value = btn.getAttribute('data-query'); renderPlaces(); setSheetState('half'); };
-});
+// === КНОПКИ КАРТЫ (+, -, 3D) ===
+document.getElementById('zoomInBtn').onclick = () => map.zoomIn();
+document.getElementById('zoomOutBtn').onclick = () => map.zoomOut();
+document.getElementById('btn3D').onclick = () => {
+    state.is3D = !state.is3D;
+    map.easeTo({ pitch: state.is3D ? 60 : 0, bearing: state.is3D ? -20 : 0 });
+    document.getElementById('btn3D').style.color = state.is3D ? "var(--primary)" : "var(--text-main)";
+};
 
-// === ПОМОЩНИКИ (ГОЛОС, GPS) ===
+// === ГОЛОС И GPS ===
 function toast(msg) {
     const c = document.getElementById('toast-container'); const t = document.createElement('div');
     t.className = 'toast'; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000);
 }
 
 function speak(text) {
-    window.speechSynthesis.cancel(); // ЖЕСТКИЙ СБРОС СТАРОГО ТЕКСТА
+    window.speechSynthesis.cancel();
     if (state.voice || document.getElementById('cb-vision').checked) {
         let u = new SpeechSynthesisUtterance(text); u.lang = 'ru-RU'; window.speechSynthesis.speak(u);
     }
@@ -180,7 +195,6 @@ document.getElementById('voiceBtn').onclick = () => {
     toast(state.voice ? "Голос: ВКЛ" : "Голос: ВЫКЛ");
 };
 
-// ПРАВИЛЬНАЯ ЛОГИКА GPS (Не выключает, а кидает к себе)
 let watchId = null;
 document.getElementById('gpsBtn').onclick = () => {
     if (state.gpsActive && state.markers.gps) {
@@ -201,27 +215,35 @@ document.getElementById('gpsBtn').onclick = () => {
     }
 };
 
-// === НАСТРОЙКИ (PERSISTENCE) ===
-function loadSettings() {
-    ['theme', 'wheelchair', 'vision', 'deaf'].forEach(k => {
-        let v = localStorage.getItem(k);
-        if(v && k === 'theme') { document.getElementById('settingTheme').value = v; applySettings(); }
-        else if (v === 'true') document.getElementById('cb-'+k).checked = true;
-    });
-}
-window.saveUserSettings = function() {
-    ['wheelchair', 'vision', 'deaf'].forEach(k => localStorage.setItem(k, document.getElementById('cb-'+k).checked));
-    renderPlaces();
-}
-function applySettings() {
-    const t = document.getElementById('settingTheme').value;
-    localStorage.setItem('theme', t); document.documentElement.setAttribute('data-theme', t);
-    map.setStyle(`https://api.maptiler.com/maps/${t === 'dark' ? 'basic-v2-dark' : 'streets-v2'}/style.json?key=${MAPTILER_KEY}`);
-    map.once('styledata', addCustomMapLayers);
-}
-document.getElementById('settingTheme').onchange = applySettings;
+// === МАРШРУТЫ И КЛИКИ (Глобальные функции для HTML) ===
+window.enablePicking = function(type) {
+    state.picking = type; setSheetState('collapsed');
+    document.getElementById('map-picking-overlay').style.display = 'block';
+};
 
-// === МАРШРУТЫ И КЛИКИ ===
+window.clearPoint = function(type) {
+    if (type === 'start') {
+        state.routeLatLangs.start = null;
+        document.getElementById('routeStart').value = '';
+        if (state.markers.start) state.markers.start.remove();
+    } else {
+        state.routeLatLangs.end = null;
+        document.getElementById('routeEnd').value = '';
+        if (state.markers.end) state.markers.end.remove();
+    }
+    document.getElementById('routeResult').style.display = 'none';
+    map.getSource('route').setData({ "type": "FeatureCollection", "features": [] });
+};
+
+window.swapRoutePoints = function() {
+    if(!state.routeLatLangs.start || !state.routeLatLangs.end) return;
+    let temp = state.routeLatLangs.start; state.routeLatLangs.start = state.routeLatLangs.end; state.routeLatLangs.end = temp;
+    let tVal = document.getElementById('routeStart').value; document.getElementById('routeStart').value = document.getElementById('routeEnd').value; document.getElementById('routeEnd').value = tVal;
+    if(state.markers.start) state.markers.start.setLngLat(state.routeLatLangs.start);
+    if(state.markers.end) state.markers.end.setLngLat(state.routeLatLangs.end);
+    calcRoute();
+};
+
 window.buildRouteTo = function(lat, lng, name) {
     state.routeLatLangs.end = [lng, lat]; document.getElementById('routeEnd').value = name;
     document.querySelector(`.nav-tab[data-target="panel-routes"]`).click();
@@ -232,25 +254,17 @@ window.buildRouteTo = function(lat, lng, name) {
     calcRoute();
 };
 
-document.getElementById('startPointBtn').onclick = () => enablePicking('start');
-document.getElementById('endPointBtn').onclick = () => enablePicking('end');
-
-function enablePicking(type) {
-    state.picking = type; setSheetState('collapsed');
-    document.getElementById('map-picking-overlay').style.display = 'block';
-}
-
 map.on('click', e => {
     if (!state.picking) return;
     const coords = [e.lngLat.lng, e.lngLat.lat];
     let el = document.createElement('div'); el.innerHTML = `<div class="point-icon ${state.picking === 'start' ? 'a' : 'b'}">${state.picking === 'start' ? 'A' : 'B'}</div>`;
 
     if (state.picking === 'start') {
-        state.routeLatLangs.start = coords; document.getElementById('routeStart').value = "Точка";
+        state.routeLatLangs.start = coords; document.getElementById('routeStart').value = "Точка на карте";
         if(state.markers.start) state.markers.start.remove();
         state.markers.start = new maplibregl.Marker(el).setLngLat(coords).addTo(map);
     } else {
-        state.routeLatLangs.end = coords; document.getElementById('routeEnd').value = "Точка";
+        state.routeLatLangs.end = coords; document.getElementById('routeEnd').value = "Точка на карте";
         if(state.markers.end) state.markers.end.remove();
         state.markers.end = new maplibregl.Marker(el).setLngLat(coords).addTo(map);
     }
@@ -288,102 +302,34 @@ document.getElementById('resetRouteBtn').onclick = () => {
     document.getElementById('routeResult').style.display = 'none';
 };
 
-// === УПРАВЛЕНИЕ КАРТОЙ (ЗУМ И 3D) ===
-document.getElementById('zoomInBtn').onclick = () => map.zoomIn();
-document.getElementById('zoomOutBtn').onclick = () => map.zoomOut();
+// === НАСТРОЙКИ (PERSISTENCE) ===
+function loadSettings() {
+    ['theme', 'wheelchair', 'vision', 'deaf'].forEach(k => {
+        let v = localStorage.getItem(k);
+        if(v && k === 'theme') { document.getElementById('settingTheme').value = v; applySettings(); }
+        else if (v === 'true') document.getElementById('cb-'+k).checked = true;
+    });
+}
 
-document.getElementById('btn3D').onclick = () => {
-    const btn = document.getElementById('btn3D');
-    if (state.is3D) {
-        map.easeTo({ pitch: 0, bearing: 0 });
-        btn.style.color = "var(--text-main)";
-    } else {
-        map.easeTo({ pitch: 60, bearing: -20 });
-        btn.style.color = "var(--primary)";
-    }
-    state.is3D = !state.is3D; // Не забудь добавить is3D: false в объект state в начале файла, если его там нет
-};
+document.querySelectorAll('#cb-wheelchair, #cb-vision, #cb-deaf').forEach(cb => {
+    cb.addEventListener('change', () => {
+        ['wheelchair', 'vision', 'deaf'].forEach(k => localStorage.setItem(k, document.getElementById('cb-'+k).checked));
+        renderPlaces(); // Мгновенное применение фильтров
+    });
+});
 
-window.clearPoint = function(type) {
-    if (type === 'start') {
-        state.routeLatLangs.start = null;
-        document.getElementById('routeStart').value = '';
-        if (state.markers.start) state.markers.start.remove();
-    } else {
-        state.routeLatLangs.end = null;
-        document.getElementById('routeEnd').value = '';
-        if (state.markers.end) state.markers.end.remove();
-    }
-    document.getElementById('routeResult').style.display = 'none';
-    map.getSource('route').setData({ "type": "FeatureCollection", "features": [] });
-};
-
-document.getElementById('zoomInBtn').onclick = () => map.zoomIn();
-document.getElementById('zoomOutBtn').onclick = () => map.zoomOut();
-document.getElementById('btn3D').onclick = () => {
-    state.is3D = !state.is3D;
-    map.easeTo({ pitch: state.is3D ? 60 : 0, bearing: state.is3D ? -20 : 0 });
-    document.getElementById('btn3D').style.color = state.is3D ? "var(--primary)" : "var(--text-main)";
-};
-
-let cvInterval = null; let videoStream = null; let aiModel = null;
-window.startTrafficLightAssist = async function() {
-    if(!aiModel) { toast("Загрузка ИИ..."); aiModel = await cocoSsd.load(); }
-    document.getElementById('traffic-light-overlay').style.display = 'flex';
-    const video = document.getElementById('camera-feed');
-    const canvas = document.getElementById('cv-canvas');
-    const ctx = canvas.getContext('2d');
-
-    videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    video.srcObject = videoStream;
-
-    video.onloadedmetadata = () => {
-        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-        cvInterval = setInterval(async () => {
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const predictions = await aiModel.detect(canvas);
-            let tl = predictions.find(p => p.class === 'traffic light' && p.score > 0.5);
-            if(tl) {
-                document.getElementById('trafficIcon').innerText = "🚦";
-                document.getElementById('trafficText').innerText = "СВЕТОФОР!";
-            } else {
-                document.getElementById('trafficIcon').innerText = "👀";
-                document.getElementById('trafficText').innerText = "Наведите камеру...";
-            }
-        }, 1000);
-    };
-};
-
-window.stopTrafficLightAssist = function() {
-    if(cvInterval) clearInterval(cvInterval);
-    if(videoStream) videoStream.getTracks().forEach(t=>t.stop());
-    document.getElementById('traffic-light-overlay').style.display = 'none';
-};
-
-// === КНОПКИ КАРТЫ (+, -, 3D) ===
-document.getElementById('zoomInBtn').onclick = () => map.zoomIn();
-document.getElementById('zoomOutBtn').onclick = () => map.zoomOut();
-
-document.getElementById('btn3D').onclick = () => {
-    state.is3D = !state.is3D;
-    map.easeTo({ pitch: state.is3D ? 60 : 0, bearing: state.is3D ? -20 : 0 });
-    document.getElementById('btn3D').style.color = state.is3D ? "var(--primary)" : "var(--text-main)";
-};
-
-// === ОЧИСТКА ТОЧЕК МАРШРУТА (КРЕСТИКИ) ===
-window.clearPoint = function(type) {
-    if (type === 'start') {
-        state.routeLatLangs.start = null;
-        document.getElementById('routeStart').value = '';
-        if (state.markers.start) state.markers.start.remove();
-    } else {
-        state.routeLatLangs.end = null;
-        document.getElementById('routeEnd').value = '';
-        if (state.markers.end) state.markers.end.remove();
-    }
-    document.getElementById('routeResult').style.display = 'none';
-    map.getSource('route').setData({ "type": "FeatureCollection", "features": [] });
-};
+function applySettings() {
+    const t = document.getElementById('settingTheme').value;
+    localStorage.setItem('theme', t); document.documentElement.setAttribute('data-theme', t);
+    map.setStyle(`https://api.maptiler.com/maps/${t === 'dark' ? 'basic-v2-dark' : 'streets-v2'}/style.json?key=${MAPTILER_KEY}`);
+    map.once('styledata', () => {
+        if(!map.getSource('route')) {
+            map.addSource('route', { 'type': 'geojson', 'data': { "type": "FeatureCollection", "features": [] } });
+            map.addLayer({ 'id': 'route-layer', 'type': 'line', 'source': 'route', 'layout': { 'line-join': 'round', 'line-cap': 'round' }, 'paint': { 'line-color': '#007aff', 'line-width': 6 } });
+        }
+    });
+}
+document.getElementById('settingTheme').onchange = applySettings;
 
 // === ИИ КАМЕРА (РОБОТ) ===
 let cvInterval = null; let videoStream = null; let aiModel = null;
