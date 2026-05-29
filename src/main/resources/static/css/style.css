@@ -94,10 +94,14 @@ body, html {
     border-radius: 16px; padding: 0; border: 1px solid var(--border-color);
     display: flex; flex-direction: column; margin-bottom: 15px;
 }
+/* Контейнер точки маршрута */
 .route-point {
-    display: flex; align-items: center;
-    padding: 12px 90px 12px 16px; /* 90px справа, чтобы текст не залазил под крестик и реверс */
-    border-bottom: 1px solid var(--border-color); position: relative;
+    display: flex;
+    align-items: center;
+    padding: 12px 55px 12px 16px; /* 55px справа — это бронь места для кнопки реверса (⇅) */
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    box-sizing: border-box; /* Не дает блоку ломать ширину */
 }
 .route-point:last-child { border-bottom: none; }
 
@@ -105,28 +109,54 @@ body, html {
 .point-icon.a { background: var(--primary); }
 .point-icon.b { background: #ff3b30; }
 
+/* Само поле ввода */
 .route-input {
-    flex-grow: 1; border: none; background: transparent; font-size: 15px;
-    outline: none; color: var(--text-main); cursor: pointer;
-    text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+    flex: 1;
+    min-width: 0; /* КРИТИЧЕСКИ ВАЖНО: Заставляет текст сжиматься и обрезаться, а не лезть наружу */
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    outline: none;
+    color: var(--text-main);
+    margin-left: 10px;
+    padding-right: 35px; /* Защитная зона внутри инпута, чтобы текст не бил в крестик (✕) */
+    box-sizing: border-box;
+    cursor: pointer;
+    text-overflow: ellipsis; /* Добавляет "..." в конце длинного текста */
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 /* Крестик очистки (✕) */
 .clear-btn {
-    font-size: 18px; color: var(--text-muted); cursor: pointer;
-    padding: 4px 8px; position: absolute;
-    right: 65px; /* Жестко отодвинут влево от кнопки реверса */
-    top: 50%; transform: translateY(-50%); z-index: 5; transition: 0.2s;
+    font-size: 18px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 8px;
+    position: absolute;
+    right: 55px; /* Стоит ровно перед кнопкой реверса */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
 }
-.clear-btn:hover { color: #ff3b30; }
+.clear-btn:hover { color: #ff3b30; }/* Кнопка смены мест (⇅) */
 
-/* Кнопка смены мест (⇅) */
 .swap-btn {
-    position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-    background: var(--bg-panel); border: 1px solid var(--border-color);
-    width: 36px; height: 36px; border-radius: 50%;
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 2;
+    position: absolute;
+    right: 15px; /* Прижата к правому краю */
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 10;
 }
 
 /* Результат маршрута */
