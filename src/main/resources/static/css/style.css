@@ -1,59 +1,135 @@
-:root { --bg-main: #f4f4f5; --bg-panel: #ffffff; --bg-input: #f4f4f5; --text-main: #1d1d1f; --text-muted: #86868b; --border-color: #e5e5ea; --primary: #007aff; --fab-bg: #ffffff; }
-[data-theme="dark"] { --bg-main: #000000; --bg-panel: #1c1c1e; --bg-input: #2c2c2e; --text-main: #f5f5f7; --text-muted: #98989d; --border-color: #38383a; --fab-bg: #2c2c2e; }
+/* =========================================
+   1. ЦВЕТОВЫЕ ТЕМЫ (ПЕРЕМЕННЫЕ)
+   ========================================= */
+:root {
+    --bg-main: #f4f4f5;
+    --bg-panel: #ffffff;
+    --bg-input: #f4f4f5;
+    --text-main: #1d1d1f;
+    --text-muted: #86868b;
+    --border-color: #e5e5ea;
+    --primary: #007aff;
+    --fab-bg: #ffffff;
+}
+/* Темная тема (переключается через атрибут data-theme="dark" в <html>) */
+[data-theme="dark"] {
+    --bg-main: #000000;
+    --bg-panel: #1c1c1e;
+    --bg-input: #2c2c2e;
+    --text-main: #f5f5f7;
+    --text-muted: #98989d;
+    --border-color: #38383a;
+    --fab-bg: #2c2c2e;
+}
 
-body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; overflow: hidden; background-color: var(--bg-main); color: var(--text-main); -webkit-tap-highlight-color: transparent;}
+/* =========================================
+   2. БАЗОВЫЕ НАСТРОЙКИ СТРАНИЦЫ
+   ========================================= */
+body, html {
+    margin: 0; padding: 0; height: 100dvh;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden; /* Запрещаем скролл всей страницы */
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    -webkit-tap-highlight-color: transparent; /* Убираем синее мерцание при клике на смартфонах */
+}
 .wrapper { display: flex; height: 100dvh; width: 100%; position: relative; }
 
-/* Боковое меню Desktop */
-.sidebar-nav { width: 72px; min-width: 72px; height: 100%; background-color: var(--bg-panel); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding-top: 15px; z-index: 1020; }
-.nav-tab { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 14px 0; cursor: pointer; color: var(--text-muted); transition: 0.2s; border-left: 3px solid transparent; }
+/* =========================================
+   3. БОКОВОЕ МЕНЮ (ДЕСКТОП)
+   ========================================= */
+.sidebar-nav {
+    width: 72px; min-width: 72px; height: 100%;
+    background-color: var(--bg-panel);
+    border-right: 1px solid var(--border-color);
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 15px; z-index: 1020;
+}
+.nav-tab {
+    width: 100%; display: flex; flex-direction: column; align-items: center;
+    padding: 14px 0; cursor: pointer; color: var(--text-muted);
+    transition: 0.2s; border-left: 3px solid transparent;
+}
 .nav-tab.active { color: var(--primary); border-left-color: var(--primary); background: rgba(0, 122, 255, 0.05); }
 .nav-tab .icon { font-size: 20px; margin-bottom: 6px; }
 .nav-tab .label { font-size: 10px; font-weight: 700; text-transform: uppercase; }
 
-/* Основная панель */
-.sidebar-content { width: 380px; min-width: 380px; height: 100%; background-color: var(--bg-panel); z-index: 1010; display: flex; flex-direction: column; position: relative; border-right: 1px solid var(--border-color); transition: height 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+/* =========================================
+   4. КОНТЕЙНЕР ДЛЯ ПАНЕЛЕЙ (ШТОРКА)
+   ========================================= */
+.sidebar-content {
+    width: 380px; min-width: 380px; height: 100%;
+    background-color: var(--bg-panel); z-index: 1010;
+    display: flex; flex-direction: column; position: relative;
+    border-right: 1px solid var(--border-color);
+    transition: height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
 .panel { display: none; padding: 15px; flex-grow: 1; overflow-y: auto; flex-direction: column; height: 100%; }
-.panel.active { display: flex; }
+.panel.active { display: flex; } /* Показываем только активную панель */
 
-/* Элементы UI */
+/* =========================================
+   5. ПОИСК И ФИЛЬТРЫ
+   ========================================= */
 .search-wrapper { position: relative; margin-bottom: 15px; display: flex; align-items: center; flex-shrink: 0; }
-.search-box { width: 100%; padding: 14px 45px 14px 40px; border-radius: 12px; border: 1px solid var(--border-color); background-color: var(--bg-input); font-size: 15px; outline: none; color: var(--text-main); font-weight: 500; }
+.search-box {
+    width: 100%; padding: 14px 45px 14px 40px;
+    border-radius: 12px; border: 1px solid var(--border-color);
+    background-color: var(--bg-input); font-size: 15px;
+    outline: none; color: var(--text-main); font-weight: 500;
+}
 .search-icon { position: absolute; left: 12px; font-size: 16px; color: var(--text-muted);}
 .mic-icon { position: absolute; right: 10px; font-size: 18px; color: var(--primary); cursor: pointer;}
 .quick-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
 .chip-btn { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 16px; font-size: 13px; color: var(--text-main); cursor: pointer; font-weight: 600; }
-.cb-label { display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg-input); border-radius:12px; margin-bottom: 8px; }
-.setting-card { background: var(--bg-input); border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid var(--border-color); }
-.setting-card .cb-label { margin-bottom: 0; background: transparent; border-radius: 0; padding: 12px 12px 4px 12px; }
-.setting-desc { font-size: 13px; color: var(--text-muted); padding: 0 12px 14px 42px; line-height: 1.5; }
-.clear-btn { font-size: 18px; color: var(--text-muted); cursor: pointer; padding: 0 10px; }
 
-/* Списки мест */
-.results-list { flex-grow: 1; display: flex; flex-direction: column; gap: 8px; padding-bottom: 20px; }
-.result-item { padding: 14px; border-radius: 14px; background: var(--bg-input); cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
-.result-title { font-weight: 700; font-size: 15px; color: var(--text-main); }
-.result-desc { font-size: 12px; color: var(--text-muted); }
-.place-detail-card { background: var(--bg-input); border-radius: 16px; padding: 14px; margin-top: 10px; border: 1px solid var(--border-color); position: relative;}
-.close-card { position: absolute; top: 18px; right: 18px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; z-index: 10;}
-
-/* Маршруты */
+/* =========================================
+   6. МАРШРУТЫ (РЕШЕНИЕ КОНФЛИКТА КНОПОК)
+   ========================================= */
 .route-tabs { display: flex; background: var(--bg-input); padding: 4px; border-radius: 12px; margin-bottom: 15px;}
 .r-tab { flex: 1; text-align: center; font-size: 20px; padding: 8px 0; cursor: pointer; border-radius: 10px; color: var(--text-muted); }
 .r-tab.active { background: var(--bg-panel); color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.05);}
-.route-input-group { background: var(--bg-input); border-radius: 16px; padding: 4px; margin-bottom: 15px; position: relative; border: 1px solid var(--border-color);}
+
+.route-input-group {
+    position: relative; background: var(--bg-input);
+    border-radius: 16px; padding: 0; border: 1px solid var(--border-color);
+    display: flex; flex-direction: column; margin-bottom: 15px;
+}
 .route-point {
-    display: flex;
-    align-items: center;
-    padding: 12px 60px 12px 16px; /* 60px отодвигают контент от кнопки ⇅ */
-    border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center;
+    padding: 12px 90px 12px 16px; /* 90px справа, чтобы текст не залазил под крестик и реверс */
+    border-bottom: 1px solid var(--border-color); position: relative;
 }
 .route-point:last-child { border-bottom: none; }
+
 .point-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; margin-left: 5px; margin-right: 10px;}
 .point-icon.a { background: var(--primary); }
 .point-icon.b { background: #ff3b30; }
-.route-input { border: none; padding: 0; flex-grow: 1; outline: none; font-size: 15px; background: transparent; color: var(--text-main); pointer-events: none;}
-.swap-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; background: var(--bg-panel); border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); z-index: 2;}
+
+.route-input {
+    flex-grow: 1; border: none; background: transparent; font-size: 15px;
+    outline: none; color: var(--text-main); cursor: pointer;
+    text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+}
+
+/* Крестик очистки (✕) */
+.clear-btn {
+    font-size: 18px; color: var(--text-muted); cursor: pointer;
+    padding: 4px 8px; position: absolute;
+    right: 65px; /* Жестко отодвинут влево от кнопки реверса */
+    top: 50%; transform: translateY(-50%); z-index: 5; transition: 0.2s;
+}
+.clear-btn:hover { color: #ff3b30; }
+
+/* Кнопка смены мест (⇅) */
+.swap-btn {
+    position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+    background: var(--bg-panel); border: 1px solid var(--border-color);
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 2;
+}
+
+/* Результат маршрута */
 .route-result-box { display: none; padding: 15px; background: var(--bg-input); border-radius: 16px; text-align: center;}
 #routeTime { margin:0 0 5px 0; font-weight:800; font-size:24px; color: var(--primary); }
 #routeDist { margin:0; color:var(--text-muted); font-size:14px; }
@@ -61,9 +137,44 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
 .start-nav-btn { flex: 2; padding: 14px; background: #34c759; color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
 .reset-btn { flex: 1; padding: 14px; background: var(--border-color); color: var(--text-main); border: none; border-radius: 12px; font-weight: 600; cursor: pointer;}
 
-/* Карта и Контролы */
+/* =========================================
+   7. КАРТОЧКИ ЗАВЕДЕНИЙ И НАСТРОЙКИ
+   ========================================= */
+.results-list { flex-grow: 1; display: flex; flex-direction: column; gap: 8px; padding-bottom: 20px; }
+.result-item { padding: 14px; border-radius: 14px; background: var(--bg-input); cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+.result-title { font-weight: 700; font-size: 15px; color: var(--text-main); }
+.result-desc { font-size: 12px; color: var(--text-muted); }
+
+/* Детальная карточка с фото */
+.place-detail-card {
+    background: var(--bg-panel); border-radius: 16px; padding: 16px;
+    margin-top: 10px; border: 1px solid var(--border-color); position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.place-detail-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; display: block; background-color: #e5e5ea; }
+.place-detail-card .close-card {
+    position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5);
+    border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer;
+    color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(5px);
+}
+
+/* Бейджи инвалидности */
+.accessibility-badge { display: block; padding: 8px 12px; background: #34c759; color: white; border-radius: 10px; font-size: 12px; font-weight: 600; line-height: 1.4; }
+.accessibility-badge.partial { background: #ff9500; }
+.accessibility-badge.none { background: #ff3b30; }
+
+/* Настройки профиля */
+.setting-card { background: var(--bg-input); border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid var(--border-color); }
+.setting-card .cb-label { margin-bottom: 0; background: transparent; border-radius: 0; padding: 12px 12px 4px 12px; }
+.cb-label { display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg-input); border-radius:12px; margin-bottom: 8px; }
+.setting-desc { font-size: 13px; color: var(--text-muted); padding: 0 12px 14px 42px; line-height: 1.5; }
+
+/* =========================================
+   8. КАРТА И КНОПКИ УПРАВЛЕНИЯ
+   ========================================= */
 #map-container { flex-grow: 1; height: 100%; position: relative; }
 #map { height: 100%; width: 100%; background-color: var(--border-color); }
+
 .map-controls-right { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); z-index: 200; display: flex; flex-direction: column; gap: 10px; transition: 0.3s; }
 .map-btn-group { background: var(--fab-bg); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; border: 1px solid var(--border-color); }
 .map-btn { width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: 600; color: var(--text-main); border-bottom: 1px solid var(--border-color);}
@@ -71,49 +182,54 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
 .map-fab { width: 40px; height: 40px; background: var(--fab-bg); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid var(--border-color); color: var(--text-main);}
 .sos-btn { background: #ff3b30 !important; color: white !important; font-weight: bold; border: none !important;}
 .stop-nav-btn { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: #ff3b30; color: white; padding: 12px 24px; border-radius: 20px; font-weight: 700; border: none; display: none; z-index: 200;}
+
+/* Маркеры на карте */
 .custom-icon-wrapper { border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);}
 .gps-pulse { width: 18px; height: 18px; background: #007aff; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,122,255,0.6); pointer-events: none; }
 
-/* Уведомления */
+/* Уведомления (Тосты) */
 #toast-container { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; width: 90%; max-width: 320px; text-align: center; pointer-events: none;}
 .toast { background-color: rgba(28, 28, 30, 0.9); color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 14px; font-weight: 500; animation: fadeIn 0.3s;}
 .hidden-overlay { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ff3b30; color: white; padding: 12px 24px; border-radius: 20px; font-weight: bold; display: none; z-index: 9999;}
 
+/* Скрываем мобильные элементы на десктопе */
 .mobile-bottom-nav { display: none; }
 .mobile-drag-handle { display: none; }
 
-/* Адаптив для телефонов */
+/* =========================================
+   9. АДАПТАЦИЯ ДЛЯ СМАРТФОНОВ
+   ========================================= */
 @media (max-width: 768px) {
     .wrapper { flex-direction: column; }
-    .sidebar-nav { display: none; }
-    .mobile-bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: var(--bg-panel); border-top: 1px solid var(--border-color); z-index: 1050; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom); }
+    .sidebar-nav { display: none; } /* Скрываем левое меню */
+
+    /* Нижнее меню */
+    .mobile-bottom-nav {
+        display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+        background: var(--bg-panel); border-top: 1px solid var(--border-color);
+        z-index: 1050; justify-content: space-around; align-items: center; padding-bottom: env(safe-area-inset-bottom);
+    }
     .mob-nav-item { flex: 1; text-align: center; color: var(--text-muted); font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 8px 0; cursor: pointer;}
     .mob-nav-item .icon { font-size: 22px; display: block; margin-bottom: 4px; }
     .mob-nav-item.active { color: var(--primary); }
 
-    .sidebar-content { width: 100% !important; min-width: 100% !important; position: fixed; top: auto; bottom: 70px; left: 0; height: 145px; border-radius: 20px 20px 0 0; border-right: none; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); transition: height 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+    /* Шторка снизу */
+    .sidebar-content {
+        width: 100% !important; min-width: 100% !important;
+        position: fixed; top: auto; bottom: 70px; left: 0; height: 145px;
+        border-radius: 20px 20px 0 0; border-right: none; box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        transition: height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Состояния шторки */
     .sidebar-content.state-collapsed { height: 145px; }
     .sidebar-content.state-half { height: 50dvh; }
     .sidebar-content.state-full { height: 90dvh; }
 
+    /* Полоска свайпа (крючок) */
     .mobile-drag-handle { display: flex; width: 100%; height: 24px; cursor: grab; justify-content: center; align-items: center; }
     .mobile-drag-handle::after { content: ''; width: 36px; height: 5px; background: var(--border-color); border-radius: 3px; }
+
+    /* Поднимаем кнопки карты над шторкой */
     .map-controls-right { bottom: 230px; top: auto; transform: none;}
 }
-
-/* Переработка полей ввода маршрута для исключения наложения кнопок */
-.route-input-group { position: relative; background: var(--bg-input); border-radius: 16px; padding: 0; border: 1px solid var(--border-color); display: flex; flex-direction: column; }
-.route-point { display: flex; align-items: center; padding: 12px 50px 12px 16px; border-bottom: 1px solid var(--border-color); position: relative; }
-.route-point:last-child { border-bottom: none; }
-.route-input { flex-grow: 1; border: none; background: transparent; font-size: 15px; outline: none; color: var(--text-main); margin-left: 10px; cursor: pointer; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }.clear-btn { font-size: 18px; color: var(--text-muted); cursor: pointer; padding: 5px; line-height: 1; transition: 0.2s; }
-/* Кнопка быстрой очистки точек инпута */
-.clear-btn { font-size: 18px; color: var(--text-muted); cursor: pointer; padding: 4px 8px; position: absolute; right: 45px; top: 50%; transform: translateY(-50%); z-index: 5; transition: 0.2s; }
-.clear-btn:hover { color: #ff3b30; }.swap-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: var(--bg-panel); border: 1px solid var(--border-color); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 2; }
-/* Карточка расширенной информации о заведении */
-.place-detail-card { background: var(--bg-panel); border-radius: 16px; padding: 16px; margin-top: 10px; border: 1px solid var(--border-color); position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-.place-detail-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; display: block; background-color: #e5e5ea; }
-.place-detail-card .close-card { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(5px); }
-/* Элементы инклюзивных бейджей */
-.accessibility-badge { display: block; padding: 8px 12px; background: #34c759; color: white; border-radius: 10px; font-size: 12px; font-weight: 600; line-height: 1.4; }
-.accessibility-badge.partial { background: #ff9500; }
-.accessibility-badge.none { background: #ff3b30; }
