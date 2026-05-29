@@ -108,8 +108,11 @@ window.renderPlaces = function() {
 
     let filtered = placesDB.filter(p => {
         let matchText = q === '' ? true : (p.name.toLowerCase().includes(q) || p.category.includes(q) || p.desc.toLowerCase().includes(q));
-        if(isW && p.accessLevel === 'none') return false;
-        if(isDeaf && !p.deafFriendly) return false;
+
+        // Альтернатива: Если галка НЕ стоит, жестко прячем недоступные места
+        if(!isW && p.accessLevel === 'none') return false;
+        if(!isDeaf && !p.deafFriendly) return false;
+
         return matchText;
     });
 
