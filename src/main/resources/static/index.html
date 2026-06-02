@@ -3,30 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
-    <title>OpenPath</title>
+    <title>OpenPath AI</title>
 
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css"/>
     <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
 
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/app.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="js/app.js" defer></script>
 </head>
 <body>
-<div id="traffic-light-overlay" style="position:fixed; top:0; left:0; width:100vw; height:100dvh; background:#000; z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center;">
-    <video id="camera-feed" autoplay playsinline style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"></video>
-    <canvas id="cv-canvas" style="display:none;"></canvas>
-    <div style="position:absolute; bottom:120px; background:rgba(0,0,0,0.7); padding:20px; border-radius:20px; text-align:center; width:80%; border:2px solid #ffcc00; backdrop-filter:blur(10px);">
-        <div style="font-size:40px; margin-bottom:10px;" id="trafficIcon">👀</div>
-        <div style="color:white; font-size:18px; font-weight:700;" id="trafficText">Наведите камеру...</div>
-    </div>
-    <button onclick="stopTrafficLightAssist()" style="position:absolute; bottom:40px; background:#ff3b30; color:white; padding:16px 30px; border-radius:24px; font-size:18px; font-weight:bold; border:none;">Закрыть сканер</button>
-</div>
 <div id="toast-container"></div>
 <div id="map-picking-overlay" class="hidden-overlay">Выберите точку на карте</div>
+
+<div id="traffic-light-overlay" class="traffic-overlay">
+    <video id="camera-feed" autoplay playsinline class="camera-feed"></video>
+    <canvas id="cv-canvas" style="display:none;"></canvas>
+    <div class="traffic-info">
+        <div id="trafficIcon" class="traffic-icon">👀</div>
+        <div id="trafficText" class="traffic-text">Наведите камеру на дорогу</div>
+    </div>
+    <button class="traffic-close" onclick="stopTrafficLightAssist()">Закрыть</button>
+</div>
 
 <div class="wrapper">
     <div class="sidebar-nav">
@@ -41,85 +45,80 @@
         <div id="panel-search" class="panel active">
             <div class="search-wrapper">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" class="search-box" placeholder="Поиск (напр. Аптека)">
-                <span class="mic-icon" id="micBtn">🎤</span>
+                <input type="text" id="searchInput" class="search-box" placeholder="Поиск мест..." oninput="window.loadPlaces()" onclick="setSheetState('full')">
+                <span class="mic-icon" id="micBtn" onclick="startVoiceSearch()">🎤</span>
             </div>
             <div class="quick-filters">
-                <button class="chip-btn" data-query="Ресторан">🍽️ Еда</button>
-                <button class="chip-btn" data-query="Аптека">💊 Аптека</button>
-                <button class="chip-btn" data-query="Magnum">🛒 Magnum</button>
+                <button class="chip-btn" onclick="window.quickSearch('Ресторан')">🍽️ Еда</button>
+                <button class="chip-btn" onclick="window.quickSearch('Аптека')">💊 Аптека</button>
+                <button class="chip-btn" onclick="window.quickSearch('Супермаркет')">🛒 Magnum</button>
             </div>
             <div id="searchResultsList" class="results-list"></div>
         </div>
 
         <div id="panel-routes" class="panel">
-            <h3>Маршрут</h3>
+            <h3 id="txtRouteTitle">Построить маршрут</h3>
             <div class="route-tabs">
-                <span class="r-tab active" data-mode="driving-car">🚗</span>
-                <span class="r-tab" data-mode="foot-walking">🚶‍♂️</span>
-                <span class="r-tab" data-mode="wheelchair" id="tabWheelchair" style="display: none;">♿</span>
+                <span class="r-tab active" data-mode="driving-car" onclick="setMode('driving-car', this)">🚗</span>
+                <span class="r-tab" data-mode="foot-walking" onclick="setMode('foot-walking', this)">🚶‍♂️</span>
+                <span class="r-tab" data-mode="wheelchair" onclick="setMode('wheelchair', this)" style="display: none;" id="tabWheelchair">♿</span>
             </div>
-            <div class="route-input-group">
-                <div class="swap-btn" id="swapBtn" onclick="swapRoutePoints()">⇅</div>
-                <div class="route-point">
+
+            <div class="route-layout-container">
+                <div class="route-point-new" onclick="startPickingMode('start')">
                     <span class="point-icon a">A</span>
-                    <input type="text" class="route-input" id="routeStart" placeholder="Мое местоположение" readonly onclick="enablePicking('start')">
-                    <span class="clear-btn" onclick="clearPoint('start')">✕</span>
+                    <input type="text" class="route-input-new" id="routeStart" placeholder="Точка А" readonly>
+                    <span class="clear-input-btn" onclick="event.stopPropagation(); clearRoutePoint('start');">✕</span>
                 </div>
-                <div class="route-point">
+
+                <div class="reverse-spacer">
+                    <button class="swap-btn-new" onclick="swapRoutePoints()">⇅</button>
+                </div>
+
+                <div class="route-point-new" onclick="startPickingMode('end')">
                     <span class="point-icon b">B</span>
-                    <input type="text" class="route-input" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly onclick="enablePicking('end')">
-                    <span class="clear-btn" onclick="clearPoint('end')">✕</span>
+                    <input type="text" class="route-input-new" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly>
+                    <span class="clear-input-btn" onclick="event.stopPropagation(); clearRoutePoint('end');">✕</span>
                 </div>
             </div>
+
             <div class="route-result-box" id="routeResult">
                 <p id="routeTime">-- мин</p>
                 <p id="routeDist">-- км</p>
                 <div class="action-buttons">
-                    <button class="reset-btn" id="resetRouteBtn">Сброс</button>
-                    <button class="start-nav-btn" id="startNavBtn">▶ В путь</button>
+                    <button class="reset-btn" onclick="clearRoute()">Сброс</button>
+                    <button class="start-nav-btn" onclick="startNavigatorMode()">▶ В путь</button>
                 </div>
             </div>
         </div>
 
         <div id="panel-profile" class="panel">
-            <h3>Опции</h3>
+            <h3 id="txtOptionsTitle">Опции</h3>
+
             <div class="form-group">
-                <label>Настройки доступности (Инклюзивность)</label>
+                <label id="lblLanguage">Язык интерфейса</label>
+                <select id="settingLanguage" class="form-input" onchange="applyLanguage()">
+                    <option value="ru">Русский</option>
+                    <option value="uk">Українська</option>
+                    <option value="kz">Қазақша</option>
+                </select>
+            </div>
 
-                <div class="setting-card">
-                    <label class="cb-label">
-                        <input type="checkbox" id="cb-wheelchair">
-                        <strong>♿ Маломобильные пользователи</strong>
-                    </label>
-                    <div class="setting-desc">
-                        <strong>Что активирует:</strong><br>
-                        • Навигатор строит маршруты в обход лестниц и подземных переходов.<br>
-                        • Из поиска скрываются локации без пандусов, лифтов или съездов.
-                    </div>
-                </div>
+            <div class="form-group">
+                <label id="lblTheme">Тема и визуальный стиль</label>
+                <select id="settingTheme" class="form-input" onchange="applySettings()">
+                    <option value="light">Светлая</option>
+                    <option value="dark">Темная</option>
+                    <option value="contrast">Контрастная (Accessibility)</option>
+                </select>
+            </div>
 
-                <div class="setting-card">
-                    <label class="cb-label">
-                        <input type="checkbox" id="cb-vision">
-                        <strong>🦯 Незрячие и слабовидящие</strong>
-                    </label>
-                    <div class="setting-desc">
-                        <strong>Что активирует:</strong><br>
-                        • Системный Screen Reader (голосовой ассистент).<br>
-                        • Озвучка карточек заведений, кнопок интерфейса и подсказок навигатора.
-                    </div>
-                </div>
-
-                <div class="setting-card">
-                    <label class="cb-label">
-                        <input type="checkbox" id="cb-deaf">
-                        <strong>🧏 Глухие и слабослышащие</strong>
-                    </label>
-                    <div class="setting-desc">
-                        <strong>Что активирует:</strong><br>
-                        • Жесткий фильтр заведений на карте. Остаются только места, оборудовые визуальными табло, текстовыми меню или кнопками вызова.
-                    </div>
+            <div class="form-group">
+                <label id="lblAccessibility">Потребности и Доступность</label>
+                <div class="checkbox-group">
+                    <label class="cb-card"><input type="checkbox" id="cb-wheelchair" onchange="saveUserSettings()"> <span class="cb-txt">♿</span> Без ступеней</label>
+                    <label class="cb-card"><input type="checkbox" id="cb-vision" onchange="saveUserSettings()"> <span class="cb-txt">🦯</span> Голосовой гид</label>
+                    <label class="cb-card"><input type="checkbox" id="cb-deaf" onchange="saveUserSettings()"> <span class="cb-txt">🧏</span> Текстовое меню/Табло</label>
                 </div>
             </div>
         </div>
@@ -128,24 +127,24 @@
     <div id="map-container">
         <div id="map"></div>
         <div class="map-controls-right" id="mapControls">
-            <div class="map-fab" onclick="startTrafficLightAssist()" style="background: #fff3cd; border-color: #ffeeba; color: #856404;">🤖</div>
-            <div class="map-fab sos-btn" id="sosBtn">SOS</div>
-            <div class="map-fab" id="gpsBtn">🎯</div>
-            <div class="map-fab" id="voiceBtn">🔊</div>
+            <div class="map-fab-ai" onclick="startTrafficLightAssist()" style="background: #fff3cd; color: #856404; font-weight:bold;">🤖</div>
+            <div class="map-fab" onclick="toggleGPS()" id="gpsBtn">🎯</div>
+            <div class="map-fab" onclick="toggleVoice()" id="voiceBtn">🔊</div>
             <div class="map-btn-group" id="desktopZoom">
-                <div class="map-btn" id="zoomInBtn">+</div>
-                <div class="map-btn" id="zoomOutBtn">−</div>
-                <div class="map-btn" id="btn3D" style="font-size:12px;">3D</div>
+                <div class="map-btn" onclick="map.zoomIn()">+</div>
+                <div class="map-btn" onclick="map.zoomOut()">−</div>
+                <div class="map-btn" onclick="toggleMap3D()" id="btn3D" style="font-size:12px;">3D</div>
             </div>
         </div>
-        <button class="stop-nav-btn" id="stopNavBtn">⏹ Завершить</button>
+        <button class="stop-nav-btn" id="stopNavBtn" onclick="stopNavigatorMode()">⏹ Завершить</button>
     </div>
 </div>
 
 <div class="mobile-bottom-nav">
-    <div class="mob-nav-item active" data-target="panel-search"><span class="icon">🔍</span>Поиск</div>
-    <div class="mob-nav-item" data-target="panel-routes"><span class="icon">🛣️</span>Маршрут</div>
-    <div class="mob-nav-item" data-target="panel-profile"><span class="icon">⚙️</span>Опции</div>
+    <div class="mob-nav-item active" onclick="openMobileMenu('panel-search', this)"><span class="icon">🔍</span><span class="label">Поиск</span></div>
+    <div class="mob-nav-item" onclick="openMobileMenu('panel-routes', this)"><span class="icon">🛣️</span><span class="label">Маршрут</span></div>
+    <div class="mob-nav-item" onclick="openMobileMenu('panel-profile', this)"><span class="icon">⚙️</span><span class="label">Опции</span></div>
 </div>
+
 </body>
 </html>
