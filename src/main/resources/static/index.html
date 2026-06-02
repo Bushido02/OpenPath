@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
     <title>OpenPath AI</title>
@@ -97,16 +97,16 @@
 
             <div class="form-group">
                 <label id="lblLanguage">Язык интерфейса</label>
-                <select id="settingLanguage" class="form-input" onchange="window.applyLanguage()">
+                <select id="settingLanguage" class="form-input" onchange="applyLanguage()">
                     <option value="ru">Русский</option>
-                    <option value="uk">Українська</option>
+                    <option value="en">English</option>
                     <option value="kz">Қазақша</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label id="lblTheme">Тема и визуальный стиль</label>
-                <select id="settingTheme" class="form-input" onchange="window.applySettings()">
+                <select id="settingTheme" class="form-input" onchange="applySettings()">
                     <option value="light">Светлая</option>
                     <option value="dark">Темная</option>
                     <option value="contrast">Контрастная (Accessibility)</option>
@@ -114,44 +114,15 @@
             </div>
 
             <div class="form-group">
-                <label id="lblAccessibility">Настройки доступности (Инклюзивность)</label>
-
-                <div class="setting-card">
-                    <label class="cb-label">
-                        <input type="checkbox" id="cb-wheelchair" onchange="window.saveUserSettings()">
-                        <strong>♿ Маломобильные пользователи</strong>
-                    </label>
-                    <div class="setting-desc">
-                        <strong>Что активирует:</strong><br>
-                        • Навигатор строит маршруты в обход лестниц.<br>
-                        • Из поиска скрываются локации без пандусов.
-                    </div>
-                </div>
-
-                <div class="setting-card">
-                    <label class="cb-label">
-                        <input type="checkbox" id="cb-vision" onchange="window.saveUserSettings()">
-                        <strong>🦯 Незрячие и слабовидящие</strong>
-                    </label>
-                    <div class="setting-desc">
-                        <strong>Что активирует:</strong><br>
-                        • Системный голосовой ассистент.<br>
-                        • Озвучка карточек заведений и подсказок.
-                    </div>
-                </div>
-
-                <div class="setting-card">
-                    <label class="cb-label">
-                        <input type="checkbox" id="cb-deaf" onchange="window.saveUserSettings()">
-                        <strong>🧏 Глухие и слабослышащие</strong>
-                    </label>
-                    <div class="setting-desc">
-                        <strong>Что активирует:</strong><br>
-                        • Жесткий фильтр заведений на карте. Остаются места с табло или кнопками вызова.
-                    </div>
+                <label id="lblAccessibility">Потребности и Доступность</label>
+                <div class="checkbox-group">
+                    <label class="cb-card"><input type="checkbox" id="cb-wheelchair" onchange="saveUserSettings()"> <span class="cb-txt">♿</span> <span id="txtWheelchair">Без ступеней</span></label>
+                    <label class="cb-card"><input type="checkbox" id="cb-vision" onchange="saveUserSettings()"> <span class="cb-txt">🦯</span> <span id="txtVision">Голосовой гид</span></label>
+                    <label class="cb-card"><input type="checkbox" id="cb-deaf" onchange="saveUserSettings()"> <span class="cb-txt">🧏</span> <span id="txtDeaf">Текстовое меню/Табло</span></label>
                 </div>
             </div>
         </div>
+    </div>
 
     <div id="map-container">
         <div id="map"></div>

@@ -3,7 +3,6 @@ const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
 const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 const BACKEND_URL = window.location.origin;
 
-// === СЛОВАРЬ ПЕРЕВОДОВ (ru, uk, kz) ===
 const translations = {
     ru: {
         searchPlaceholder: "Поиск мест...", optionsTitle: "Опции", routeTitle: "Построить маршрут",
@@ -14,32 +13,32 @@ const translations = {
         btnRouteHere: "Маршрут сюда", btnDrive: "В путь", btnReset: "Сброс",
         toastGPS: "Ищу GPS...", toastGPSFound: "Спутники найдены!", toastVoiceOn: "Голос включен", toastVoiceOff: "Голос выключен",
         trafficWait: "Наведите камеру на дорогу...", trafficFound: "СВЕТОФОР!", trafficScan: "Радар включен", trafficClose: "Закрыть",
-        fullAccess: "✅ Доступно для колясок", partialAccess: "🤝 Кнопка вызова", noAccess: "❌ Ступени (Нужна помощь)",
-        routeError: "Ошибка построения маршрута", noPlaces: "Ничего не найдено"
+        fullAccess: "✅ Доступно", partialAccess: "🤝 Кнопка вызова", noAccess: "❌ Ступени",
+        routeError: "Ошибка маршрута", noPlaces: "Ничего не найдено"
     },
-    uk: {
-        searchPlaceholder: "Пошук місць...", optionsTitle: "Опції", routeTitle: "Побудувати маршрут",
-        tabSearch: "Пошук", tabRoutes: "Маршрут", tabOptions: "Опції",
-        lblLanguage: "Мова інтерфейсу", lblTheme: "Тема та візуальний стиль", lblAccessibility: "Потреби та Доступність",
-        needsWheelchair: "Без сходинок", needsVision: "Голосовий гід", needsDeaf: "Текстове меню",
-        pointA: "Точка А", pointB: "Точка Б", кудаНажать: "Куди (Натисніть на карту)",
-        btnRouteHere: "Маршрут сюди", btnDrive: "Поїхали", btnReset: "Скидання",
-        toastGPS: "Шукаю GPS...", toastGPSFound: "Супутники знайдені!", toastVoiceOn: "Голос увімкнено", toastVoiceOff: "Голос вимкнено",
-        trafficWait: "Наведіть камеру на дорогу...", trafficFound: "СВІТЛОФОР!", trafficScan: "Радар увімкнено", trafficClose: "Закрити",
-        fullAccess: "✅ Доступно для візків", partialAccess: "🤝 Кнопка виклику", noAccess: "❌ Сходинки (Потрібна допомога)",
-        routeError: "Помилка побудови маршруту", noPlaces: "Нічого не знайдено"
+    en: {
+        searchPlaceholder: "Search places...", optionsTitle: "Options", routeTitle: "Route",
+        tabSearch: "Search", tabRoutes: "Route", tabOptions: "Options",
+        lblLanguage: "Language", lblTheme: "Theme", lblAccessibility: "Accessibility",
+        needsWheelchair: "Wheelchair access", needsVision: "Voice guide", needsDeaf: "Text menu",
+        pointA: "Point A", pointB: "Point B", кудаНажать: "Where to (Tap map)",
+        btnRouteHere: "Route here", btnDrive: "Start", btnReset: "Reset",
+        toastGPS: "Searching GPS...", toastGPSFound: "GPS found!", toastVoiceOn: "Voice ON", toastVoiceOff: "Voice OFF",
+        trafficWait: "Point camera at road...", trafficFound: "TRAFFIC LIGHT!", trafficScan: "Radar ON", trafficClose: "Close",
+        fullAccess: "✅ Accessible", partialAccess: "🤝 Call button", noAccess: "❌ Stairs",
+        routeError: "Route error", noPlaces: "Nothing found"
     },
     kz: {
         searchPlaceholder: "Орындарды іздеу...", optionsTitle: "Баптаулар", routeTitle: "Маршрут салу",
         tabSearch: "Іздеу", tabRoutes: "Маршрут", tabOptions: "Баптаулар",
-        lblLanguage: "Интерфейс тілі", lblTheme: "Тақырып және стиль", lblAccessibility: "Қажеттіліктер мен Қолжетімділік",
+        lblLanguage: "Интерфейс тілі", lblTheme: "Тақырып және стиль", lblAccessibility: "Қажеттіліктер",
         needsWheelchair: "Баспалдақсыз", needsVision: "Дауыстық нұсқау", needsDeaf: "Мәтіндік мәзір",
         pointA: "A нүктесі", pointB: "Б нүктесі", кудаНажать: "Қайда (Картаға басыңыз)",
         btnRouteHere: "Маршрут осында", btnDrive: "Кеттік", btnReset: "Тастау",
         toastGPS: "GPS іздеу...", toastGPSFound: "Спутниктер табылды!", toastVoiceOn: "Дауыс қосылды", toastVoiceOff: "Дауыс өшірілді",
         trafficWait: "Камераны жолға бағыттаңыз...", trafficFound: "БАҒДАРШАМ!", trafficScan: "Радар қосылды", trafficClose: "Жабу",
-        fullAccess: "✅ Арбаларға қолжетімді", partialAccess: "🤝 Шақыру батырмасы", noAccess: "❌ Баспалдақ (Көмек керек)",
-        routeError: "Маршрут құру қатесі", noPlaces: "Ештеңе табылмады"
+        fullAccess: "✅ Қолжетімді", partialAccess: "🤝 Шақыру батырмасы", noAccess: "❌ Баспалдақ",
+        routeError: "Маршрут қатесі", noPlaces: "Ештеңе табылмады"
     }
 };
 
@@ -104,9 +103,11 @@ window.applyLanguage = function() {
     document.getElementById('lblLanguage').innerText = t.lblLanguage;
     document.getElementById('lblTheme').innerText = t.lblTheme;
     document.getElementById('lblAccessibility').innerText = t.lblAccessibility;
-    document.getElementById('cb-wheelchair').parentNode.querySelector('.cb-txt').nextSibling.nodeValue = " " + t.needsWheelchair;
-    document.getElementById('cb-vision').parentNode.querySelector('.cb-txt').nextSibling.nodeValue = " " + t.needsVision;
-    document.getElementById('cb-deaf').parentNode.querySelector('.cb-txt').nextSibling.nodeValue = " " + t.needsDeaf;
+
+    // ЖЕЛЕЗОБЕТОННЫЙ ФИКС: Обращаемся строго по ID, никаких nextSibling
+    const tw = document.getElementById('txtWheelchair'); if(tw) tw.innerText = t.needsWheelchair;
+    const tv = document.getElementById('txtVision'); if(tv) tv.innerText = t.needsVision;
+    const td = document.getElementById('txtDeaf'); if(td) td.innerText = t.needsDeaf;
 
     document.getElementById('txtRouteTitle').innerText = t.routeTitle;
     document.getElementById('routeStart').placeholder = t.pointA;
