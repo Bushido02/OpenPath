@@ -84,14 +84,14 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
     display: flex;
     flex-direction: column;
     margin-bottom: 15px;
-    position: relative; /* КРИТИЧЕСКИ ВАЖНО: держит кнопку реверса */
+    position: relative;
 }
 
 /* Строка с точкой */
 .route-point {
     display: flex;
     align-items: center;
-    padding: 12px 85px 12px 16px; /* 85px справа: жесткая бронь для ✕ и ⇅ */
+    padding: 12px 45px 12px 60px; /* КРИТИЧНО: 60px слева под реверс, 45px справа под крестик */
     position: relative;
     cursor: pointer;
 }
@@ -102,7 +102,7 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
 /* Поле ввода */
 .route-input {
     flex: 1;
-    min-width: 0; /* Не дает тексту вылезать за пределы */
+    min-width: 0;
     border: none;
     background: transparent;
     font-size: 15px;
@@ -114,23 +114,23 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
     white-space: nowrap;
 }
 
-/* Крестики очистки (✕) - стоят перед реверсом */
+/* Крестики очистки (✕) - возвращаем в правый край */
 .clear-btn {
     position: absolute;
-    right: 55px; /* Отодвинуты влево от края */
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
     font-size: 18px;
     color: var(--text-muted);
-    padding: 4px 8px;
+    padding: 4px;
     z-index: 5;
 }
 .clear-btn:hover { color: #ff3b30; }
 
-/* Кнопка реверса (⇅) - висит ровно по центру на правой стороне */
+/* Кнопка реверса (⇅) - переносим в левый край */
 .swap-btn {
     position: absolute;
-    right: 12px;
+    left: 12px; /* Было right: 12px */
     top: 50%;
     transform: translateY(-50%);
     width: 36px;
