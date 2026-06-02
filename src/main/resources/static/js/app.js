@@ -3,6 +3,7 @@ const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
 const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 const BACKEND_URL = window.location.origin;
 
+// === СЛОВАРЬ ПЕРЕВОДОВ ===
 const translations = {
     ru: {
         searchPlaceholder: "Поиск мест...", optionsTitle: "Опции", routeTitle: "Построить маршрут",
@@ -50,7 +51,7 @@ let placesDB = [
     { id: 4, name: "Ресторан Navat", lat: 43.2420, lng: 76.9010, category: "food", accessLevel: "partial", deafFriendly: true, desc: "Восточная кухня." }
 ];
 
-// === СОСТОЯНИЕ (STATE) ===
+// === СОСТОЯНИЕ ===
 let currentLang = 'ru';
 let state = {
     isMobile: window.innerWidth <= 768,
@@ -83,7 +84,7 @@ function addCustomMapLayers() {
 }
 
 // === ЛОГИКА МУЛЬТИЯЗЫЧНОСТИ ===
-window.applyLanguage = function() {
+function applyLanguage() {
     const selector = document.getElementById('settingLanguage');
     if (selector) currentLang = selector.value;
     localStorage.setItem('language', currentLang);
@@ -104,7 +105,6 @@ window.applyLanguage = function() {
     document.getElementById('lblTheme').innerText = t.lblTheme;
     document.getElementById('lblAccessibility').innerText = t.lblAccessibility;
 
-    // ЖЕЛЕЗОБЕТОННЫЙ ФИКС: Обращаемся строго по ID, никаких nextSibling
     const tw = document.getElementById('txtWheelchair'); if(tw) tw.innerText = t.needsWheelchair;
     const tv = document.getElementById('txtVision'); if(tv) tv.innerText = t.needsVision;
     const td = document.getElementById('txtDeaf'); if(td) td.innerText = t.needsDeaf;
@@ -119,14 +119,16 @@ window.applyLanguage = function() {
     if (resetBtn) resetBtn.innerText = t.btnReset;
     if (startNavBtn) startNavBtn.innerText = t.btnDrive;
 
-    window.renderPlaces();
-};
+    renderPlaces();
+}
+window.applyLanguage = applyLanguage;
 
 // === УПРАВЛЕНИЕ UI И ШТОРКОЙ ===
-window.setSheetState = function(s) {
+function setSheetState(s) {
     if (!state.isMobile) return;
     document.getElementById('sidebarContent').className = `sidebar-content state-${s}`;
-};
+}
+window.setSheetState = setSheetState;
 
 const dragHandle = document.getElementById('dragHandle');
 if (dragHandle) {
@@ -151,13 +153,16 @@ document.querySelectorAll('.nav-tab').forEach(el => {
     });
 });
 
-window.openMobileMenu = function(targetId, el) {
+document.getElementById('searchInput').addEventListener('input', () => renderPlaces());
+
+function openMobileMenu(targetId, el) {
     document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
     document.getElementById(targetId).classList.add('active');
     setSheetState(targetId === 'panel-search' ? 'collapsed' : 'half');
-};
+}
+window.openMobileMenu = openMobileMenu;
 
 // === БЭКЕНД И МЕСТА ===
 async function fetchBackendPlaces() {
@@ -170,18 +175,19 @@ async function fetchBackendPlaces() {
                 category: p.category || 'shop', accessLevel: p.accessLevel || 'full', deafFriendly: p.deafFriendly !== undefined ? p.deafFriendly : true,
                 desc: p.desc || p.description || ''
             }));
-            window.renderPlaces();
+            renderPlaces();
         }
     } catch (e) { console.warn("Используется локальная БД."); }
 }
 
-window.quickSearch = function(query) {
+function quickSearch(query) {
     document.getElementById('searchInput').value = query;
-    window.renderPlaces();
+    renderPlaces();
     setSheetState('half');
-};
+}
+window.quickSearch = quickSearch;
 
-window.renderPlaces = function() {
+function renderPlaces() {
     const query = document.getElementById('searchInput').value.toLowerCase().trim();
     const isW = document.getElementById('cb-wheelchair').checked;
     const isDeaf = document.getElementById('cb-deaf').checked;
@@ -226,9 +232,10 @@ window.renderPlaces = function() {
 
         state.markers.places.push(new maplibregl.Marker(mEl).setLngLat([p.lng, p.lat]).addTo(map));
     });
-};
+}
+window.renderPlaces = renderPlaces;
 
-window.showPlaceDetails = function(p) {
+function showPlaceDetails(p) {
     map.flyTo({center: [p.lng, p.lat], zoom: 17});
     setSheetState('half');
     const t = translations[currentLang];
@@ -239,16 +246,18 @@ window.showPlaceDetails = function(p) {
             <button class="close-card" onclick="window.renderPlaces(); setSheetState('collapsed');">✕</button>
             <h3>${p.name}</h3>
             <p style="color:var(--text-muted); font-size:14px; margin-bottom:15px;">${p.desc}</p>
-            <button class="start-nav-btn" style="width:100%;" onclick="buildRouteTo(${p.lat}, ${p.lng}, '${p.name.replace(/'/g, "\\'")}')">${t.btnRouteHere}</button>
+            <button class="start-nav-btn" style="width:100%;" onclick="window.buildRouteTo(${p.lat}, ${p.lng}, '${p.name.replace(/'/g, "\\'")}')">${t.btnRouteHere}</button>
         </div>
     `;
-};
+}
+window.showPlaceDetails = showPlaceDetails;
 
 // === МАРШРУТЫ ===
-window.startPickingMode = function(type) {
+function startPickingMode(type) {
     state.picking = type; setSheetState('collapsed');
     document.getElementById('map-picking-overlay').style.display = 'block';
-};
+}
+window.startPickingMode = startPickingMode;
 
 map.on('click', e => {
     if (!state.picking) return;
@@ -272,16 +281,17 @@ map.on('click', e => {
     calculateRoute();
 });
 
-window.swapRoutePoints = function() {
+function swapRoutePoints() {
     if(!state.routeLatLangs.start || !state.routeLatLangs.end) return;
     let temp = state.routeLatLangs.start; state.routeLatLangs.start = state.routeLatLangs.end; state.routeLatLangs.end = temp;
     let tVal = document.getElementById('routeStart').value; document.getElementById('routeStart').value = document.getElementById('routeEnd').value; document.getElementById('routeEnd').value = tVal;
     if(state.markers.start) state.markers.start.setLngLat(state.routeLatLangs.start);
     if(state.markers.end) state.markers.end.setLngLat(state.routeLatLangs.end);
     calculateRoute();
-};
+}
+window.swapRoutePoints = swapRoutePoints;
 
-window.clearRoutePoint = function(type) {
+function clearRoutePoint(type) {
     const t = translations[currentLang];
     if (type === 'start') {
         state.routeLatLangs.start = null;
@@ -295,14 +305,16 @@ window.clearRoutePoint = function(type) {
     }
     document.getElementById('routeResult').style.display = 'none';
     map.getSource('route').setData({ "type": "FeatureCollection", "features": [] });
-};
+}
+window.clearRoutePoint = clearRoutePoint;
 
-window.clearRoute = function() {
-    window.clearRoutePoint('start');
-    window.clearRoutePoint('end');
-};
+function clearRoute() {
+    clearRoutePoint('start');
+    clearRoutePoint('end');
+}
+window.clearRoute = clearRoute;
 
-window.buildRouteTo = function(lat, lng, name) {
+function buildRouteTo(lat, lng, name) {
     state.routeLatLangs.end = [lng, lat]; document.getElementById('routeEnd').value = name;
     if(state.isMobile) openMobileMenu('panel-routes', document.querySelectorAll('.mob-nav-item')[1]);
     else document.querySelector(`.nav-tab[data-target="panel-routes"]`).click();
@@ -322,14 +334,16 @@ window.buildRouteTo = function(lat, lng, name) {
         state.markers.end.setLngLat(state.routeLatLangs.end);
     }
     calculateRoute();
-};
+}
+window.buildRouteTo = buildRouteTo;
 
-window.setMode = function(mode, el) {
+function setMode(mode, el) {
     state.mode = mode;
     document.querySelectorAll('.r-tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     calculateRoute();
-};
+}
+window.setMode = setMode;
 
 async function calculateRoute() {
     if(!state.routeLatLangs.start || !state.routeLatLangs.end) return;
@@ -345,29 +359,32 @@ async function calculateRoute() {
     } catch(e) { toast('routeError'); }
 }
 
-// === УТИЛИТЫ (GPS, Голос, 3D) ===
-window.toast = function(msgKey, isRaw = false) {
+// === УТИЛИТЫ ===
+function toast(msgKey, isRaw = false) {
     const msg = isRaw ? msgKey : translations[currentLang][msgKey];
     if(!msg) return;
     const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000);
-};
+}
+window.toast = toast;
 
-window.speak = function(text) {
+function speak(text) {
     window.speechSynthesis.cancel();
     if (state.voice || document.getElementById('cb-vision').checked) {
         let u = new SpeechSynthesisUtterance(text);
-        u.lang = currentLang === 'ru' ? 'ru-RU' : (currentLang === 'uk' ? 'uk-UA' : 'kk-KZ');
+        u.lang = currentLang === 'ru' ? 'ru-RU' : (currentLang === 'en' ? 'en-US' : 'kk-KZ');
         window.speechSynthesis.speak(u);
     }
-};
+}
+window.speak = speak;
 
-window.toggleVoice = function() {
+function toggleVoice() {
     state.voice = !state.voice;
     document.getElementById('voiceBtn').style.color = state.voice ? "var(--primary)" : "var(--text-main)";
     toast(state.voice ? 'toastVoiceOn' : 'toastVoiceOff');
-};
+}
+window.toggleVoice = toggleVoice;
 
-window.toggleGPS = function() {
+function toggleGPS() {
     if (state.gpsActive && state.markers.gps) {
         map.flyTo({center: state.markers.gps.getLngLat(), zoom: 18, pitch: 45});
         return;
@@ -384,15 +401,17 @@ window.toggleGPS = function() {
             } else { state.markers.gps.setLngLat(coords); }
         }, null, { enableHighAccuracy: true });
     }
-};
+}
+window.toggleGPS = toggleGPS;
 
-window.toggleMap3D = function() {
+function toggleMap3D() {
     state.is3D = !state.is3D;
     map.easeTo({ pitch: state.is3D ? 60 : 0, bearing: state.is3D ? -20 : 0 });
     document.getElementById('btn3D').style.color = state.is3D ? "var(--primary)" : "var(--text-main)";
-};
+}
+window.toggleMap3D = toggleMap3D;
 
-// === НАСТРОЙКИ (PERSISTENCE) ===
+// === НАСТРОЙКИ ===
 function loadUserSettings() {
     const savedLang = localStorage.getItem('language') || 'ru';
     document.getElementById('settingLanguage').value = savedLang;
@@ -405,41 +424,45 @@ function loadUserSettings() {
     if(localStorage.getItem('deaf') === 'true') document.getElementById('cb-deaf').checked = true;
 }
 
-window.saveUserSettings = function() {
-    ['wheelchair', 'vision', 'deaf'].forEach(k => localStorage.setItem(k, document.getElementById('cb-'+k).checked));
+function saveUserSettings() {
+    ['wheelchair', 'vision', 'deaf'].forEach(k => {
+        const el = document.getElementById('cb-'+k);
+        if(el) localStorage.setItem(k, el.checked);
+    });
     document.getElementById('tabWheelchair').style.display = document.getElementById('cb-wheelchair').checked ? 'block' : 'none';
-    window.renderPlaces();
-};
+    renderPlaces();
+}
+window.saveUserSettings = saveUserSettings;
 
-window.applySettings = function() {
+function applySettings() {
     const t = document.getElementById('settingTheme').value;
     localStorage.setItem('theme', t); document.documentElement.setAttribute('data-theme', t);
-
-    // Для контрастной темы используем темную карту Maptiler
     const mapStyle = t === 'contrast' ? 'basic-v2-dark' : (t === 'dark' ? 'basic-v2-dark' : 'streets-v2');
     map.setStyle(`https://api.maptiler.com/maps/${mapStyle}/style.json?key=${MAPTILER_KEY}`);
     map.once('styledata', () => addCustomMapLayers());
-};
+}
+window.applySettings = applySettings;
 
 // === ГОЛОСОВОЙ ПОИСК ===
-window.startVoiceSearch = function() {
+function startVoiceSearch() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return toast("Голосовой поиск не поддерживается браузером", true);
+    if (!SpeechRecognition) return toast("Голосовой поиск не поддерживается", true);
     const recognition = new SpeechRecognition();
-    recognition.lang = currentLang === 'ru' ? 'ru-RU' : (currentLang === 'uk' ? 'uk-UA' : 'kk-KZ');
+    recognition.lang = currentLang === 'ru' ? 'ru-RU' : (currentLang === 'en' ? 'en-US' : 'kk-KZ');
     recognition.start();
     document.getElementById('micBtn').style.color = "#ff3b30";
     recognition.onresult = function(event) {
         document.getElementById('searchInput').value = event.results[0][0].transcript;
-        window.renderPlaces();
+        renderPlaces();
         document.getElementById('micBtn').style.color = "var(--primary)";
     };
     recognition.onerror = () => document.getElementById('micBtn').style.color = "var(--primary)";
-};
+}
+window.startVoiceSearch = startVoiceSearch;
 
-// === ИИ КАМЕРА (РОБОТ) ===
+// === ИИ КАМЕРА ===
 let cvInterval = null; let videoStream = null; let aiModel = null;
-window.startTrafficLightAssist = async function() {
+async function startTrafficLightAssist() {
     toast('trafficScan');
     if(!aiModel) aiModel = await cocoSsd.load();
     document.getElementById('traffic-light-overlay').style.display = 'flex';
@@ -459,20 +482,26 @@ window.startTrafficLightAssist = async function() {
             }
         }, 1000);
     };
-};
-window.stopTrafficLightAssist = function() {
+}
+window.startTrafficLightAssist = startTrafficLightAssist;
+
+function stopTrafficLightAssist() {
     if(cvInterval) clearInterval(cvInterval);
     if(videoStream) videoStream.getTracks().forEach(t=>t.stop());
     document.getElementById('traffic-light-overlay').style.display = 'none';
-};
+}
+window.stopTrafficLightAssist = stopTrafficLightAssist;
 
-// === РЕЖИМ НАВИГАТОРА (ЗАГЛУШКА) ===
-window.startNavigatorMode = function() {
+// === НАВИГАТОР ===
+function startNavigatorMode() {
     document.getElementById('stopNavBtn').style.display = 'block';
     setSheetState('collapsed');
     toast("Навигация запущена", true);
-};
-window.stopNavigatorMode = function() {
+}
+window.startNavigatorMode = startNavigatorMode;
+
+function stopNavigatorMode() {
     document.getElementById('stopNavBtn').style.display = 'none';
     toast("Навигация завершена", true);
-};
+}
+window.stopNavigatorMode = stopNavigatorMode;

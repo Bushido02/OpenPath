@@ -29,7 +29,7 @@
         <div id="trafficIcon" class="traffic-icon">👀</div>
         <div id="trafficText" class="traffic-text">Наведите камеру на дорогу</div>
     </div>
-    <button class="traffic-close" onclick="stopTrafficLightAssist()">Закрыть</button>
+    <button class="traffic-close" onclick="window.stopTrafficLightAssist()">Закрыть</button>
 </div>
 
 <div class="wrapper">
@@ -45,18 +45,17 @@
         <div id="panel-search" class="panel active">
             <div class="search-wrapper">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" class="search-box" placeholder="Поиск мест..." oninput="window.loadPlaces()" onclick="setSheetState('full')">
-                <span class="mic-icon" id="micBtn" onclick="startVoiceSearch()">🎤</span>
+                <input type="text" id="searchInput" class="search-box" placeholder="Поиск мест..." onclick="window.setSheetState('full')">
+                <span class="mic-icon" id="micBtn" onclick="window.startVoiceSearch()">🎤</span>
             </div>
             <div class="quick-filters">
                 <button class="chip-btn" onclick="window.quickSearch('Ресторан')">🍽️ Еда</button>
                 <button class="chip-btn" onclick="window.quickSearch('Аптека')">💊 Аптека</button>
-                <button class="chip-btn" onclick="window.quickSearch('Супермаркет')">🛒 Magnum</button>
+                <button class="chip-btn" onclick="window.quickSearch('Magnum')">🛒 Magnum</button>
             </div>
             <div id="searchResultsList" class="results-list"></div>
         </div>
 
-        <!-- ПАНЕЛЬ МАРШРУТОВ -->
         <div id="panel-routes" class="panel">
             <h3 id="txtRouteTitle">Построить маршрут</h3>
             <div class="route-tabs">
@@ -65,19 +64,21 @@
                 <span class="r-tab" data-mode="wheelchair" onclick="window.setMode('wheelchair', this)" style="display: none;" id="tabWheelchair">♿</span>
             </div>
 
-            <div class="route-input-group">
-                <div class="swap-btn" onclick="window.swapRoutePoints()">⇅</div>
-
-                <div class="route-point" onclick="window.startPickingMode('start')">
+            <div class="route-layout-container">
+                <div class="route-point-new" onclick="window.startPickingMode('start')">
                     <span class="point-icon a">A</span>
-                    <input type="text" class="route-input" id="routeStart" placeholder="Точка А" readonly>
-                    <span class="clear-btn" onclick="event.stopPropagation(); window.clearRoutePoint('start');">✕</span>
+                    <input type="text" class="route-input-new" id="routeStart" placeholder="Точка А" readonly>
+                    <span class="clear-input-btn" onclick="event.stopPropagation(); window.clearRoutePoint('start');">✕</span>
                 </div>
 
-                <div class="route-point" onclick="window.startPickingMode('end')">
+                <div class="reverse-spacer">
+                    <button class="swap-btn-new" onclick="window.swapRoutePoints()">⇅</button>
+                </div>
+
+                <div class="route-point-new" onclick="window.startPickingMode('end')">
                     <span class="point-icon b">B</span>
-                    <input type="text" class="route-input" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly>
-                    <span class="clear-btn" onclick="event.stopPropagation(); window.clearRoutePoint('end');">✕</span>
+                    <input type="text" class="route-input-new" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly>
+                    <span class="clear-input-btn" onclick="event.stopPropagation(); window.clearRoutePoint('end');">✕</span>
                 </div>
             </div>
 
@@ -91,13 +92,12 @@
             </div>
         </div>
 
-        <!-- ПАНЕЛЬ ПРОФИЛЯ (Настройки и Доступность) -->
         <div id="panel-profile" class="panel">
             <h3 id="txtOptionsTitle">Опции</h3>
 
             <div class="form-group">
                 <label id="lblLanguage">Язык интерфейса</label>
-                <select id="settingLanguage" class="form-input" onchange="applyLanguage()">
+                <select id="settingLanguage" class="form-input" onchange="window.applyLanguage()">
                     <option value="ru">Русский</option>
                     <option value="en">English</option>
                     <option value="kz">Қазақша</option>
@@ -106,7 +106,7 @@
 
             <div class="form-group">
                 <label id="lblTheme">Тема и визуальный стиль</label>
-                <select id="settingTheme" class="form-input" onchange="applySettings()">
+                <select id="settingTheme" class="form-input" onchange="window.applySettings()">
                     <option value="light">Светлая</option>
                     <option value="dark">Темная</option>
                     <option value="contrast">Контрастная (Accessibility)</option>
@@ -116,9 +116,9 @@
             <div class="form-group">
                 <label id="lblAccessibility">Потребности и Доступность</label>
                 <div class="checkbox-group">
-                    <label class="cb-card"><input type="checkbox" id="cb-wheelchair" onchange="saveUserSettings()"> <span class="cb-txt">♿</span> <span id="txtWheelchair">Без ступеней</span></label>
-                    <label class="cb-card"><input type="checkbox" id="cb-vision" onchange="saveUserSettings()"> <span class="cb-txt">🦯</span> <span id="txtVision">Голосовой гид</span></label>
-                    <label class="cb-card"><input type="checkbox" id="cb-deaf" onchange="saveUserSettings()"> <span class="cb-txt">🧏</span> <span id="txtDeaf">Текстовое меню/Табло</span></label>
+                    <label class="cb-card"><input type="checkbox" id="cb-wheelchair" onchange="window.saveUserSettings()"> <span class="cb-txt">♿</span> <span id="txtWheelchair">Без ступеней</span></label>
+                    <label class="cb-card"><input type="checkbox" id="cb-vision" onchange="window.saveUserSettings()"> <span class="cb-txt">🦯</span> <span id="txtVision">Голосовой гид</span></label>
+                    <label class="cb-card"><input type="checkbox" id="cb-deaf" onchange="window.saveUserSettings()"> <span class="cb-txt">🧏</span> <span id="txtDeaf">Текстовое меню/Табло</span></label>
                 </div>
             </div>
         </div>
@@ -127,24 +127,23 @@
     <div id="map-container">
         <div id="map"></div>
         <div class="map-controls-right" id="mapControls">
-            <div class="map-fab-ai" onclick="startTrafficLightAssist()" style="background: #fff3cd; color: #856404; font-weight:bold;">🤖</div>
-            <div class="map-fab" onclick="toggleGPS()" id="gpsBtn">🎯</div>
-            <div class="map-fab" onclick="toggleVoice()" id="voiceBtn">🔊</div>
+            <div class="map-fab-ai" onclick="window.startTrafficLightAssist()" style="background: #fff3cd; color: #856404; font-weight:bold;">🤖</div>
+            <div class="map-fab" onclick="window.toggleGPS()" id="gpsBtn">🎯</div>
+            <div class="map-fab" onclick="window.toggleVoice()" id="voiceBtn">🔊</div>
             <div class="map-btn-group" id="desktopZoom">
                 <div class="map-btn" onclick="map.zoomIn()">+</div>
                 <div class="map-btn" onclick="map.zoomOut()">−</div>
-                <div class="map-btn" onclick="toggleMap3D()" id="btn3D" style="font-size:12px;">3D</div>
+                <div class="map-btn" onclick="window.toggleMap3D()" id="btn3D" style="font-size:12px;">3D</div>
             </div>
         </div>
-        <button class="stop-nav-btn" id="stopNavBtn" onclick="stopNavigatorMode()">⏹ Завершить</button>
+        <button class="stop-nav-btn" id="stopNavBtn" onclick="window.stopNavigatorMode()">⏹ Завершить</button>
     </div>
 </div>
 
 <div class="mobile-bottom-nav">
-    <div class="mob-nav-item active" onclick="openMobileMenu('panel-search', this)"><span class="icon">🔍</span><span class="label">Поиск</span></div>
-    <div class="mob-nav-item" onclick="openMobileMenu('panel-routes', this)"><span class="icon">🛣️</span><span class="label">Маршрут</span></div>
-    <div class="mob-nav-item" onclick="openMobileMenu('panel-profile', this)"><span class="icon">⚙️</span><span class="label">Опции</span></div>
+    <div class="mob-nav-item active" onclick="window.openMobileMenu('panel-search', this)"><span class="icon">🔍</span><span class="label">Поиск</span></div>
+    <div class="mob-nav-item" onclick="window.openMobileMenu('panel-routes', this)"><span class="icon">🛣️</span><span class="label">Маршрут</span></div>
+    <div class="mob-nav-item" onclick="window.openMobileMenu('panel-profile', this)"><span class="icon">⚙️</span><span class="label">Опции</span></div>
 </div>
-
 </body>
 </html>
