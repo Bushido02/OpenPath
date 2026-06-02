@@ -84,13 +84,14 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
     display: flex;
     flex-direction: column;
     margin-bottom: 15px;
+    position: relative; /* КРИТИЧЕСКИ ВАЖНО: держит кнопку реверса */
 }
 
 /* Строка с точкой */
 .route-point {
     display: flex;
     align-items: center;
-    padding: 12px 45px 12px 16px; /* 45px — жестко забронированное место справа только под крестик */
+    padding: 12px 85px 12px 16px; /* 85px справа: жесткая бронь для ✕ и ⇅ */
     position: relative;
     cursor: pointer;
 }
@@ -98,62 +99,56 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
     border-bottom: 1px solid var(--border-color);
 }
 
-.point-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; margin-left: 5px; margin-right: 10px; flex-shrink: 0;}
-.point-icon.a { background: var(--primary); }
-.point-icon.b { background: #ff3b30; }
-
 /* Поле ввода */
 .route-input {
     flex: 1;
+    min-width: 0; /* Не дает тексту вылезать за пределы */
     border: none;
     background: transparent;
     font-size: 15px;
     color: var(--text-main);
     outline: none;
-    pointer-events: none; /* Клик принимает сама строка, а не инпут */
+    pointer-events: none;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
 }
 
-/* Крестик очистки (✕) - теперь он один хозяин на правой стороне */
+/* Крестики очистки (✕) - стоят перед реверсом */
 .clear-btn {
     position: absolute;
-    right: 12px;
+    right: 55px; /* Отодвинуты влево от края */
     top: 50%;
     transform: translateY(-50%);
     font-size: 18px;
     color: var(--text-muted);
-    padding: 4px;
+    padding: 4px 8px;
     z-index: 5;
 }
 .clear-btn:hover { color: #ff3b30; }
 
-/* === НОВЫЙ БЛОК: РЕВЕРС ПО ЦЕНТРУ === */
-.swap-divider {
-    display: flex;
-    justify-content: center; /* Ставит кнопку строго по центру горизонтали */
-    align-items: center;
-    height: 0; /* Фокус: блок не имеет высоты, кнопка идеально ляжет на границу между А и Б */
-    position: relative;
-    z-index: 10;
-}
+/* Кнопка реверса (⇅) - висит ровно по центру на правой стороне */
 .swap-btn {
-    width: 34px;
-    height: 34px;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
     background: var(--bg-panel);
     border: 1px solid var(--border-color);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     color: var(--text-muted);
     transition: 0.2s;
+    z-index: 10;
 }
-.swap-btn:hover { color: var(--primary); transform: scale(1.1); }
+.swap-btn:hover { color: var(--primary); }
 
 .route-result-box { display: none; padding: 15px; background: var(--bg-input); border-radius: 16px; text-align: center;}
 #routeTime { margin:0 0 5px 0; font-weight:800; font-size:24px; color: var(--primary); }
