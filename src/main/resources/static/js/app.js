@@ -233,8 +233,63 @@ function renderPlaces() {
         state.markers.places.push(new maplibregl.Marker(mEl).setLngLat([p.lng, p.lat]).addTo(map));
     });
 }
-window.renderPlaces = renderPlaces;
+// === 2. ИСПРАВЛЕННАЯ ИНВЕРТИРОВАННАЯ ЛОГИКА ФИЛЬТРАЦИИ ===
+window.renderPlaces = function() {
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
 
+    // Получаем текущее состояние свитчей
+    const isW = document.getElementById('cb-wheelchair').checked;
+    const isDeaf = document.getElementById('cb-deaf').checked;
+
+    // Очистка
+    document.getElementById('searchResultsList').innerHTML = '';
+    state.markers.places.forEach(m => m.remove());
+    state.markers.places = [];
+
+    // Применяем фильтры
+    let filtered = placesDB.filter(p => {
+        // 1. Поиск по тексту (всегда работает)
+        let textMatch = query === '' ? true : (p.name.toLowerCase().includes(query) || p.category.includes(query) || (p.desc && p.desc.toLowerCase().includes(query)));
+
+        // 2. ИНВЕРТИРОВАННАЯ ЛОГИКА ДОСТУПНОСТИ
+        // Мы скрываем место ТОЛЬКО если пользователь ВКЛЮЧИЛ потребность, а место ЕЙ НЕ СООТВЕТСТВУЕТ.
+
+        // Если ВКЛЮЧЕН свитч коляски (isW) И у места НЕТ пандуса (none), мы его НЕ ПОКАЗЫВАЕМ (return false).
+        if(isW && p.accessLevel === 'none') return false;
+
+        // Если ВКЛЮЧЕН свитч для глухих (isDeaf) И место НЕ адаптировано (!deafFriendly), мы его НЕ ПОКАЗЫВАЕМ.
+        if(isDeaf && !p.deafFriendly) return false;
+
+        // Если ни один фильтр не сработал на удаление, показываем место
+        return textMatch;
+    });
+
+    // Рендеринг (оставляем без изменений)...
+    // [Здесь твой старый код filtered.forEach(p => { ... })]
+    // Убедись, что p.lng, p.latparseFloat валидируются, как в прошлой правке, чтобы карта не падала!
+    filtered.forEach(p => {
+        if (!p.lat || !p.lng || isNaN(p.lat) || isNaN(p.lng)) return; // Валидация координат
+
+        let item = document.createElement('div');
+        item.className = 'result-item';
+        let accessText = p.accessLevel === 'full' ? '✅ Доступно' : (p.accessLevel === 'partial' ? '🤝 Кнопка вызова' : '❌ Ступени');
+
+        item.innerHTML = `
+            <div class="result-title">${p.name}</div>
+            <div class="result-desc">${p.desc || ''}</div>
+            <div style="font-size:11px; color:var(--primary); font-weight:700; margin-top:4px;">${accessText} ${p.deafFriendly ? '| 🧏 Адаптировано' : ''}</div>
+        `;
+        item.onclick = () => { map.flyTo({center: [p.lng, p.lat], zoom: 17}); showPlaceDetails(p); };
+        document.getElementById('searchResultsList').appendChild(item);
+
+        let mEl = document.createElement('div'); mEl.className = 'custom-icon-wrapper';
+        mEl.style.background = p.accessLevel === 'none' ? '#ff3b30' : (p.accessLevel === 'partial' ? '#ff9500' : '#34c759');
+        mEl.innerHTML = p.category === 'pharmacy' ? '💊' : (p.category === 'food' ? '🍽️' : '📍');
+        mEl.onclick = (e) => { e.stopPropagation(); map.flyTo({center: [p.lng, p.lat], zoom: 17}); showPlaceDetails(p); };
+
+        state.markers.places.push(new maplibregl.Marker(mEl).setLngLat([p.lng, p.lat]).addTo(map));
+    });
+};
 function showPlaceDetails(p) {
     map.flyTo({center: [p.lng, p.lat], zoom: 17});
     setSheetState('half');
@@ -412,16 +467,33 @@ function toggleMap3D() {
 window.toggleMap3D = toggleMap3D;
 
 // === НАСТРОЙКИ ===
+// === 1. ИСПРАВЛЕННАЯ ЗАГРУЗКА ДЕФОЛТОВ (false по умолчанию) ===
 function loadUserSettings() {
-    const savedLang = localStorage.getItem('language') || 'ru';
-    document.getElementById('settingLanguage').value = savedLang;
+    console.log("Загрузка настроек пользователя...");
+
+    // Тема (оставляем как есть)
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.getElementById('settingTheme').value = savedTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);
 
-    if(localStorage.getItem('wheelchair') === 'true') { document.getElementById('cb-wheelchair').checked = true; document.getElementById('tabWheelchair').style.display = 'block'; }
-    if(localStorage.getItem('vision') === 'true') document.getElementById('cb-vision').checked = true;
-    if(localStorage.getItem('deaf') === 'true') document.getElementById('cb-deaf').checked = true;
+    // Потребности: ЖЕСТКИЙ ДЕФОЛТ false, если в localStorage пусто
+    ['wheelchair', 'vision', 'deaf'].forEach(k => {
+        const savedVal = localStorage.getItem(k);
+        const cb = document.getElementById('cb-'+k);
+        if(!cb) return;
+
+        if (savedVal === 'true') {
+            cb.checked = true;
+        } else {
+            // Если null (первый запуск) или 'false' -> галка выключена
+            cb.checked = false;
+        }
+    });
+
+    // Специальная кнопка маршрута (скрыта, если нет потребности)
+    if(document.getElementById('cb-wheelchair').checked) {
+        document.getElementById('tabWheelchair').style.display = 'block';
+    }
 }
 
 function saveUserSettings() {

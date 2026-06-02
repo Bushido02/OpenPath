@@ -150,6 +150,32 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
 }
 .swap-btn:hover { color: var(--primary); }
 
+/* === ПРОФЕССИОНАЛЬНЫЕ НАСТРОЙКИ ДОСТУПНОСТИ === */
+.accessibility-settings { display: flex; flex-direction: column; gap: 10px; }
+.accessibility-settings .group-title { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; margin-left: 5px;}
+
+/* Карточка потребности */
+.need-card { display: flex; align-items: center; background: var(--bg-input); padding: 14px; border-radius: 14px; border: 1px solid var(--border-color); transition: 0.2s ease; gap: 12px; position: relative;}
+.need-card:hover { border-color: var(--primary); background: rgba(0, 122, 255, 0.03); }
+
+/* Иконка и текст */
+.need-icon { font-size: 24px; width: 32px; text-align: center; flex-shrink: 0; }
+.need-info { flex-grow: 1; display: flex; flex-direction: column; gap: 2px; }
+.need-name { font-weight: 700; font-size: 15px; color: var(--text-main); }
+.need-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; padding-right: 50px; /* Место под свитч */ }
+
+/* === СТИЛИЗАЦИЯ SWITCH (ПЕРЕКЛЮЧАТЕЛЯ) === */
+.switch { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 44px; height: 26px; flex-shrink: 0; cursor: pointer; }
+.switch input { opacity: 0; width: 0; height: 0; } /* Скрываем сам чекбокс */
+
+.slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .3s; border-radius: 26px; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+
+/* Состояния вкл/выкл */
+input:checked + .slider { background-color: #34c759; /* Зеленый Apple стиль */ }
+input:focus + .slider { box-shadow: 0 0 1px #34c759; }
+input:checked + .slider:before { transform: translateX(18px); }
+
 .route-result-box { display: none; padding: 15px; background: var(--bg-input); border-radius: 16px; text-align: center;}
 #routeTime { margin:0 0 5px 0; font-weight:800; font-size:24px; color: var(--primary); }
 #routeDist { margin:0; color:var(--text-muted); font-size:14px; }

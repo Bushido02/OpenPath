@@ -67,7 +67,7 @@
             <div class="route-input-group">
                 <div class="route-point" onclick="window.startPickingMode('start')">
                     <span class="point-icon a">A</span>
-                    <input type="text" class="route-input" id="routeStart" placeholder="Точка А" readonly>
+                    <input type="text" class="route-input" id="routeStart" placeholder="Откуда поедем?" readonly>
                     <span class="clear-btn" onclick="event.stopPropagation(); window.clearRoutePoint('start');">✕</span>
                 </div>
 
@@ -75,7 +75,7 @@
 
                 <div class="route-point" onclick="window.startPickingMode('end')">
                     <span class="point-icon b">B</span>
-                    <input type="text" class="route-input" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly>
+                    <input type="text" class="route-input" id="routeEnd" placeholder="Куда поедем? (Нажмите на карту)" readonly>
                     <span class="clear-btn" onclick="event.stopPropagation(); window.clearRoutePoint('end');">✕</span>
                 </div>
             </div>
@@ -93,30 +93,46 @@
         <div id="panel-profile" class="panel">
             <h3 id="txtOptionsTitle">Опции</h3>
 
-            <div class="form-group">
-                <label id="lblLanguage">Язык интерфейса</label>
-                <select id="settingLanguage" class="form-input" onchange="window.applyLanguage()">
-                    <option value="ru">Русский</option>
-                    <option value="en">English</option>
-                    <option value="kz">Қазақша</option>
-                </select>
-            </div>
+            <div class="form-group accessibility-settings">
+                <label class="group-title">Инклюзивные функции (Выключены по умолчанию)</label>
 
-            <div class="form-group">
-                <label id="lblTheme">Тема и визуальный стиль</label>
-                <select id="settingTheme" class="form-input" onchange="window.applySettings()">
-                    <option value="light">Светлая</option>
-                    <option value="dark">Темная</option>
-                    <option value="contrast">Контрастная (Accessibility)</option>
-                </select>
-            </div>
+                <!-- Карточка 1: Маломобильные -->
+                <div class="need-card" id="card-wheelchair">
+                    <div class="need-icon">♿</div>
+                    <div class="need-info">
+                        <div class="need-name">Доступная среда</div>
+                        <div class="need-desc">Маршруты без лестниц, места с пандусами и лифтами.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="cb-wheelchair" onchange="window.saveUserSettings()">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
 
-            <div class="form-group">
-                <label id="lblAccessibility">Потребности и Доступность</label>
-                <div class="checkbox-group">
-                    <label class="cb-card"><input type="checkbox" id="cb-wheelchair" onchange="window.saveUserSettings()"> <span class="cb-txt">♿</span> <span id="txtWheelchair">Без ступеней</span></label>
-                    <label class="cb-card"><input type="checkbox" id="cb-vision" onchange="window.saveUserSettings()"> <span class="cb-txt">🦯</span> <span id="txtVision">Голосовой гид</span></label>
-                    <label class="cb-card"><input type="checkbox" id="cb-deaf" onchange="window.saveUserSettings()"> <span class="cb-txt">🧏</span> <span id="txtDeaf">Текстовое меню/Табло</span></label>
+                <!-- Карточка 2: Слабовидящие -->
+                <div class="need-card" id="card-vision">
+                    <div class="need-icon">🦯</div>
+                    <div class="need-info">
+                        <div class="need-name">Аудио-ассистент</div>
+                        <div class="need-desc">Голосовое описание мест, кнопок и подсказки навигатора.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="cb-vision" onchange="window.saveUserSettings()">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <!-- Карточка 3: Глухие -->
+                <div class="need-card" id="card-deaf">
+                    <div class="need-icon">🧏</div>
+                    <div class="need-info">
+                        <div class="need-name">Визуальная адаптация</div>
+                        <div class="need-desc">Места с текстовым меню, табло или кнопками вызова.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="cb-deaf" onchange="window.saveUserSettings()">
+                        <span class="slider round"></span>
+                    </label>
                 </div>
             </div>
         </div>
