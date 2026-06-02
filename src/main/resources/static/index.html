@@ -56,29 +56,28 @@
             <div id="searchResultsList" class="results-list"></div>
         </div>
 
+        <!-- ПАНЕЛЬ МАРШРУТОВ -->
         <div id="panel-routes" class="panel">
             <h3 id="txtRouteTitle">Построить маршрут</h3>
             <div class="route-tabs">
-                <span class="r-tab active" data-mode="driving-car" onclick="setMode('driving-car', this)">🚗</span>
-                <span class="r-tab" data-mode="foot-walking" onclick="setMode('foot-walking', this)">🚶‍♂️</span>
-                <span class="r-tab" data-mode="wheelchair" onclick="setMode('wheelchair', this)" style="display: none;" id="tabWheelchair">♿</span>
+                <span class="r-tab active" data-mode="driving-car" onclick="window.setMode('driving-car', this)">🚗</span>
+                <span class="r-tab" data-mode="foot-walking" onclick="window.setMode('foot-walking', this)">🚶‍♂️</span>
+                <span class="r-tab" data-mode="wheelchair" onclick="window.setMode('wheelchair', this)" style="display: none;" id="tabWheelchair">♿</span>
             </div>
 
-            <div class="route-layout-container">
-                <div class="route-point-new" onclick="startPickingMode('start')">
+            <div class="route-input-group">
+                <div class="swap-btn" onclick="window.swapRoutePoints()">⇅</div>
+
+                <div class="route-point" onclick="window.startPickingMode('start')">
                     <span class="point-icon a">A</span>
-                    <input type="text" class="route-input-new" id="routeStart" placeholder="Точка А" readonly>
-                    <span class="clear-input-btn" onclick="event.stopPropagation(); clearRoutePoint('start');">✕</span>
+                    <input type="text" class="route-input" id="routeStart" placeholder="Точка А" readonly>
+                    <span class="clear-btn" onclick="event.stopPropagation(); window.clearRoutePoint('start');">✕</span>
                 </div>
 
-                <div class="reverse-spacer">
-                    <button class="swap-btn-new" onclick="swapRoutePoints()">⇅</button>
-                </div>
-
-                <div class="route-point-new" onclick="startPickingMode('end')">
+                <div class="route-point" onclick="window.startPickingMode('end')">
                     <span class="point-icon b">B</span>
-                    <input type="text" class="route-input-new" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly>
-                    <span class="clear-input-btn" onclick="event.stopPropagation(); clearRoutePoint('end');">✕</span>
+                    <input type="text" class="route-input" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly>
+                    <span class="clear-btn" onclick="event.stopPropagation(); window.clearRoutePoint('end');">✕</span>
                 </div>
             </div>
 
@@ -86,18 +85,19 @@
                 <p id="routeTime">-- мин</p>
                 <p id="routeDist">-- км</p>
                 <div class="action-buttons">
-                    <button class="reset-btn" onclick="clearRoute()">Сброс</button>
-                    <button class="start-nav-btn" onclick="startNavigatorMode()">▶ В путь</button>
+                    <button class="reset-btn" onclick="window.clearRoute()">Сброс</button>
+                    <button class="start-nav-btn" onclick="window.startNavigatorMode()">▶ В путь</button>
                 </div>
             </div>
         </div>
 
+        <!-- ПАНЕЛЬ ПРОФИЛЯ (Настройки и Доступность) -->
         <div id="panel-profile" class="panel">
             <h3 id="txtOptionsTitle">Опции</h3>
 
             <div class="form-group">
                 <label id="lblLanguage">Язык интерфейса</label>
-                <select id="settingLanguage" class="form-input" onchange="applyLanguage()">
+                <select id="settingLanguage" class="form-input" onchange="window.applyLanguage()">
                     <option value="ru">Русский</option>
                     <option value="uk">Українська</option>
                     <option value="kz">Қазақша</option>
@@ -106,7 +106,7 @@
 
             <div class="form-group">
                 <label id="lblTheme">Тема и визуальный стиль</label>
-                <select id="settingTheme" class="form-input" onchange="applySettings()">
+                <select id="settingTheme" class="form-input" onchange="window.applySettings()">
                     <option value="light">Светлая</option>
                     <option value="dark">Темная</option>
                     <option value="contrast">Контрастная (Accessibility)</option>
@@ -114,15 +114,44 @@
             </div>
 
             <div class="form-group">
-                <label id="lblAccessibility">Потребности и Доступность</label>
-                <div class="checkbox-group">
-                    <label class="cb-card"><input type="checkbox" id="cb-wheelchair" onchange="saveUserSettings()"> <span class="cb-txt">♿</span> Без ступеней</label>
-                    <label class="cb-card"><input type="checkbox" id="cb-vision" onchange="saveUserSettings()"> <span class="cb-txt">🦯</span> Голосовой гид</label>
-                    <label class="cb-card"><input type="checkbox" id="cb-deaf" onchange="saveUserSettings()"> <span class="cb-txt">🧏</span> Текстовое меню/Табло</label>
+                <label id="lblAccessibility">Настройки доступности (Инклюзивность)</label>
+
+                <div class="setting-card">
+                    <label class="cb-label">
+                        <input type="checkbox" id="cb-wheelchair" onchange="window.saveUserSettings()">
+                        <strong>♿ Маломобильные пользователи</strong>
+                    </label>
+                    <div class="setting-desc">
+                        <strong>Что активирует:</strong><br>
+                        • Навигатор строит маршруты в обход лестниц.<br>
+                        • Из поиска скрываются локации без пандусов.
+                    </div>
+                </div>
+
+                <div class="setting-card">
+                    <label class="cb-label">
+                        <input type="checkbox" id="cb-vision" onchange="window.saveUserSettings()">
+                        <strong>🦯 Незрячие и слабовидящие</strong>
+                    </label>
+                    <div class="setting-desc">
+                        <strong>Что активирует:</strong><br>
+                        • Системный голосовой ассистент.<br>
+                        • Озвучка карточек заведений и подсказок.
+                    </div>
+                </div>
+
+                <div class="setting-card">
+                    <label class="cb-label">
+                        <input type="checkbox" id="cb-deaf" onchange="window.saveUserSettings()">
+                        <strong>🧏 Глухие и слабослышащие</strong>
+                    </label>
+                    <div class="setting-desc">
+                        <strong>Что активирует:</strong><br>
+                        • Жесткий фильтр заведений на карте. Остаются места с табло или кнопками вызова.
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <div id="map-container">
         <div id="map"></div>
