@@ -64,21 +64,21 @@
                 <span class="r-tab" data-mode="wheelchair" onclick="window.setMode('wheelchair', this)" style="display: none;" id="tabWheelchair">♿</span>
             </div>
 
-            <div class="route-layout-container">
-                <div class="route-point-new" onclick="window.startPickingMode('start')">
+            <div class="route-input-group">
+                <div class="route-point" onclick="window.startPickingMode('start')">
                     <span class="point-icon a">A</span>
-                    <input type="text" class="route-input-new" id="routeStart" placeholder="Точка А" readonly>
-                    <span class="clear-input-btn" onclick="event.stopPropagation(); window.clearRoutePoint('start');">✕</span>
+                    <input type="text" class="route-input" id="routeStart" placeholder="Точка А" readonly>
+                    <span class="clear-btn" onclick="event.stopPropagation(); window.clearRoutePoint('start');">✕</span>
                 </div>
 
-                <div class="reverse-spacer">
-                    <button class="swap-btn-new" onclick="window.swapRoutePoints()">⇅</button>
+                <div class="swap-divider">
+                    <button class="swap-btn" onclick="window.swapRoutePoints()">⇅</button>
                 </div>
 
-                <div class="route-point-new" onclick="window.startPickingMode('end')">
+                <div class="route-point" onclick="window.startPickingMode('end')">
                     <span class="point-icon b">B</span>
-                    <input type="text" class="route-input-new" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly>
-                    <span class="clear-input-btn" onclick="event.stopPropagation(); window.clearRoutePoint('end');">✕</span>
+                    <input type="text" class="route-input" id="routeEnd" placeholder="Куда (Нажмите на карту)" readonly>
+                    <span class="clear-btn" onclick="event.stopPropagation(); window.clearRoutePoint('end');">✕</span>
                 </div>
             </div>
 
