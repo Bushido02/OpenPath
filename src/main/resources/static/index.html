@@ -93,15 +93,32 @@
         <div id="panel-profile" class="panel">
             <h3 id="txtOptionsTitle">Опции</h3>
 
-            <div class="form-group accessibility-settings">
-                <label class="group-title">Инклюзивные функции (Выключены по умолчанию)</label>
+            <div class="form-group">
+                <label id="lblLanguage">Язык интерфейса</label>
+                <select id="settingLanguage" class="form-input" onchange="window.applyLanguage()">
+                    <option value="ru">Русский</option>
+                    <option value="en">English</option>
+                    <option value="kz">Қазақша</option>
+                </select>
+            </div>
 
-                <!-- Карточка 1: Маломобильные -->
-                <div class="need-card" id="card-wheelchair">
+            <div class="form-group">
+                <label id="lblTheme">Тема и визуальный стиль</label>
+                <select id="settingTheme" class="form-input" onchange="window.applySettings()">
+                    <option value="light">Светлая</option>
+                    <option value="dark">Темная</option>
+                    <option value="contrast">Контрастная (Accessibility)</option>
+                </select>
+            </div>
+
+            <div class="form-group accessibility-settings">
+                <label class="group-title">Инклюзивные фильтры (Выкл по умолчанию)</label>
+
+                <div class="need-card">
                     <div class="need-icon">♿</div>
                     <div class="need-info">
-                        <div class="need-name">Доступная среда</div>
-                        <div class="need-desc">Маршруты без лестниц, места с пандусами и лифтами.</div>
+                        <div class="need-name" id="txtWheelchair">Без ступеней</div>
+                        <div class="need-desc">Фильтр: скрывает с карты все места со ступенями. Оставляет только пандусы.</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="cb-wheelchair" onchange="window.saveUserSettings()">
@@ -109,12 +126,11 @@
                     </label>
                 </div>
 
-                <!-- Карточка 2: Слабовидящие -->
-                <div class="need-card" id="card-vision">
+                <div class="need-card">
                     <div class="need-icon">🦯</div>
                     <div class="need-info">
-                        <div class="need-name">Аудио-ассистент</div>
-                        <div class="need-desc">Голосовое описание мест, кнопок и подсказки навигатора.</div>
+                        <div class="need-name" id="txtVision">Голосовой гид</div>
+                        <div class="need-desc">Опция: включает озвучку интерфейса и названий заведений при клике.</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="cb-vision" onchange="window.saveUserSettings()">
@@ -122,12 +138,11 @@
                     </label>
                 </div>
 
-                <!-- Карточка 3: Глухие -->
-                <div class="need-card" id="card-deaf">
+                <div class="need-card">
                     <div class="need-icon">🧏</div>
                     <div class="need-info">
-                        <div class="need-name">Визуальная адаптация</div>
-                        <div class="need-desc">Места с текстовым меню, табло или кнопками вызова.</div>
+                        <div class="need-name" id="txtDeaf">Текстовое меню</div>
+                        <div class="need-desc">Фильтр: оставляет на карте ТОЛЬКО места, адаптированные для глухих.</div>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="cb-deaf" onchange="window.saveUserSettings()">
