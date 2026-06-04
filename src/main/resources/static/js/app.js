@@ -47,10 +47,54 @@ const translations = {
 
 // === БАЗА ДАННЫХ ===
 let placesDB = [
-    { id: 1, name: "MEGA Alma-Ata", lat: 43.2018, lng: 76.8923, category: "shop", accessLevel: "full", deafFriendly: true, desc: "Крупный торговый центр." },
-    { id: 2, name: "Magnum Cash & Carry", lat: 43.2375, lng: 76.8875, category: "shop", accessLevel: "full", deafFriendly: true, desc: "Продуктовый супермаркет." },
-    { id: 3, name: "Аптека Садыхан", lat: 43.2380, lng: 76.8890, category: "pharmacy", accessLevel: "full", deafFriendly: false, desc: "Круглосуточная аптека." },
-    { id: 4, name: "Ресторан Navat", lat: 43.2420, lng: 76.9010, category: "food", accessLevel: "partial", deafFriendly: true, desc: "Восточная кухня." }
+    {
+        id: 1,
+        name: "MEGA Alma-Ata",
+        lat: 43.2018,
+        lng: 76.8923,
+        category: "shop",
+        accessLevel: "full",
+        deafFriendly: true,
+        image: "https://images.unsplash.com/photo-1519567241046-7f4f6b643a60?w=600&q=80",
+        hours: "10:00 - 22:00",
+        desc: "Крупнейший ТРЦ. Оборудован просторными лифтами, автоматическими дверями и выделенными парковочными местами. Есть инвалидные коляски напрокат на стойке информации."
+    },
+    {
+        id: 2,
+        name: "Magnum Cash & Carry",
+        lat: 43.2375,
+        lng: 76.8875,
+        category: "shop",
+        accessLevel: "full",
+        deafFriendly: true,
+        image: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600&q=80",
+        hours: "Круглосуточно",
+        desc: "Гипермаркет с широкими проходами. Вход на уровне земли, без порогов. Работают специальные кассы с расширенным проходом для колясок, визуальная навигация по отделам."
+    },
+    {
+        id: 3,
+        name: "Аптека Садыхан",
+        lat: 43.2380,
+        lng: 76.8890,
+        category: "pharmacy",
+        accessLevel: "full",
+        deafFriendly: false,
+        image: "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=600&q=80",
+        hours: "Круглосуточно",
+        desc: "Аптека с круглосуточным окном обслуживания. Имеется нормативный пандус с поручнями по ГОСТу и кнопка вызова фармацевта на удобной высоте."
+    },
+    {
+        id: 4,
+        name: "Ресторан Navat",
+        lat: 43.2420,
+        lng: 76.9010,
+        category: "food",
+        accessLevel: "partial",
+        deafFriendly: true,
+        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80",
+        hours: "11:00 - 00:00",
+        desc: "Традиционная восточная кухня. На входе есть небольшая ступенька, персонал помогает по нажатию кнопки вызова. Имеется меню с крупным шрифтом и картинками."
+    }
 ];
 
 // === СОСТОЯНИЕ ===
