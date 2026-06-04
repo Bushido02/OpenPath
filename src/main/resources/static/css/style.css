@@ -151,18 +151,27 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
 .swap-btn:hover { color: var(--primary); }
 
 /* === ПРОФЕССИОНАЛЬНЫЕ НАСТРОЙКИ ДОСТУПНОСТИ === */
-.accessibility-settings { display: flex; flex-direction: column; gap: 10px; }
-.accessibility-settings .group-title { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; margin-left: 5px;}
+.accessibility-settings { display: flex; flex-direction: column; gap: 12px; }
+.accessibility-settings .group-title { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; margin-left: 5px;}
 
-/* Карточка потребности */
-.need-card { display: flex; align-items: center; background: var(--bg-input); padding: 14px; border-radius: 14px; border: 1px solid var(--border-color); transition: 0.2s ease; gap: 12px; position: relative;}
-.need-card:hover { border-color: var(--primary); background: rgba(0, 122, 255, 0.03); }
+/* Обертка для аккордеона */
+.need-card-wrapper { background: var(--bg-input); border-radius: 14px; border: 1px solid var(--border-color); overflow: hidden; transition: 0.3s ease; }
+.need-card-wrapper:focus-within { border-color: var(--primary); }
 
-/* Иконка и текст */
+/* Основная карточка */
+.need-card { display: flex; align-items: center; padding: 14px; position: relative; z-index: 2; background: var(--bg-input); }
 .need-icon { font-size: 24px; width: 32px; text-align: center; flex-shrink: 0; }
-.need-info { flex-grow: 1; display: flex; flex-direction: column; gap: 2px; }
+.need-info { flex-grow: 1; display: flex; flex-direction: column; gap: 2px; padding-right: 55px; }
 .need-name { font-weight: 700; font-size: 15px; color: var(--text-main); }
-.need-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; padding-right: 50px; /* Место под свитч */ }
+.need-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+/* Скрытое подменю с функциями */
+.need-sub-options { display: none; padding: 12px 14px 14px 58px; flex-direction: column; gap: 12px; border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.02); }
+.need-card-wrapper.expanded .need-sub-options { display: flex; animation: fadeIn 0.3s ease; }
+
+/* Дизайн внутренних чекбоксов */
+.sub-option-label { font-size: 13px; color: var(--text-main); display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; }
+.sub-option-label input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; margin: 0; }
 
 /* === СТИЛИЗАЦИЯ SWITCH (ПЕРЕКЛЮЧАТЕЛЯ) === */
 .switch { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 44px; height: 26px; flex-shrink: 0; cursor: pointer; }

@@ -73,9 +73,9 @@ const map = new maplibregl.Map({
 
 map.on('load', () => {
     addCustomMapLayers();
-    loadUserSettings();
+    window.loadUserSettings();
     fetchBackendPlaces();
-    applyLanguage();
+    window.applyLanguage();
 });
 
 function addCustomMapLayers() {
@@ -84,7 +84,7 @@ function addCustomMapLayers() {
 }
 
 // === ЛОГИКА МУЛЬТИЯЗЫЧНОСТИ ===
-function applyLanguage() {
+window.applyLanguage = function() {
     const selector = document.getElementById('settingLanguage');
     if (selector) currentLang = selector.value;
     localStorage.setItem('language', currentLang);
@@ -100,35 +100,37 @@ function applyLanguage() {
         if (target === 'panel-profile' && labelEl) labelEl.innerText = t.tabOptions;
     });
 
-    document.getElementById('txtOptionsTitle').innerText = t.optionsTitle;
-    document.getElementById('lblLanguage').innerText = t.lblLanguage;
-    document.getElementById('lblTheme').innerText = t.lblTheme;
-    document.getElementById('lblAccessibility').innerText = t.lblAccessibility;
+    const txtOptionsTitle = document.getElementById('txtOptionsTitle'); if(txtOptionsTitle) txtOptionsTitle.innerText = t.optionsTitle;
+    const lblLang = document.getElementById('lblLanguage'); if(lblLang) lblLang.innerText = t.lblLanguage;
+    const lblTheme = document.getElementById('lblTheme'); if(lblTheme) lblTheme.innerText = t.lblTheme;
+    const lblAcc = document.getElementById('lblAccessibility'); if(lblAcc) lblAcc.innerText = t.lblAccessibility;
 
     const tw = document.getElementById('txtWheelchair'); if(tw) tw.innerText = t.needsWheelchair;
     const tv = document.getElementById('txtVision'); if(tv) tv.innerText = t.needsVision;
     const td = document.getElementById('txtDeaf'); if(td) td.innerText = t.needsDeaf;
 
-    document.getElementById('txtRouteTitle').innerText = t.routeTitle;
-    document.getElementById('routeStart').placeholder = t.pointA;
-    if (!state.routeLatLangs.end) document.getElementById('routeEnd').placeholder = t.кудаНажать;
-    else document.getElementById('routeEnd').placeholder = t.pointB;
+    const routeTitle = document.getElementById('txtRouteTitle'); if(routeTitle) routeTitle.innerText = t.routeTitle;
+    const routeStart = document.getElementById('routeStart'); if(routeStart) routeStart.placeholder = t.pointA;
+
+    const routeEnd = document.getElementById('routeEnd');
+    if(routeEnd) {
+        if (!state.routeLatLangs.end) routeEnd.placeholder = t.кудаНажать;
+        else routeEnd.placeholder = t.pointB;
+    }
 
     const resetBtn = document.querySelector('.reset-btn');
     const startNavBtn = document.querySelector('.start-nav-btn');
     if (resetBtn) resetBtn.innerText = t.btnReset;
     if (startNavBtn) startNavBtn.innerText = t.btnDrive;
 
-    renderPlaces();
-}
-window.applyLanguage = applyLanguage;
+    window.renderPlaces();
+};
 
 // === УПРАВЛЕНИЕ UI И ШТОРКОЙ ===
-function setSheetState(s) {
+window.setSheetState = function(s) {
     if (!state.isMobile) return;
     document.getElementById('sidebarContent').className = `sidebar-content state-${s}`;
-}
-window.setSheetState = setSheetState;
+};
 
 const dragHandle = document.getElementById('dragHandle');
 if (dragHandle) {
@@ -137,8 +139,8 @@ if (dragHandle) {
     dragHandle.addEventListener('touchend', e => {
         let diff = startY - e.changedTouches[0].clientY;
         const sheet = document.getElementById('sidebarContent');
-        if (diff > 40) setSheetState(sheet.classList.contains('state-collapsed') ? 'half' : 'full');
-        else if (diff < -40) setSheetState(sheet.classList.contains('state-full') ? 'half' : 'collapsed');
+        if (diff > 40) window.setSheetState(sheet.classList.contains('state-collapsed') ? 'half' : 'full');
+        else if (diff < -40) window.setSheetState(sheet.classList.contains('state-full') ? 'half' : 'collapsed');
     });
 }
 
@@ -149,20 +151,19 @@ document.querySelectorAll('.nav-tab').forEach(el => {
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
         el.classList.add('active');
         document.getElementById(target).classList.add('active');
-        setSheetState(target === 'panel-search' ? 'collapsed' : 'half');
+        window.setSheetState(target === 'panel-search' ? 'collapsed' : 'half');
     });
 });
 
-document.getElementById('searchInput').addEventListener('input', () => renderPlaces());
+document.getElementById('searchInput').addEventListener('input', () => window.renderPlaces());
 
-function openMobileMenu(targetId, el) {
+window.openMobileMenu = function(targetId, el) {
     document.querySelectorAll('.mob-nav-item').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     el.classList.add('active');
     document.getElementById(targetId).classList.add('active');
-    setSheetState(targetId === 'panel-search' ? 'collapsed' : 'half');
-}
-window.openMobileMenu = openMobileMenu;
+    window.setSheetState(targetId === 'panel-search' ? 'collapsed' : 'half');
+};
 
 // === БЭКЕНД И МЕСТА ===
 async function fetchBackendPlaces() {
@@ -175,33 +176,41 @@ async function fetchBackendPlaces() {
                 category: p.category || 'shop', accessLevel: p.accessLevel || 'full', deafFriendly: p.deafFriendly !== undefined ? p.deafFriendly : true,
                 desc: p.desc || p.description || ''
             }));
-            renderPlaces();
+            window.renderPlaces();
         }
     } catch (e) { console.warn("Используется локальная БД."); }
 }
 
-function quickSearch(query) {
+window.quickSearch = function(query) {
     document.getElementById('searchInput').value = query;
-    renderPlaces();
-    setSheetState('half');
-}
-window.quickSearch = quickSearch;
+    window.renderPlaces();
+    window.setSheetState('half');
+};
 
-function renderPlaces() {
+// === ТОЧЕЧНАЯ ИНВЕРТИРОВАННАЯ ФИЛЬТРАЦИЯ ===
+window.renderPlaces = function() {
     const query = document.getElementById('searchInput').value.toLowerCase().trim();
-    const isW = document.getElementById('cb-wheelchair').checked;
-    const isDeaf = document.getElementById('cb-deaf').checked;
-    const t = translations[currentLang];
-    const list = document.getElementById('searchResultsList');
 
+    // Читаем ТОЛЬКО под-опции, отвечающие за поиск
+    const cbWheelchairSearch = document.getElementById('cb-wheelchair-search');
+    const cbDeafSearch = document.getElementById('cb-deaf-search');
+    const filterWheelchair = cbWheelchairSearch ? cbWheelchairSearch.checked : false;
+    const filterDeaf = cbDeafSearch ? cbDeafSearch.checked : false;
+    const t = translations[currentLang];
+
+    const list = document.getElementById('searchResultsList');
     list.innerHTML = '';
     state.markers.places.forEach(m => m.remove());
     state.markers.places = [];
 
+    // Применяем фильтры
     let filtered = placesDB.filter(p => {
-        let textMatch = query === '' ? true : (p.name.toLowerCase().includes(query) || p.category.includes(query) || p.desc.toLowerCase().includes(query));
-        if(isW && p.accessLevel === 'none') return false;
-        if(isDeaf && !p.deafFriendly) return false;
+        let textMatch = query === '' ? true : (p.name.toLowerCase().includes(query) || p.category.includes(query) || (p.desc && p.desc.toLowerCase().includes(query)));
+
+        // Жесткая отбраковка
+        if(filterWheelchair && p.accessLevel === 'none') return false;
+        if(filterDeaf && !p.deafFriendly) return false;
+
         return textMatch;
     });
 
@@ -210,6 +219,7 @@ function renderPlaces() {
         return;
     }
 
+    // Рендеринг
     filtered.forEach(p => {
         if (!p.lat || !p.lng || isNaN(p.lat) || isNaN(p.lng)) return;
 
@@ -219,100 +229,42 @@ function renderPlaces() {
 
         item.innerHTML = `
             <div class="result-title">${p.name}</div>
-            <div class="result-desc">${p.desc}</div>
-            <div style="font-size:11px; color:var(--primary); font-weight:700; margin-top:4px;">${accessText}</div>
+            <div class="result-desc">${p.desc || ''}</div>
+            <div style="font-size:11px; color:var(--primary); font-weight:700; margin-top:4px;">${accessText} ${p.deafFriendly ? '| 🧏 Адаптировано' : ''}</div>
         `;
-        item.onclick = () => showPlaceDetails(p);
+        item.onclick = () => window.showPlaceDetails(p);
         list.appendChild(item);
 
         let mEl = document.createElement('div'); mEl.className = 'custom-icon-wrapper';
         mEl.style.background = p.accessLevel === 'none' ? '#ff3b30' : (p.accessLevel === 'partial' ? '#ff9500' : '#34c759');
         mEl.innerHTML = p.category === 'pharmacy' ? '💊' : (p.category === 'food' ? '🍽️' : '📍');
-        mEl.onclick = (e) => { e.stopPropagation(); showPlaceDetails(p); };
-
-        state.markers.places.push(new maplibregl.Marker(mEl).setLngLat([p.lng, p.lat]).addTo(map));
-    });
-}
-// === 2. ИСПРАВЛЕННАЯ ИНВЕРТИРОВАННАЯ ЛОГИКА ФИЛЬТРАЦИИ ===
-window.renderPlaces = function() {
-    const query = document.getElementById('searchInput').value.toLowerCase().trim();
-
-    // Получаем текущее состояние свитчей
-    const isW = document.getElementById('cb-wheelchair').checked;
-    const isDeaf = document.getElementById('cb-deaf').checked;
-
-    // Очистка
-    document.getElementById('searchResultsList').innerHTML = '';
-    state.markers.places.forEach(m => m.remove());
-    state.markers.places = [];
-
-    // Применяем фильтры
-    let filtered = placesDB.filter(p => {
-        // 1. Поиск по тексту (всегда работает)
-        let textMatch = query === '' ? true : (p.name.toLowerCase().includes(query) || p.category.includes(query) || (p.desc && p.desc.toLowerCase().includes(query)));
-
-        // 2. ИНВЕРТИРОВАННАЯ ЛОГИКА ДОСТУПНОСТИ
-        // Мы скрываем место ТОЛЬКО если пользователь ВКЛЮЧИЛ потребность, а место ЕЙ НЕ СООТВЕТСТВУЕТ.
-
-        // Если ВКЛЮЧЕН свитч коляски (isW) И у места НЕТ пандуса (none), мы его НЕ ПОКАЗЫВАЕМ (return false).
-        if(isW && p.accessLevel === 'none') return false;
-
-        // Если ВКЛЮЧЕН свитч для глухих (isDeaf) И место НЕ адаптировано (!deafFriendly), мы его НЕ ПОКАЗЫВАЕМ.
-        if(isDeaf && !p.deafFriendly) return false;
-
-        // Если ни один фильтр не сработал на удаление, показываем место
-        return textMatch;
-    });
-
-    // Рендеринг (оставляем без изменений)...
-    // [Здесь твой старый код filtered.forEach(p => { ... })]
-    // Убедись, что p.lng, p.latparseFloat валидируются, как в прошлой правке, чтобы карта не падала!
-    filtered.forEach(p => {
-        if (!p.lat || !p.lng || isNaN(p.lat) || isNaN(p.lng)) return; // Валидация координат
-
-        let item = document.createElement('div');
-        item.className = 'result-item';
-        let accessText = p.accessLevel === 'full' ? '✅ Доступно' : (p.accessLevel === 'partial' ? '🤝 Кнопка вызова' : '❌ Ступени');
-
-        item.innerHTML = `
-            <div class="result-title">${p.name}</div>
-            <div class="result-desc">${p.desc || ''}</div>
-            <div style="font-size:11px; color:var(--primary); font-weight:700; margin-top:4px;">${accessText} ${p.deafFriendly ? '| 🧏 Адаптировано' : ''}</div>
-        `;
-        item.onclick = () => { map.flyTo({center: [p.lng, p.lat], zoom: 17}); showPlaceDetails(p); };
-        document.getElementById('searchResultsList').appendChild(item);
-
-        let mEl = document.createElement('div'); mEl.className = 'custom-icon-wrapper';
-        mEl.style.background = p.accessLevel === 'none' ? '#ff3b30' : (p.accessLevel === 'partial' ? '#ff9500' : '#34c759');
-        mEl.innerHTML = p.category === 'pharmacy' ? '💊' : (p.category === 'food' ? '🍽️' : '📍');
-        mEl.onclick = (e) => { e.stopPropagation(); map.flyTo({center: [p.lng, p.lat], zoom: 17}); showPlaceDetails(p); };
+        mEl.onclick = (e) => { e.stopPropagation(); window.showPlaceDetails(p); };
 
         state.markers.places.push(new maplibregl.Marker(mEl).setLngLat([p.lng, p.lat]).addTo(map));
     });
 };
-function showPlaceDetails(p) {
+
+window.showPlaceDetails = function(p) {
     map.flyTo({center: [p.lng, p.lat], zoom: 17});
-    setSheetState('half');
+    window.setSheetState('half');
     const t = translations[currentLang];
-    speak(p.name + ". " + p.desc);
+    window.speak(p.name + ". " + p.desc);
 
     document.getElementById('searchResultsList').innerHTML = `
         <div class="place-detail-card">
-            <button class="close-card" onclick="window.renderPlaces(); setSheetState('collapsed');">✕</button>
+            <button class="close-card" onclick="window.renderPlaces(); window.setSheetState('collapsed');">✕</button>
             <h3>${p.name}</h3>
             <p style="color:var(--text-muted); font-size:14px; margin-bottom:15px;">${p.desc}</p>
             <button class="start-nav-btn" style="width:100%;" onclick="window.buildRouteTo(${p.lat}, ${p.lng}, '${p.name.replace(/'/g, "\\'")}')">${t.btnRouteHere}</button>
         </div>
     `;
-}
-window.showPlaceDetails = showPlaceDetails;
+};
 
 // === МАРШРУТЫ ===
-function startPickingMode(type) {
-    state.picking = type; setSheetState('collapsed');
+window.startPickingMode = function(type) {
+    state.picking = type; window.setSheetState('collapsed');
     document.getElementById('map-picking-overlay').style.display = 'block';
-}
-window.startPickingMode = startPickingMode;
+};
 
 map.on('click', e => {
     if (!state.picking) return;
@@ -331,22 +283,21 @@ map.on('click', e => {
     }
 
     state.picking = null; document.getElementById('map-picking-overlay').style.display = 'none';
-    if(state.isMobile) openMobileMenu('panel-routes', document.querySelectorAll('.mob-nav-item')[1]);
+    if(state.isMobile) window.openMobileMenu('panel-routes', document.querySelectorAll('.mob-nav-item')[1]);
     else document.querySelector(`.nav-tab[data-target="panel-routes"]`).click();
-    calculateRoute();
+    window.calculateRoute();
 });
 
-function swapRoutePoints() {
+window.swapRoutePoints = function() {
     if(!state.routeLatLangs.start || !state.routeLatLangs.end) return;
     let temp = state.routeLatLangs.start; state.routeLatLangs.start = state.routeLatLangs.end; state.routeLatLangs.end = temp;
     let tVal = document.getElementById('routeStart').value; document.getElementById('routeStart').value = document.getElementById('routeEnd').value; document.getElementById('routeEnd').value = tVal;
     if(state.markers.start) state.markers.start.setLngLat(state.routeLatLangs.start);
     if(state.markers.end) state.markers.end.setLngLat(state.routeLatLangs.end);
-    calculateRoute();
-}
-window.swapRoutePoints = swapRoutePoints;
+    window.calculateRoute();
+};
 
-function clearRoutePoint(type) {
+window.clearRoutePoint = function(type) {
     const t = translations[currentLang];
     if (type === 'start') {
         state.routeLatLangs.start = null;
@@ -360,18 +311,16 @@ function clearRoutePoint(type) {
     }
     document.getElementById('routeResult').style.display = 'none';
     map.getSource('route').setData({ "type": "FeatureCollection", "features": [] });
-}
-window.clearRoutePoint = clearRoutePoint;
+};
 
-function clearRoute() {
-    clearRoutePoint('start');
-    clearRoutePoint('end');
-}
-window.clearRoute = clearRoute;
+window.clearRoute = function() {
+    window.clearRoutePoint('start');
+    window.clearRoutePoint('end');
+};
 
-function buildRouteTo(lat, lng, name) {
+window.buildRouteTo = function(lat, lng, name) {
     state.routeLatLangs.end = [lng, lat]; document.getElementById('routeEnd').value = name;
-    if(state.isMobile) openMobileMenu('panel-routes', document.querySelectorAll('.mob-nav-item')[1]);
+    if(state.isMobile) window.openMobileMenu('panel-routes', document.querySelectorAll('.mob-nav-item')[1]);
     else document.querySelector(`.nav-tab[data-target="panel-routes"]`).click();
 
     if(state.markers.gps && !state.routeLatLangs.start) {
@@ -388,19 +337,17 @@ function buildRouteTo(lat, lng, name) {
     } else {
         state.markers.end.setLngLat(state.routeLatLangs.end);
     }
-    calculateRoute();
-}
-window.buildRouteTo = buildRouteTo;
+    window.calculateRoute();
+};
 
-function setMode(mode, el) {
+window.setMode = function(mode, el) {
     state.mode = mode;
     document.querySelectorAll('.r-tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
-    calculateRoute();
-}
-window.setMode = setMode;
+    window.calculateRoute();
+};
 
-async function calculateRoute() {
+window.calculateRoute = async function() {
     if(!state.routeLatLangs.start || !state.routeLatLangs.end) return;
     document.getElementById('routeResult').style.display = 'block';
     try {
@@ -411,131 +358,151 @@ async function calculateRoute() {
         document.getElementById('routeDist').innerText = (data.features[0].properties.summary.distance / 1000).toFixed(2) + ' км';
         const bounds = new maplibregl.LngLatBounds(); data.features[0].geometry.coordinates.forEach(c => bounds.extend(c));
         map.fitBounds(bounds, { padding: 50 });
-    } catch(e) { toast('routeError'); }
-}
+    } catch(e) { window.toast('routeError'); }
+};
 
 // === УТИЛИТЫ ===
-function toast(msgKey, isRaw = false) {
+window.toast = function(msgKey, isRaw = false) {
     const msg = isRaw ? msgKey : translations[currentLang][msgKey];
     if(!msg) return;
     const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000);
-}
-window.toast = toast;
+};
 
-function speak(text) {
+window.speak = function(text) {
     window.speechSynthesis.cancel();
-    if (state.voice || document.getElementById('cb-vision').checked) {
+    const voiceCb = document.getElementById('cb-vision-voice');
+    const isVoiceEnabled = voiceCb ? voiceCb.checked : false;
+
+    if (state.voice || isVoiceEnabled) {
         let u = new SpeechSynthesisUtterance(text);
         u.lang = currentLang === 'ru' ? 'ru-RU' : (currentLang === 'en' ? 'en-US' : 'kk-KZ');
         window.speechSynthesis.speak(u);
     }
-}
-window.speak = speak;
+};
 
-function toggleVoice() {
+window.toggleVoice = function() {
     state.voice = !state.voice;
     document.getElementById('voiceBtn').style.color = state.voice ? "var(--primary)" : "var(--text-main)";
-    toast(state.voice ? 'toastVoiceOn' : 'toastVoiceOff');
-}
-window.toggleVoice = toggleVoice;
+    window.toast(state.voice ? 'toastVoiceOn' : 'toastVoiceOff');
+};
 
-function toggleGPS() {
+window.toggleGPS = function() {
     if (state.gpsActive && state.markers.gps) {
         map.flyTo({center: state.markers.gps.getLngLat(), zoom: 18, pitch: 45});
         return;
     }
     if ("geolocation" in navigator) {
-        document.getElementById('gpsBtn').style.color = "var(--primary)"; state.gpsActive = true; toast('toastGPS');
+        document.getElementById('gpsBtn').style.color = "var(--primary)"; state.gpsActive = true; window.toast('toastGPS');
         navigator.geolocation.watchPosition(pos => {
             const coords = [pos.coords.longitude, pos.coords.latitude];
             if (!state.markers.gps) {
                 let el = document.createElement('div'); el.className = 'gps-pulse';
                 state.markers.gps = new maplibregl.Marker({element: el}).setLngLat(coords).addTo(map);
                 map.flyTo({center: coords, zoom: 18, pitch: 45});
-                toast('toastGPSFound');
+                window.toast('toastGPSFound');
             } else { state.markers.gps.setLngLat(coords); }
         }, null, { enableHighAccuracy: true });
     }
-}
-window.toggleGPS = toggleGPS;
+};
 
-function toggleMap3D() {
+window.toggleMap3D = function() {
     state.is3D = !state.is3D;
     map.easeTo({ pitch: state.is3D ? 60 : 0, bearing: state.is3D ? -20 : 0 });
     document.getElementById('btn3D').style.color = state.is3D ? "var(--primary)" : "var(--text-main)";
-}
-window.toggleMap3D = toggleMap3D;
+};
 
 // === НАСТРОЙКИ ===
-// === 1. ИСПРАВЛЕННАЯ ЗАГРУЗКА ДЕФОЛТОВ (false по умолчанию) ===
-function loadUserSettings() {
-    console.log("Загрузка настроек пользователя...");
+window.toggleNeed = function(type) {
+    const mainCb = document.getElementById(`cb-${type}-main`);
+    if(!mainCb) return;
+    const isMainChecked = mainCb.checked;
+    const wrapper = document.getElementById(`wrap-${type}`);
 
-    // Тема (оставляем как есть)
+    if (isMainChecked) {
+        if(wrapper) wrapper.classList.add('expanded');
+        document.querySelectorAll(`#wrap-${type} .need-sub-options input`).forEach(cb => cb.checked = true);
+    } else {
+        if(wrapper) wrapper.classList.remove('expanded');
+        document.querySelectorAll(`#wrap-${type} .need-sub-options input`).forEach(cb => cb.checked = false);
+    }
+    window.saveUserSettings();
+};
+
+window.saveUserSettings = function() {
+    const keys = [
+        'wheelchair-main', 'wheelchair-search', 'wheelchair-route',
+        'vision-main', 'vision-voice',
+        'deaf-main', 'deaf-search'
+    ];
+
+    keys.forEach(k => {
+        const el = document.getElementById('cb-'+k);
+        if(el) localStorage.setItem(k, el.checked);
+    });
+
+    const tabW = document.getElementById('tabWheelchair');
+    const routeCb = document.getElementById('cb-wheelchair-route');
+    if (tabW && routeCb) tabW.style.display = routeCb.checked ? 'block' : 'none';
+
+    window.renderPlaces();
+};
+
+window.loadUserSettings = function() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.getElementById('settingTheme').value = savedTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);
 
-    // Потребности: ЖЕСТКИЙ ДЕФОЛТ false, если в localStorage пусто
-    ['wheelchair', 'vision', 'deaf'].forEach(k => {
+    const keys = [
+        'wheelchair-main', 'wheelchair-search', 'wheelchair-route',
+        'vision-main', 'vision-voice',
+        'deaf-main', 'deaf-search'
+    ];
+
+    keys.forEach(k => {
         const savedVal = localStorage.getItem(k);
         const cb = document.getElementById('cb-'+k);
         if(!cb) return;
 
-        if (savedVal === 'true') {
-            cb.checked = true;
-        } else {
-            // Если null (первый запуск) или 'false' -> галка выключена
-            cb.checked = false;
+        cb.checked = (savedVal === 'true');
+
+        if (k.endsWith('-main') && cb.checked) {
+            const wrapper = document.getElementById(`wrap-${k.split('-')[0]}`);
+            if(wrapper) wrapper.classList.add('expanded');
         }
     });
 
-    // Специальная кнопка маршрута (скрыта, если нет потребности)
-    if(document.getElementById('cb-wheelchair').checked) {
-        document.getElementById('tabWheelchair').style.display = 'block';
-    }
-}
+    const tabW = document.getElementById('tabWheelchair');
+    if (tabW) tabW.style.display = localStorage.getItem('wheelchair-route') === 'true' ? 'block' : 'none';
+};
 
-function saveUserSettings() {
-    ['wheelchair', 'vision', 'deaf'].forEach(k => {
-        const el = document.getElementById('cb-'+k);
-        if(el) localStorage.setItem(k, el.checked);
-    });
-    document.getElementById('tabWheelchair').style.display = document.getElementById('cb-wheelchair').checked ? 'block' : 'none';
-    renderPlaces();
-}
-window.saveUserSettings = saveUserSettings;
-
-function applySettings() {
+window.applySettings = function() {
     const t = document.getElementById('settingTheme').value;
     localStorage.setItem('theme', t); document.documentElement.setAttribute('data-theme', t);
     const mapStyle = t === 'contrast' ? 'basic-v2-dark' : (t === 'dark' ? 'basic-v2-dark' : 'streets-v2');
     map.setStyle(`https://api.maptiler.com/maps/${mapStyle}/style.json?key=${MAPTILER_KEY}`);
     map.once('styledata', () => addCustomMapLayers());
-}
-window.applySettings = applySettings;
+};
 
 // === ГОЛОСОВОЙ ПОИСК ===
-function startVoiceSearch() {
+window.startVoiceSearch = function() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return toast("Голосовой поиск не поддерживается", true);
+    if (!SpeechRecognition) return window.toast("Голосовой поиск не поддерживается", true);
     const recognition = new SpeechRecognition();
     recognition.lang = currentLang === 'ru' ? 'ru-RU' : (currentLang === 'en' ? 'en-US' : 'kk-KZ');
     recognition.start();
     document.getElementById('micBtn').style.color = "#ff3b30";
     recognition.onresult = function(event) {
         document.getElementById('searchInput').value = event.results[0][0].transcript;
-        renderPlaces();
+        window.renderPlaces();
         document.getElementById('micBtn').style.color = "var(--primary)";
     };
     recognition.onerror = () => document.getElementById('micBtn').style.color = "var(--primary)";
-}
-window.startVoiceSearch = startVoiceSearch;
+};
 
 // === ИИ КАМЕРА ===
 let cvInterval = null; let videoStream = null; let aiModel = null;
-async function startTrafficLightAssist() {
-    toast('trafficScan');
+window.startTrafficLightAssist = async function() {
+    window.toast('trafficScan');
     if(!aiModel) aiModel = await cocoSsd.load();
     document.getElementById('traffic-light-overlay').style.display = 'flex';
     const video = document.getElementById('camera-feed'); const canvas = document.getElementById('cv-canvas'); const ctx = canvas.getContext('2d');
@@ -554,26 +521,22 @@ async function startTrafficLightAssist() {
             }
         }, 1000);
     };
-}
-window.startTrafficLightAssist = startTrafficLightAssist;
+};
 
-function stopTrafficLightAssist() {
+window.stopTrafficLightAssist = function() {
     if(cvInterval) clearInterval(cvInterval);
     if(videoStream) videoStream.getTracks().forEach(t=>t.stop());
     document.getElementById('traffic-light-overlay').style.display = 'none';
-}
-window.stopTrafficLightAssist = stopTrafficLightAssist;
+};
 
 // === НАВИГАТОР ===
-function startNavigatorMode() {
+window.startNavigatorMode = function() {
     document.getElementById('stopNavBtn').style.display = 'block';
-    setSheetState('collapsed');
-    toast("Навигация запущена", true);
-}
-window.startNavigatorMode = startNavigatorMode;
+    window.setSheetState('collapsed');
+    window.toast("Навигация запущена", true);
+};
 
-function stopNavigatorMode() {
+window.stopNavigatorMode = function() {
     document.getElementById('stopNavBtn').style.display = 'none';
-    toast("Навигация завершена", true);
-}
-window.stopNavigatorMode = stopNavigatorMode;
+    window.toast("Навигация завершена", true);
+};
