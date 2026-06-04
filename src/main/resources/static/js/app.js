@@ -249,18 +249,40 @@ window.renderPlaces = function() {
     });
 };
 
+// === КРАСИВАЯ КАРТОЧКА ЗАВЕДЕНИЯ ===
 window.showPlaceDetails = function(p) {
     map.flyTo({center: [p.lng, p.lat], zoom: 17});
     window.setSheetState('half');
     const t = translations[currentLang];
     window.speak(p.name + ". " + p.desc);
 
+    // Заглушка для фото и часов работы, если бэкенд их не отдал
+    const imgUrl = p.image || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=80';
+    const hoursText = p.hours || '09:00 - 21:00';
+
+    // Формируем бейджи доступности
+    const accessText = p.accessLevel === 'full' ? t.fullAccess : (p.accessLevel === 'partial' ? t.partialAccess : t.noAccess);
+    const accessClass = p.accessLevel === 'none' ? 'badge-red' : (p.accessLevel === 'partial' ? 'badge-orange' : 'badge-green');
+    const deafBadge = p.deafFriendly ? `<span class="badge badge-purple">🧏 Адаптировано</span>` : '';
+
     document.getElementById('searchResultsList').innerHTML = `
         <div class="place-detail-card">
             <button class="close-card" onclick="window.renderPlaces(); window.setSheetState('collapsed');">✕</button>
-            <h3>${p.name}</h3>
-            <p style="color:var(--text-muted); font-size:14px; margin-bottom:15px;">${p.desc}</p>
-            <button class="start-nav-btn" style="width:100%;" onclick="window.buildRouteTo(${p.lat}, ${p.lng}, '${p.name.replace(/'/g, "\\'")}')">${t.btnRouteHere}</button>
+            
+            <div class="card-cover">
+                <img src="${imgUrl}" alt="${p.name}">
+                <div class="card-badges">
+                    <span class="badge ${accessClass}">${accessText}</span>
+                    ${deafBadge}
+                </div>
+            </div>
+            
+            <div class="card-content">
+                <h3 class="card-title">${p.name}</h3>
+                <div class="card-meta">🕒 ${hoursText}</div>
+                <p class="card-desc">${p.desc || 'Описание отсутствует.'}</p>
+                <button class="start-nav-btn" onclick="window.buildRouteTo(${p.lat}, ${p.lng}, '${p.name.replace(/'/g, "\\'")}')">${t.btnRouteHere}</button>
+            </div>
         </div>
     `;
 };
