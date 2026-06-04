@@ -8,8 +8,8 @@ const translations = {
     ru: {
         searchPlaceholder: "Поиск мест...", optionsTitle: "Опции", routeTitle: "Построить маршрут",
         tabSearch: "Поиск", tabRoutes: "Маршрут", tabOptions: "Опции",
-        lblLanguage: "Язык интерфейса", lblTheme: "Тема и визуальный стиль", lblAccessibility: "Потребности и Доступность",
-        needsWheelchair: "Без ступеней", needsVision: "Голосовой гид", needsDeaf: "Текстовое меню",
+        lblLanguage: "Язык интерфейса", lblTheme: "Тема и визуальный стиль", lblAccessibility: "Специальные возможности",
+        needsWheelchair: "Для маломобильных", needsVision: "Для слабовидящих", needsDeaf: "Для слабослышащих",
         pointA: "Точка А", pointB: "Точка Б", кудаНажать: "Куда (Нажмите на карту)",
         btnRouteHere: "Маршрут сюда", btnDrive: "В путь", btnReset: "Сброс",
         toastGPS: "Ищу GPS...", toastGPSFound: "Спутники найдены!", toastVoiceOn: "Голос включен", toastVoiceOff: "Голос выключен",
@@ -20,8 +20,8 @@ const translations = {
     en: {
         searchPlaceholder: "Search places...", optionsTitle: "Options", routeTitle: "Route",
         tabSearch: "Search", tabRoutes: "Route", tabOptions: "Options",
-        lblLanguage: "Language", lblTheme: "Theme", lblAccessibility: "Accessibility",
-        needsWheelchair: "Wheelchair access", needsVision: "Voice guide", needsDeaf: "Text menu",
+        lblLanguage: "Language", lblTheme: "Theme", lblAccessibility: "Accessibility features",
+        needsWheelchair: "Wheelchair access", needsVision: "Vision assistant", needsDeaf: "Hearing assistant",
         pointA: "Point A", pointB: "Point B", кудаНажать: "Where to (Tap map)",
         btnRouteHere: "Route here", btnDrive: "Start", btnReset: "Reset",
         toastGPS: "Searching GPS...", toastGPSFound: "GPS found!", toastVoiceOn: "Voice ON", toastVoiceOff: "Voice OFF",
@@ -32,8 +32,8 @@ const translations = {
     kz: {
         searchPlaceholder: "Орындарды іздеу...", optionsTitle: "Баптаулар", routeTitle: "Маршрут салу",
         tabSearch: "Іздеу", tabRoutes: "Маршрут", tabOptions: "Баптаулар",
-        lblLanguage: "Интерфейс тілі", lblTheme: "Тақырып және стиль", lblAccessibility: "Қажеттіліктер",
-        needsWheelchair: "Баспалдақсыз", needsVision: "Дауыстық нұсқау", needsDeaf: "Мәтіндік мәзір",
+        lblLanguage: "Интерфейс тілі", lblTheme: "Тақырып және стиль", lblAccessibility: "Арнайы мүмкіндіктер",
+        needsWheelchair: "Қозғалысы шектеулі жандарға", needsVision: "Нашар көретіндерге", needsDeaf: "Нашар еститіндерге",
         pointA: "A нүктесі", pointB: "Б нүктесі", кудаНажать: "Қайда (Картаға басыңыз)",
         btnRouteHere: "Маршрут осында", btnDrive: "Кеттік", btnReset: "Тастау",
         toastGPS: "GPS іздеу...", toastGPSFound: "Спутниктер табылды!", toastVoiceOn: "Дауыс қосылды", toastVoiceOff: "Дауыс өшірілді",
