@@ -111,6 +111,20 @@
                 </select>
             </div>
 
+            <!-- УВЕДОМЛЕНИЯ -->
+            <div class="form-group">
+                <label id="lblNotifications">Уведомления</label>
+                <div class="need-card" style="padding: 10px 14px; margin-top: 5px; cursor: default;">
+                    <div class="need-info">
+                        <div class="need-name" id="txtToasts" style="font-size: 14px;">Всплывающие подсказки</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="cb-toasts" onchange="window.saveUserSettings()" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
             <!-- ИНКЛЮЗИВНЫЕ ФИЛЬТРЫ (ПРОФЕССИОНАЛЬНАЯ ВЕРСИЯ) -->
             <div class="form-group accessibility-settings">
                 <label class="group-title">Специальные возможности</label>
@@ -185,9 +199,9 @@
     <div id="map-container">
         <div id="map"></div>
         <div class="map-controls-right" id="mapControls">
-            <div class="map-fab-ai" onclick="window.startTrafficLightAssist()" style="background: #fff3cd; color: #856404; font-weight:bold;">🤖</div>
+            <div class="map-fab-ai" onclick="window.startTrafficLightAssist()" style="background: #fff3cd; color: #856404; font-weight:bold; display:none;" id="aiBtn">🤖</div>
             <div class="map-fab" onclick="window.toggleGPS()" id="gpsBtn">🎯</div>
-            <div class="map-fab" onclick="window.toggleVoice()" id="voiceBtn">🔊</div>
+            <div class="map-fab" onclick="window.toggleVoice()" id="voiceBtn" style="display:none;">🔊</div>
             <div class="map-btn-group" id="desktopZoom">
                 <div class="map-btn" onclick="map.zoomIn()">+</div>
                 <div class="map-btn" onclick="map.zoomOut()">−</div>

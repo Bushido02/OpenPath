@@ -3,12 +3,12 @@ const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
 const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 const BACKEND_URL = window.location.origin;
 
-// === СЛОВАРЬ ПЕРЕВОДОВ ===
 const translations = {
     ru: {
         searchPlaceholder: "Поиск мест...", optionsTitle: "Опции", routeTitle: "Построить маршрут",
         tabSearch: "Поиск", tabRoutes: "Маршрут", tabOptions: "Опции",
-        lblLanguage: "Язык интерфейса", lblTheme: "Тема и визуальный стиль", lblAccessibility: "Специальные возможности",
+        lblLanguage: "Язык интерфейса", lblTheme: "Тема и стиль", lblAccessibility: "Специальные возможности",
+        lblNotifications: "Уведомления", txtToasts: "Всплывающие подсказки", // Новые строки
         needsWheelchair: "Для маломобильных", needsVision: "Для слабовидящих", needsDeaf: "Для слабослышащих",
         pointA: "Точка А", pointB: "Точка Б", кудаНажать: "Куда (Нажмите на карту)",
         btnRouteHere: "Маршрут сюда", btnDrive: "В путь", btnReset: "Сброс",
@@ -21,6 +21,7 @@ const translations = {
         searchPlaceholder: "Search places...", optionsTitle: "Options", routeTitle: "Route",
         tabSearch: "Search", tabRoutes: "Route", tabOptions: "Options",
         lblLanguage: "Language", lblTheme: "Theme", lblAccessibility: "Accessibility features",
+        lblNotifications: "Notifications", txtToasts: "Popup hints", // Новые строки
         needsWheelchair: "Wheelchair access", needsVision: "Vision assistant", needsDeaf: "Hearing assistant",
         pointA: "Point A", pointB: "Point B", кудаНажать: "Where to (Tap map)",
         btnRouteHere: "Route here", btnDrive: "Start", btnReset: "Reset",
@@ -32,7 +33,8 @@ const translations = {
     kz: {
         searchPlaceholder: "Орындарды іздеу...", optionsTitle: "Баптаулар", routeTitle: "Маршрут салу",
         tabSearch: "Іздеу", tabRoutes: "Маршрут", tabOptions: "Баптаулар",
-        lblLanguage: "Интерфейс тілі", lblTheme: "Тақырып және стиль", lblAccessibility: "Арнайы мүмкіндіктер",
+        lblLanguage: "Интерфейс тілі", lblTheme: "Тақырып", lblAccessibility: "Арнайы мүмкіндіктер",
+        lblNotifications: "Хабарландырулар", txtToasts: "Қалқымалы кеңестер", // Новые строки
         needsWheelchair: "Қозғалысы шектеулі жандарға", needsVision: "Нашар көретіндерге", needsDeaf: "Нашар еститіндерге",
         pointA: "A нүктесі", pointB: "Б нүктесі", кудаНажать: "Қайда (Картаға басыңыз)",
         btnRouteHere: "Маршрут осында", btnDrive: "Кеттік", btnReset: "Тастау",
@@ -95,9 +97,12 @@ window.applyLanguage = function() {
     document.querySelectorAll('.nav-tab, .mob-nav-item').forEach(item => {
         const target = item.getAttribute('data-target');
         const labelEl = item.querySelector('.label');
+        const lblNotif = document.getElementById('lblNotifications'); if(lblNotif) lblNotif.innerText = t.lblNotifications;
+        const txtT = document.getElementById('txtToasts'); if(txtT) txtT.innerText = t.txtToasts;
         if (target === 'panel-search' && labelEl) labelEl.innerText = t.tabSearch;
         if (target === 'panel-routes' && labelEl) labelEl.innerText = t.tabRoutes;
         if (target === 'panel-profile' && labelEl) labelEl.innerText = t.tabOptions;
+
     });
 
     const txtOptionsTitle = document.getElementById('txtOptionsTitle'); if(txtOptionsTitle) txtOptionsTitle.innerText = t.optionsTitle;
@@ -361,8 +366,11 @@ window.calculateRoute = async function() {
     } catch(e) { window.toast('routeError'); }
 };
 
-// === УТИЛИТЫ ===
 window.toast = function(msgKey, isRaw = false) {
+    // Если галочка "Всплывающие подсказки" снята — глушим все тосты
+    const cbToasts = document.getElementById('cb-toasts');
+    if (cbToasts && !cbToasts.checked) return;
+
     const msg = isRaw ? msgKey : translations[currentLang][msgKey];
     if(!msg) return;
     const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg; c.appendChild(t); setTimeout(() => t.remove(), 3000);
@@ -440,9 +448,21 @@ window.saveUserSettings = function() {
         if(el) localStorage.setItem(k, el.checked);
     });
 
+    // Сохраняем состояние подсказок
+    const cbToasts = document.getElementById('cb-toasts');
+    if (cbToasts) localStorage.setItem('toasts', cbToasts.checked);
+
+    // Скрываем/Показываем вкладку инвалидной коляски
     const tabW = document.getElementById('tabWheelchair');
     const routeCb = document.getElementById('cb-wheelchair-route');
     if (tabW && routeCb) tabW.style.display = routeCb.checked ? 'block' : 'none';
+
+    // Скрываем/Показываем Робота и Голос на карте
+    const isVision = document.getElementById('cb-vision-main') ? document.getElementById('cb-vision-main').checked : false;
+    const aiBtn = document.getElementById('aiBtn');
+    const voiceBtn = document.getElementById('voiceBtn');
+    if (aiBtn) aiBtn.style.display = isVision ? 'flex' : 'none';
+    if (voiceBtn) voiceBtn.style.display = isVision ? 'flex' : 'none';
 
     window.renderPlaces();
 };
@@ -451,6 +471,11 @@ window.loadUserSettings = function() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.getElementById('settingTheme').value = savedTheme;
     document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // Загружаем тосты (включены по умолчанию)
+    const savedToasts = localStorage.getItem('toasts');
+    const cbToasts = document.getElementById('cb-toasts');
+    if (cbToasts) cbToasts.checked = savedToasts !== 'false';
 
     const keys = [
         'wheelchair-main', 'wheelchair-search', 'wheelchair-route',
@@ -473,6 +498,13 @@ window.loadUserSettings = function() {
 
     const tabW = document.getElementById('tabWheelchair');
     if (tabW) tabW.style.display = localStorage.getItem('wheelchair-route') === 'true' ? 'block' : 'none';
+
+    // Скрываем/Показываем кнопки на старте
+    const isVision = localStorage.getItem('vision-main') === 'true';
+    const aiBtn = document.getElementById('aiBtn');
+    const voiceBtn = document.getElementById('voiceBtn');
+    if (aiBtn) aiBtn.style.display = isVision ? 'flex' : 'none';
+    if (voiceBtn) voiceBtn.style.display = isVision ? 'flex' : 'none';
 };
 
 window.applySettings = function() {
