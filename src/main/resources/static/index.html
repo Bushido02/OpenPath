@@ -104,7 +104,7 @@
             </div>
 
             <div class="form-group">
-                <label id="lblTheme">Тема и визуальный стиль</label>
+                <label id="lblTheme">Тема и стиль</label>
                 <select id="settingTheme" class="form-input" onchange="window.applySettings()">
                     <option value="light">Светлая</option>
                     <option value="dark">Темная</option>
@@ -112,7 +112,6 @@
                 </select>
             </div>
 
-            <!-- УВЕДОМЛЕНИЯ -->
             <div class="form-group">
                 <label id="lblNotifications">Уведомления</label>
                 <div class="need-card" style="padding: 10px 14px; margin-top: 5px; cursor: default;">
@@ -126,9 +125,8 @@
                 </div>
             </div>
 
-            <!-- ИНКЛЮЗИВНЫЕ ФИЛЬТРЫ (ПРОФЕССИОНАЛЬНАЯ ВЕРСИЯ) -->
             <div class="form-group accessibility-settings">
-                <label class="group-title">Специальные возможности</label>
+                <label class="group-title" id="lblAccessibility">Специальные возможности</label>
 
                 <div class="need-card-wrapper" id="wrap-wheelchair">
                     <div class="need-card">
