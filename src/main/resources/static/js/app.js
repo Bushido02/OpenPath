@@ -3,8 +3,8 @@ const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
 const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 
 // Подключение Supabase
-const SUPABASE_URL = 'https://idsyqzgtmtgdgcejbhhu.supabase.co'; // Должно начинаться с https:// и заканчиваться на .co
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3lxemd0bXRnZGdjZWpiaGh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNzU0ODUsImV4cCI6MjA5NjY1MTQ4NX0.aEUb88NSfuRV8PoHjb7zXmFwdlmfRvq3uZ5FBKdBEFo'; // Длинный токен
+const SUPABASE_URL = 'https://idsyqzgtmtgdgcejbhhu.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3lxemd0bXRnZGdjZWpiaGh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNzU0ODUsImV4cCI6MjA5NjY1MTQ4NX0.aEUb88NSfuRV8PoHjb7zXmFwdlmfRvq3uZ5FBKdBEFo';
 const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 let placesDB = [];
