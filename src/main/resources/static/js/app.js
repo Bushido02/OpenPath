@@ -2,23 +2,21 @@
 const MAPTILER_KEY = '8Wl8NVdgQf24Ak9zxDl7';
 const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjgxNzIyY2I0ZDRiZmY5NDE3MWRiZGQ4N2QxMjZlIiwiaCI6Im11cm11cjY0In0=';
 
-// Подключение Supabase
 const SUPABASE_URL = 'https://idsyqzgtmtgdgcejbhhu.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3lxemd0bXRnZGdjZWpiaGh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNzU0ODUsImV4cCI6MjA5NjY1MTQ4NX0.aEUb88NSfuRV8PoHjb7zXmFwdlmfRvq3uZ5FBKdBEFo';
-
-// ИЗМЕНЕНИЕ: Переименовали переменную в dbClient, чтобы избежать конфликта с CDN
 const dbClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
 let placesDB = [];
+let lastClickCoords = null; // Для сохранения точки нового места
 
 // === БЭКЕНД И МЕСТА (SUPABASE) ===
 async function fetchBackendPlaces() {
     if (!dbClient) {
-        console.warn("БД не инициализирована. Используем кэш.");
+        console.warn("Supabase не инициализирован. Используем кэш.");
         useOfflineCache();
         return;
     }
     try {
-        // ИЗМЕНЕНИЕ: Используем dbClient вместо supabase
         const { data, error } = await dbClient.from('places').select('*');
         if (error) throw error;
 
@@ -34,20 +32,10 @@ async function fetchBackendPlaces() {
     } catch (e) {
         console.error("Ошибка загрузки БД, используем локальный кэш:", e);
         useOfflineCache();
-        window.toast("Связь с сервером потеряна. Включен офлайн-режим.", true);
     } finally {
         window.renderPlaces();
     }
 }
-let pressTimer;
-map.on('mousedown', () => pressTimer = setTimeout(() => {
-    // Тут можно добавить логику появления формы
-}, 800));
-map.on('mouseup', () => clearTimeout(pressTimer));
-map.on('touchstart', () => pressTimer = setTimeout(() => {
-    // Добавить логику для мобильных
-}, 800));
-map.on('touchend', () => clearTimeout(pressTimer));
 
 function useOfflineCache() {
     placesDB = [
@@ -125,14 +113,82 @@ const map = new maplibregl.Map({
 map.on('load', () => {
     addCustomMapLayers();
     window.loadUserSettings();
-    fetchBackendPlaces(); // Вызываем загрузку данных
     window.applyLanguage();
+    fetchBackendPlaces(); // Загрузка после полной сборки карты
+    initLongPressHandler();
 });
 
 function addCustomMapLayers() {
     if(!map.getSource('route')) map.addSource('route', { 'type': 'geojson', 'data': { "type": "FeatureCollection", "features": [] } });
     if(!map.getLayer('route-layer')) map.addLayer({ 'id': 'route-layer', 'type': 'line', 'source': 'route', 'layout': { 'line-join': 'round', 'line-cap': 'round' }, 'paint': { 'line-color': '#007aff', 'line-width': 6 } });
 }
+
+// === ЛОГИКА ДОЛГОГО НАЖАТИЯ ДЛЯ ДОБАВЛЕНИЯ МЕСТА ===
+function initLongPressHandler() {
+    let pressTimer;
+
+    // Для ПК (Правый клик мыши)
+    map.on('contextmenu', (e) => {
+        e.preventDefault();
+        window.openAddPlaceModal(e.lngLat.lng, e.lngLat.lat);
+    });
+
+    // Для мобильных устройств (Удержание пальца 800мс)
+    map.on('touchstart', (e) => {
+        if (e.touches.length > 1) return;
+        const coords = e.lngLat;
+        pressTimer = setTimeout(() => {
+            window.openAddPlaceModal(coords.lng, coords.lat);
+        }, 800);
+    });
+    map.on('touchend', () => clearTimeout(pressTimer));
+    map.on('move', () => clearTimeout(pressTimer));
+}
+
+window.openAddPlaceModal = function(lng, lat) {
+    lastClickCoords = [lng, lat];
+    document.getElementById('add-place-overlay').style.display = 'flex';
+};
+
+window.closeAddPlaceModal = function() {
+    document.getElementById('add-place-overlay').style.display = 'none';
+    document.getElementById('new-name').value = '';
+    document.getElementById('new-desc').value = '';
+};
+
+window.saveNewPlace = async function() {
+    const name = document.getElementById('new-name').value.trim();
+    const cat = document.getElementById('new-cat').value;
+    const access = document.getElementById('new-access').value;
+    const deaf = document.getElementById('new-deaf').checked;
+    const desc = document.getElementById('new-desc').value.trim();
+
+    if (!name) { alert("Пожалуйста, введите название заведения"); return; }
+    if (!lastClickCoords) return;
+
+    try {
+        const { error } = await dbClient.from('places').insert([{
+            name: name,
+            lat: lastClickCoords[1],
+            lng: lastClickCoords[0],
+            category: cat,
+            access_level: access,
+            deaf_friendly: deaf,
+            description: desc || "Описание подготавливается...",
+            hours: "09:00 - 21:00",
+            image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=80"
+        }]);
+
+        if (error) throw error;
+
+        window.toast("Место отправлено в базу данных!", true);
+        window.closeAddPlaceModal();
+        await fetchBackendPlaces();
+    } catch (err) {
+        console.error(err);
+        alert("Не удалось сохранить в Supabase. Проверьте структуру таблицы.");
+    }
+};
 
 // === ЛОГИКА МУЛЬТИЯЗЫЧНОСТИ ===
 window.applyLanguage = function() {
@@ -234,6 +290,7 @@ window.renderPlaces = function() {
     const t = translations[currentLang];
 
     const list = document.getElementById('searchResultsList');
+    if (!list) return;
     list.innerHTML = '';
     state.markers.places.forEach(m => m.remove());
     state.markers.places = [];
@@ -604,67 +661,4 @@ window.stopNavigatorMode = function() {
     document.getElementById('stopNavBtn').style.display = 'none';
     map.easeTo({ pitch: 0, bearing: 0 });
     window.clearRoute();
-};
-
-window.saveNewPlace = async function() {
-    const name = document.getElementById('new-place-name').value;
-    const cat = document.getElementById('new-place-cat').value;
-    const wheel = document.getElementById('new-place-wheel').checked;
-
-    // Получаем координаты последней точки, где кликнули
-    const coords = state.lastClickCoords;
-
-    const { data, error } = await dbClient.from('places').insert([{
-        name: name,
-        lat: coords[1],
-        lng: coords[0],
-        category: cat,
-        access_level: wheel ? 'full' : 'none',
-        deaf_friendly: false
-    }]);
-
-    if (!error) {
-        document.getElementById('add-place-overlay').style.display = 'none';
-        fetchBackendPlaces(); // Перезагружаем данные с сервера
-        window.toast("Место добавлено!");
-    }
-};
-
-let lastCoords = null;
-
-// Обработка долгого нажатия на карту
-map.on('contextmenu', (e) => {
-    lastCoords = e.lngLat;
-    document.getElementById('add-place-overlay').style.display = 'flex';
-});
-
-window.closeAddPlace = function() {
-    document.getElementById('add-place-overlay').style.display = 'none';
-};
-
-window.saveNewPlace = async function() {
-    const name = document.getElementById('new-name').value;
-    const cat = document.getElementById('new-cat').value;
-    const hasWheel = document.getElementById('new-wheel').checked;
-
-    if (!name) return alert("Введите название!");
-
-    const { data, error } = await dbClient.from('places').insert([{
-        name: name,
-        lat: lastCoords.lat,
-        lng: lastCoords.lng,
-        category: cat,
-        access_level: hasWheel ? 'full' : 'none',
-        deaf_friendly: false,
-        description: "Добавлено пользователем"
-    }]);
-
-    if (error) {
-        console.error(error);
-        alert("Ошибка сохранения");
-    } else {
-        window.closeAddPlace();
-        fetchBackendPlaces(); // Обновляем карту
-        window.toast("Место успешно добавлено!");
-    }
 };
