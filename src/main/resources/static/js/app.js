@@ -39,6 +39,15 @@ async function fetchBackendPlaces() {
         window.renderPlaces();
     }
 }
+let pressTimer;
+map.on('mousedown', () => pressTimer = setTimeout(() => {
+    // Тут можно добавить логику появления формы
+}, 800));
+map.on('mouseup', () => clearTimeout(pressTimer));
+map.on('touchstart', () => pressTimer = setTimeout(() => {
+    // Добавить логику для мобильных
+}, 800));
+map.on('touchend', () => clearTimeout(pressTimer));
 
 function useOfflineCache() {
     placesDB = [
@@ -595,4 +604,67 @@ window.stopNavigatorMode = function() {
     document.getElementById('stopNavBtn').style.display = 'none';
     map.easeTo({ pitch: 0, bearing: 0 });
     window.clearRoute();
+};
+
+window.saveNewPlace = async function() {
+    const name = document.getElementById('new-place-name').value;
+    const cat = document.getElementById('new-place-cat').value;
+    const wheel = document.getElementById('new-place-wheel').checked;
+
+    // Получаем координаты последней точки, где кликнули
+    const coords = state.lastClickCoords;
+
+    const { data, error } = await dbClient.from('places').insert([{
+        name: name,
+        lat: coords[1],
+        lng: coords[0],
+        category: cat,
+        access_level: wheel ? 'full' : 'none',
+        deaf_friendly: false
+    }]);
+
+    if (!error) {
+        document.getElementById('add-place-overlay').style.display = 'none';
+        fetchBackendPlaces(); // Перезагружаем данные с сервера
+        window.toast("Место добавлено!");
+    }
+};
+
+let lastCoords = null;
+
+// Обработка долгого нажатия на карту
+map.on('contextmenu', (e) => {
+    lastCoords = e.lngLat;
+    document.getElementById('add-place-overlay').style.display = 'flex';
+});
+
+window.closeAddPlace = function() {
+    document.getElementById('add-place-overlay').style.display = 'none';
+};
+
+window.saveNewPlace = async function() {
+    const name = document.getElementById('new-name').value;
+    const cat = document.getElementById('new-cat').value;
+    const hasWheel = document.getElementById('new-wheel').checked;
+
+    if (!name) return alert("Введите название!");
+
+    const { data, error } = await dbClient.from('places').insert([{
+        name: name,
+        lat: lastCoords.lat,
+        lng: lastCoords.lng,
+        category: cat,
+        access_level: hasWheel ? 'full' : 'none',
+        deaf_friendly: false,
+        description: "Добавлено пользователем"
+    }]);
+
+    if (error) {
+        console.error(error);
+        alert("Ошибка сохранения");
+    } else {
+        window.closeAddPlace();
+        fetchBackendPlaces(); // Обновляем карту
+        window.toast("Место успешно добавлено!");
+    }
 };

@@ -216,5 +216,21 @@
     <div class="mob-nav-item" onclick="window.openMobileMenu('panel-routes', this)"><span class="icon">🛣️</span><span class="label">Маршрут</span></div>
     <div class="mob-nav-item" onclick="window.openMobileMenu('panel-profile', this)"><span class="icon">⚙️</span><span class="label">Опции</span></div>
 </div>
+
+<div id="add-place-overlay" class="hidden-overlay" style="display:none; z-index: 9999;">
+    <div class="panel" style="width: 90%; max-width: 400px; padding: 20px;">
+        <h3>Добавить место</h3>
+        <input type="text" id="new-place-name" placeholder="Название" class="form-input">
+        <select id="new-place-cat" class="form-input">
+            <option value="shop">Магазин</option>
+            <option value="pharmacy">Аптека</option>
+            <option value="food">Еда</option>
+        </select>
+        <label><input type="checkbox" id="new-place-wheel"> Пандус есть</label>
+        <button onclick="window.saveNewPlace()" class="start-nav-btn">Сохранить</button>
+        <button onclick="document.getElementById('add-place-overlay').style.display='none'" class="reset-btn">Отмена</button>
+    </div>
+</div>
+
 </body>
 </html>
