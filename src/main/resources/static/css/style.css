@@ -315,3 +315,29 @@ input:checked + .slider:before { transform: translateX(18px); }
     .mobile-drag-handle::after { content: ''; width: 36px; height: 5px; background: var(--border-color); border-radius: 3px; }
     .map-controls-right { bottom: 230px; top: auto; transform: none;}
 }
+
+/* === КНОПКА ЗАВЕРШЕНИЯ НАВИГАЦИИ === */
+.stop-nav-btn {
+    display: none; /* Скрыта по умолчанию */
+    position: absolute;
+    bottom: 40px; /* Висит внизу по центру */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff3b30;
+    color: white;
+    padding: 16px 32px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 800;
+    border: none;
+    box-shadow: 0 4px 15px rgba(255, 59, 48, 0.4);
+    z-index: 2000;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.stop-nav-btn:hover {
+    background: #d70015;
+    transform: translateX(-50%) scale(1.05);
+}
+
+
