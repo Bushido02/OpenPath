@@ -5,19 +5,21 @@ const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjFjYjg
 // Подключение Supabase
 const SUPABASE_URL = 'https://idsyqzgtmtgdgcejbhhu.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3lxemd0bXRnZGdjZWpiaGh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNzU0ODUsImV4cCI6MjA5NjY1MTQ4NX0.aEUb88NSfuRV8PoHjb7zXmFwdlmfRvq3uZ5FBKdBEFo';
-const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
+// ИЗМЕНЕНИЕ: Переименовали переменную в dbClient, чтобы избежать конфликта с CDN
+const dbClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 let placesDB = [];
 
 // === БЭКЕНД И МЕСТА (SUPABASE) ===
 async function fetchBackendPlaces() {
-    if (!supabase) {
-        console.warn("Supabase не инициализирован. Используем кэш.");
+    if (!dbClient) {
+        console.warn("БД не инициализирована. Используем кэш.");
         useOfflineCache();
         return;
     }
     try {
-        const { data, error } = await supabase.from('places').select('*');
+        // ИЗМЕНЕНИЕ: Используем dbClient вместо supabase
+        const { data, error } = await dbClient.from('places').select('*');
         if (error) throw error;
 
         if (data && data.length > 0) {
