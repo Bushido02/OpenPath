@@ -7,13 +7,14 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const dbClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 let placesDB = [];
-let lastClickCoords = null; // Для сохранения точки нового места
+let lastClickCoords = null;
 
 // === БЭКЕНД И МЕСТА (SUPABASE) ===
 async function fetchBackendPlaces() {
     if (!dbClient) {
         console.warn("Supabase не инициализирован. Используем кэш.");
         useOfflineCache();
+        window.renderPlaces();
         return;
     }
     try {
@@ -42,7 +43,8 @@ function useOfflineCache() {
         { id: 1, name: "MEGA Alma-Ata", lat: 43.2018, lng: 76.8923, category: "shop", accessLevel: "full", deafFriendly: true, image: "https://images.unsplash.com/photo-1519567241046-7f4f6b643a60?w=600&q=80", hours: "10:00 - 22:00", desc: "Крупнейший ТРЦ. Оборудован просторными лифтами и пандусами." },
         { id: 2, name: "Magnum Cash & Carry", lat: 43.2375, lng: 76.8875, category: "shop", accessLevel: "full", deafFriendly: true, image: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600&q=80", hours: "Круглосуточно", desc: "Гипермаркет с широкими проходами. Вход на уровне земли." },
         { id: 3, name: "Аптека Садыхан", lat: 43.2380, lng: 76.8890, category: "pharmacy", accessLevel: "full", deafFriendly: false, image: "https://images.unsplash.com/photo-1585435557343-3b092031a831?w=600&q=80", hours: "Круглосуточно", desc: "Круглосуточная аптека с пандусом по ГОСТу." },
-        { id: 4, name: "Ресторан Navat", lat: 43.2420, lng: 76.9010, category: "food", accessLevel: "partial", deafFriendly: true, image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80", hours: "11:00 - 00:00", desc: "Традиционная кухня. Есть кнопка вызова персонала и меню с картинками." }
+        { id: 4, name: "Ресторан Navat", lat: 43.2420, lng: 76.9010, category: "food", accessLevel: "partial", deafFriendly: true, image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80", hours: "11:00 - 00:00", desc: "Традиционная кухня. Есть кнопка вызова персонала и меню с картинками." },
+        { id: 5, name: "Аптека без пандуса (пример)", lat: 43.2350, lng: 76.9100, category: "pharmacy", accessLevel: "none", deafFriendly: false, image: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600&q=80", hours: "08:00 - 22:00", desc: "Вход через 3 ступени, пандуса нет." }
     ];
 }
 
@@ -59,7 +61,20 @@ const translations = {
         toastGPS: "Ищу GPS...", toastGPSFound: "Спутники найдены!", toastVoiceOn: "Голос включен", toastVoiceOff: "Голос выключен",
         trafficWait: "Наведите камеру на дорогу...", trafficFound: "СВЕТОФОР!", trafficScan: "Радар включен", trafficClose: "Закрыть",
         fullAccess: "✅ Доступно", partialAccess: "🤝 Кнопка вызова", noAccess: "❌ Ступени",
-        routeError: "Ошибка маршрута", noPlaces: "Ничего не найдено"
+        routeError: "Ошибка маршрута", noPlaces: "Ничего не найдено",
+        rampOnlyOn: "Показаны только места с пандусом", rampOnlyOff: "Фильтр пандусов выключен",
+        sayDestination: "Скажите место назначения, например: Аптека Садыхан",
+        sayOrigin: "Скажите откуда вы выходите",
+        voiceNotFound: "Не нашёл такое место в базе. Попробуйте ещё раз",
+        voiceRouteFound: "Нашёл: ",
+        routeReadyVoice: "Маршрут готов. Время в пути: ",
+        minutesVoice: " минут. Расстояние: ",
+        kmVoice: " километра.",
+        startNavVoice: "Навигация начата. Следуйте по синей линии на карте.",
+        addPlaceSaved: "Место отправлено в базу данных!",
+        addPlaceNeedName: "Пожалуйста, введите название заведения",
+        addPlaceFail: "Не удалось сохранить место. Попробуйте позже.",
+        listenAccessHint: "Совет: включите фильтр пандусов в Поиске или в Опциях → Для маломобильных."
     },
     en: {
         searchPlaceholder: "Search places...", optionsTitle: "Options", routeTitle: "Route",
@@ -72,7 +87,20 @@ const translations = {
         toastGPS: "Searching GPS...", toastGPSFound: "GPS found!", toastVoiceOn: "Voice ON", toastVoiceOff: "Voice OFF",
         trafficWait: "Point camera at road...", trafficFound: "TRAFFIC LIGHT!", trafficScan: "Radar ON", trafficClose: "Close",
         fullAccess: "✅ Accessible", partialAccess: "🤝 Call button", noAccess: "❌ Stairs",
-        routeError: "Route error", noPlaces: "Nothing found"
+        routeError: "Route error", noPlaces: "Nothing found",
+        rampOnlyOn: "Showing ramp-accessible places only", rampOnlyOff: "Ramp filter off",
+        sayDestination: "Say your destination, for example: pharmacy Sadykhan",
+        sayOrigin: "Say where you are starting from",
+        voiceNotFound: "Couldn't find that place. Please try again",
+        voiceRouteFound: "Found: ",
+        routeReadyVoice: "Route is ready. Travel time: ",
+        minutesVoice: " minutes. Distance: ",
+        kmVoice: " kilometers.",
+        startNavVoice: "Navigation started. Follow the blue line on the map.",
+        addPlaceSaved: "Place submitted to the database!",
+        addPlaceNeedName: "Please enter a place name",
+        addPlaceFail: "Could not save the place. Try again later.",
+        listenAccessHint: "Tip: enable the ramp filter in Search or in Options → Wheelchair access."
     },
     kz: {
         searchPlaceholder: "Орындарды іздеу...", optionsTitle: "Баптаулар", routeTitle: "Маршрут салу",
@@ -85,7 +113,20 @@ const translations = {
         toastGPS: "GPS іздеу...", toastGPSFound: "Спутниктер табылды!", toastVoiceOn: "Дауыс қосылды", toastVoiceOff: "Дауыс өшірілді",
         trafficWait: "Камераны жолға бағыттаңыз...", trafficFound: "БАҒДАРШАМ!", trafficScan: "Радар қосылды", trafficClose: "Жабу",
         fullAccess: "✅ Қолжетімді", partialAccess: "🤝 Шақыру батырмасы", noAccess: "❌ Баспалдақ",
-        routeError: "Маршрут қатесі", noPlaces: "Ештеңе табылмады"
+        routeError: "Маршрут қатесі", noPlaces: "Ештеңе табылмады",
+        rampOnlyOn: "Тек пандус бар орындар көрсетілді", rampOnlyOff: "Пандус сүзгісі өшірілді",
+        sayDestination: "Баратын жеріңізді айтыңыз",
+        sayOrigin: "Қайдан шығатыныңызды айтыңыз",
+        voiceNotFound: "Бұндай орын табылмады. Қайталап көріңіз",
+        voiceRouteFound: "Табылды: ",
+        routeReadyVoice: "Маршрут дайын. Жол уақыты: ",
+        minutesVoice: " минут. Қашықтық: ",
+        kmVoice: " километр.",
+        startNavVoice: "Навигация басталды. Картадағы көк сызықпен жүріңіз.",
+        addPlaceSaved: "Орын дерекқорға жіберілді!",
+        addPlaceNeedName: "Атауын енгізіңіз",
+        addPlaceFail: "Сақтау мүмкін болмады. Кейінірек көріңіз.",
+        listenAccessHint: "Кеңес: Іздеуде немесе Баптауларда пандус сүзгісін қосыңыз."
     }
 };
 
@@ -99,6 +140,7 @@ let state = {
     isNavigating: false,
     mode: 'driving-car',
     picking: null,
+    rampOnly: false,
     routeLatLangs: { start: null, end: null },
     markers: { gps: null, start: null, end: null, places: [] }
 };
@@ -152,19 +194,40 @@ window.openAddPlaceModal = function(lng, lat) {
 
 window.closeAddPlaceModal = function() {
     document.getElementById('add-place-overlay').style.display = 'none';
-    document.getElementById('new-name').value = '';
-    document.getElementById('new-desc').value = '';
+    document.getElementById('new-place-name').value = '';
+    document.getElementById('new-place-desc').value = '';
+    document.getElementById('new-place-access').value = 'full';
+    document.getElementById('new-place-deaf').checked = false;
 };
 
 window.saveNewPlace = async function() {
-    const name = document.getElementById('new-name').value.trim();
-    const cat = document.getElementById('new-cat').value;
-    const access = document.getElementById('new-access').value;
-    const deaf = document.getElementById('new-deaf').checked;
-    const desc = document.getElementById('new-desc').value.trim();
+    const t = translations[currentLang];
+    const name = document.getElementById('new-place-name').value.trim();
+    const cat = document.getElementById('new-place-cat').value;
+    const access = document.getElementById('new-place-access').value; // full | partial | none
+    const deaf = document.getElementById('new-place-deaf').checked;
+    const desc = document.getElementById('new-place-desc').value.trim();
 
-    if (!name) { alert("Пожалуйста, введите название заведения"); return; }
+    if (!name) { window.toast(t.addPlaceNeedName, true); return; }
     if (!lastClickCoords) return;
+
+    const newPlaceLocal = {
+        id: 'local-' + Date.now(),
+        name, lat: lastClickCoords[1], lng: lastClickCoords[0],
+        category: cat, accessLevel: access, deafFriendly: deaf,
+        description: desc || "Описание подготавливается...",
+        desc: desc || "Описание подготавливается...",
+        hours: "09:00 - 21:00",
+        image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=80"
+    };
+
+    if (!dbClient) {
+        placesDB.push(newPlaceLocal);
+        window.toast(t.addPlaceSaved, true);
+        window.closeAddPlaceModal();
+        window.renderPlaces();
+        return;
+    }
 
     try {
         const { error } = await dbClient.from('places').insert([{
@@ -181,12 +244,16 @@ window.saveNewPlace = async function() {
 
         if (error) throw error;
 
-        window.toast("Место отправлено в базу данных!", true);
+        window.toast(t.addPlaceSaved, true);
         window.closeAddPlaceModal();
         await fetchBackendPlaces();
     } catch (err) {
         console.error(err);
-        alert("Не удалось сохранить в Supabase. Проверьте структуру таблицы.");
+        // Фоллбэк: сохраняем хотя бы локально, чтобы пользователь не терял данные
+        placesDB.push(newPlaceLocal);
+        window.toast(t.addPlaceFail, true);
+        window.closeAddPlaceModal();
+        window.renderPlaces();
     }
 };
 
@@ -228,7 +295,7 @@ window.applyLanguage = function() {
     }
 
     const resetBtn = document.querySelector('.reset-btn');
-    const startNavBtn = document.querySelector('.start-nav-btn');
+    const startNavBtn = document.querySelector('#routeResult .start-nav-btn');
     if (resetBtn) resetBtn.innerText = t.btnReset;
     if (startNavBtn) startNavBtn.innerText = t.btnDrive;
 
@@ -280,12 +347,27 @@ window.quickSearch = function(query) {
     window.setSheetState('half');
 };
 
+// === БЫСТРЫЙ ФИЛЬТР "ТОЛЬКО С ПАНДУСОМ" (чип в поиске) ===
+window.toggleRampOnlyQuick = function() {
+    state.rampOnly = !state.rampOnly;
+    const chip = document.getElementById('chipRampOnly');
+    if (chip) chip.classList.toggle('chip-active', state.rampOnly);
+
+    // Синхронизируем с настройками доступности, чтобы не было двух разных источников правды
+    const cbSearch = document.getElementById('cb-wheelchair-search');
+    if (cbSearch) cbSearch.checked = state.rampOnly;
+    localStorage.setItem('wheelchair-search', state.rampOnly);
+
+    window.toast(state.rampOnly ? translations[currentLang].rampOnlyOn : translations[currentLang].rampOnlyOff, true);
+    window.renderPlaces();
+};
+
 // === ТОЧЕЧНАЯ ИНВЕРТИРОВАННАЯ ФИЛЬТРАЦИЯ ===
 window.renderPlaces = function() {
     const query = document.getElementById('searchInput').value.toLowerCase().trim();
     const cbWheelchairSearch = document.getElementById('cb-wheelchair-search');
     const cbDeafSearch = document.getElementById('cb-deaf-search');
-    const filterWheelchair = cbWheelchairSearch ? cbWheelchairSearch.checked : false;
+    const filterWheelchair = state.rampOnly || (cbWheelchairSearch ? cbWheelchairSearch.checked : false);
     const filterDeaf = cbDeafSearch ? cbDeafSearch.checked : false;
     const t = translations[currentLang];
 
@@ -297,12 +379,13 @@ window.renderPlaces = function() {
 
     let filtered = placesDB.filter(p => {
         let textMatch = query === '' ? true : (p.name.toLowerCase().includes(query) || p.category.includes(query) || (p.desc && p.desc.toLowerCase().includes(query)));
-        if(filterWheelchair && p.accessLevel === 'none') return false;
+        // Только ПОЛНЫЙ доступ (full) считается "с пандусом" для строгого фильтра
+        if(filterWheelchair && p.accessLevel !== 'full') return false;
         if(filterDeaf && !p.deafFriendly) return false;
         return textMatch;
     });
 
-    if (filtered.length === 0 && query !== '') {
+    if (filtered.length === 0) {
         list.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:15px;">${t.noPlaces}</p>`;
         return;
     }
@@ -452,18 +535,39 @@ window.setMode = function(mode, el) {
     window.calculateRoute();
 };
 
+// Реальный ORS-профиль "wheelchair" нестабилен без доп. подписки/тегов OSM,
+// поэтому по решению используем надёжный пешеходный профиль (foot-walking)
+// для режима ♿, а доступность точек проверяем отдельно через фильтр мест.
+function resolveOrsProfile(mode) {
+    if (mode === 'wheelchair') return 'foot-walking';
+    return mode;
+}
+
 window.calculateRoute = async function() {
     if(!state.routeLatLangs.start || !state.routeLatLangs.end) return;
     document.getElementById('routeResult').style.display = 'block';
+    const t = translations[currentLang];
     try {
-        const res = await fetch(`https://api.openrouteservice.org/v2/directions/${state.mode}?api_key=${ORS_API_KEY}&start=${state.routeLatLangs.start.join(',')}&end=${state.routeLatLangs.end.join(',')}`);
+        const profile = resolveOrsProfile(state.mode);
+        const res = await fetch(`https://api.openrouteservice.org/v2/directions/${profile}?api_key=${ORS_API_KEY}&start=${state.routeLatLangs.start.join(',')}&end=${state.routeLatLangs.end.join(',')}`);
         const data = await res.json();
+        if (!data.features || !data.features[0]) throw new Error('No route');
+
         map.getSource('route').setData({ "type": "Feature", "geometry": { "type": "LineString", "coordinates": data.features[0].geometry.coordinates } });
-        document.getElementById('routeTime').innerText = Math.round(data.features[0].properties.summary.duration / 60) + ' мин';
-        document.getElementById('routeDist').innerText = (data.features[0].properties.summary.distance / 1000).toFixed(2) + ' км';
+        const minutes = Math.round(data.features[0].properties.summary.duration / 60);
+        const km = (data.features[0].properties.summary.distance / 1000).toFixed(2);
+        document.getElementById('routeTime').innerText = minutes + ' мин';
+        document.getElementById('routeDist').innerText = km + ' км';
         const bounds = new maplibregl.LngLatBounds(); data.features[0].geometry.coordinates.forEach(c => bounds.extend(c));
         map.fitBounds(bounds, { padding: 50 });
-    } catch(e) { window.toast('routeError'); }
+
+        // Озвучка готового маршрута — критично для незрячих пользователей
+        window.speak(t.routeReadyVoice + minutes + t.minutesVoice + km + t.kmVoice);
+    } catch(e) {
+        console.error(e);
+        window.toast('routeError');
+        window.speak(t.routeError);
+    }
 };
 
 window.toast = function(msgKey, isRaw = false) {
@@ -475,6 +579,7 @@ window.toast = function(msgKey, isRaw = false) {
 };
 
 window.speak = function(text) {
+    if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     const voiceCb = document.getElementById('cb-vision-voice');
     const isVoiceEnabled = voiceCb ? voiceCb.checked : false;
@@ -485,10 +590,92 @@ window.speak = function(text) {
     }
 };
 
+// Принудительная озвучка (используется для навигации/маршрутов независимо от чекбокса "озвучивать детали")
+window.speakForce = function(text) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    let u = new SpeechSynthesisUtterance(text);
+    u.lang = currentLang === 'ru' ? 'ru-RU' : (currentLang === 'en' ? 'en-US' : 'kk-KZ');
+    window.speechSynthesis.speak(u);
+};
+
 window.toggleVoice = function() {
     state.voice = !state.voice;
     document.getElementById('voiceBtn').style.color = state.voice ? "var(--primary)" : "var(--text-main)";
     window.toast(state.voice ? 'toastVoiceOn' : 'toastVoiceOff');
+};
+
+// === ГОЛОСОВОЙ ВЫБОР ТОЧЕК МАРШРУТА (для слабовидящих) ===
+// Ищет ближайшее совпадение в placesDB по произнесённому названию.
+function findPlaceByVoice(transcript) {
+    const q = transcript.toLowerCase().trim();
+    if (!q) return null;
+    // Сначала точное вхождение
+    let found = placesDB.find(p => p.name.toLowerCase().includes(q) || q.includes(p.name.toLowerCase()));
+    if (found) return found;
+    // Затем по словам (частичное совпадение)
+    const words = q.split(/\s+/).filter(w => w.length > 2);
+    found = placesDB.find(p => words.some(w => p.name.toLowerCase().includes(w)));
+    return found || null;
+}
+
+window.startVoiceRouteSearch = function(pointType) {
+    const t = translations[currentLang];
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) { window.toast("Голосовой поиск не поддерживается", true); return; }
+
+    window.speakForce(pointType === 'start' ? t.sayOrigin : t.sayDestination);
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = currentLang === 'ru' ? 'ru-RU' : (currentLang === 'en' ? 'en-US' : 'kk-KZ');
+
+    // Небольшая задержка, чтобы TTS-подсказка не перебивалась распознаванием
+    setTimeout(() => {
+        try { recognition.start(); } catch(e) { /* уже запущен */ }
+    }, 900);
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        const place = findPlaceByVoice(transcript);
+
+        if (!place) {
+            window.toast(t.voiceNotFound, true);
+            window.speakForce(t.voiceNotFound);
+            return;
+        }
+
+        window.speakForce(t.voiceRouteFound + place.name);
+        window.toast(t.voiceRouteFound + place.name, true);
+
+        const coords = [place.lng, place.lat];
+        let el = document.createElement('div');
+
+        if (pointType === 'start') {
+            state.routeLatLangs.start = coords;
+            document.getElementById('routeStart').value = place.name;
+            el.innerHTML = '<div class="point-icon a">A</div>';
+            if (state.markers.start) state.markers.start.remove();
+            state.markers.start = new maplibregl.Marker(el).setLngLat(coords).addTo(map);
+        } else {
+            state.routeLatLangs.end = coords;
+            document.getElementById('routeEnd').value = place.name;
+            el.innerHTML = '<div class="point-icon b">B</div>';
+            if (state.markers.end) state.markers.end.remove();
+            state.markers.end = new maplibregl.Marker(el).setLngLat(coords).addTo(map);
+        }
+
+        // Если старт не задан, но есть GPS — используем текущее местоположение автоматически
+        if (!state.routeLatLangs.start && state.markers.gps) {
+            state.routeLatLangs.start = [state.markers.gps.getLngLat().lng, state.markers.gps.getLngLat().lat];
+            document.getElementById('routeStart').value = t.pointA;
+        }
+
+        window.calculateRoute();
+    };
+
+    recognition.onerror = function() {
+        window.toast(t.voiceNotFound, true);
+    };
 };
 
 // === ЖИВОЙ GPS И СЛЕЖЕНИЕ ===
@@ -548,14 +735,25 @@ window.saveUserSettings = function() {
     });
     const cbToasts = document.getElementById('cb-toasts');
     if (cbToasts) localStorage.setItem('toasts', cbToasts.checked);
+
     const tabW = document.getElementById('tabWheelchair');
     const routeCb = document.getElementById('cb-wheelchair-route');
     if (tabW && routeCb) tabW.style.display = routeCb.checked ? 'block' : 'none';
+
     const isVision = document.getElementById('cb-vision-main') ? document.getElementById('cb-vision-main').checked : false;
     const aiBtn = document.getElementById('aiBtn');
     const voiceBtn = document.getElementById('voiceBtn');
+    const voiceRouteGroup = document.getElementById('voiceRouteGroup');
     if (aiBtn) aiBtn.style.display = isVision ? 'flex' : 'none';
     if (voiceBtn) voiceBtn.style.display = isVision ? 'flex' : 'none';
+    if (voiceRouteGroup) voiceRouteGroup.style.display = isVision ? 'block' : 'none';
+
+    // Синхронизируем быстрый чип "только с пандусом" с настройками
+    const cbWheelchairSearch = document.getElementById('cb-wheelchair-search');
+    state.rampOnly = cbWheelchairSearch ? cbWheelchairSearch.checked : false;
+    const chip = document.getElementById('chipRampOnly');
+    if (chip) chip.classList.toggle('chip-active', state.rampOnly);
+
     window.renderPlaces();
 };
 
@@ -578,11 +776,18 @@ window.loadUserSettings = function() {
     });
     const tabW = document.getElementById('tabWheelchair');
     if (tabW) tabW.style.display = localStorage.getItem('wheelchair-route') === 'true' ? 'block' : 'none';
+
     const isVision = localStorage.getItem('vision-main') === 'true';
     const aiBtn = document.getElementById('aiBtn');
     const voiceBtn = document.getElementById('voiceBtn');
+    const voiceRouteGroup = document.getElementById('voiceRouteGroup');
     if (aiBtn) aiBtn.style.display = isVision ? 'flex' : 'none';
     if (voiceBtn) voiceBtn.style.display = isVision ? 'flex' : 'none';
+    if (voiceRouteGroup) voiceRouteGroup.style.display = isVision ? 'block' : 'none';
+
+    state.rampOnly = localStorage.getItem('wheelchair-search') === 'true';
+    const chip = document.getElementById('chipRampOnly');
+    if (chip) chip.classList.toggle('chip-active', state.rampOnly);
 };
 
 window.applySettings = function() {
@@ -593,7 +798,7 @@ window.applySettings = function() {
     map.once('styledata', () => addCustomMapLayers());
 };
 
-// === ГОЛОСОВОЙ ПОИСК ===
+// === ГОЛОСОВОЙ ПОИСК (общий поиск по карте) ===
 window.startVoiceSearch = function() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return window.toast("Голосовой поиск не поддерживается", true);
@@ -619,15 +824,19 @@ window.startTrafficLightAssist = async function() {
     videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); video.srcObject = videoStream;
     video.onloadedmetadata = () => {
         canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        let wasFound = false;
         cvInterval = setInterval(async () => {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height); const predictions = await aiModel.detect(canvas);
             let tl = predictions.find(p => p.class === 'traffic light' && p.score > 0.5);
             if(tl) {
                 document.getElementById('trafficIcon').innerText = "🚦";
                 document.getElementById('trafficText').innerText = translations[currentLang].trafficFound;
+                if (!wasFound) window.speakForce(translations[currentLang].trafficFound);
+                wasFound = true;
             } else {
                 document.getElementById('trafficIcon').innerText = "👀";
                 document.getElementById('trafficText').innerText = translations[currentLang].trafficWait;
+                wasFound = false;
             }
         }, 1000);
     };
@@ -641,6 +850,7 @@ window.stopTrafficLightAssist = function() {
 
 // === НАВИГАТОР ===
 window.startNavigatorMode = function() {
+    const t = translations[currentLang];
     if (!state.routeLatLangs.start || !state.routeLatLangs.end) {
         window.toast("Сначала постройте маршрут", true); return;
     }
@@ -650,7 +860,7 @@ window.startNavigatorMode = function() {
     if (bottomNav) bottomNav.style.display = 'none';
     document.getElementById('stopNavBtn').style.display = 'block';
     if (!state.gpsActive) window.toggleGPS();
-    window.speak(translations[currentLang].btnDrive);
+    window.speakForce(t.startNavVoice);
 };
 
 window.stopNavigatorMode = function() {

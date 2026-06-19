@@ -62,6 +62,7 @@ body, html { margin: 0; padding: 0; height: 100dvh; font-family: -apple-system, 
 .mic-icon { position: absolute; right: 10px; font-size: 18px; color: var(--primary); cursor: pointer; padding: 5px;}
 .quick-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
 .chip-btn { background: var(--bg-panel); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 16px; font-size: 13px; color: var(--text-main); cursor: pointer; font-weight: 600; }
+.chip-btn.chip-active { background: #34c759; color: #fff; border-color: #34c759; }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase;}
 .form-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-input); font-size: 15px; outline: none; color: var(--text-main); font-weight: 500;}

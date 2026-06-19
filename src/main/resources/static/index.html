@@ -53,6 +53,7 @@
                 <button class="chip-btn" onclick="window.quickSearch('Ресторан')">🍽️ Еда</button>
                 <button class="chip-btn" onclick="window.quickSearch('Аптека')">💊 Аптека</button>
                 <button class="chip-btn" onclick="window.quickSearch('Magnum')">🛒 Magnum</button>
+                <button class="chip-btn" id="chipRampOnly" onclick="window.toggleRampOnlyQuick()">♿ Только с пандусом</button>
             </div>
             <div id="searchResultsList" class="results-list"></div>
         </div>
@@ -79,6 +80,12 @@
                     <input type="text" class="route-input" id="routeEnd" placeholder="Куда поедем? (Нажмите на карту)" readonly>
                     <span class="clear-btn" onclick="event.stopPropagation(); window.clearRoutePoint('end');">✕</span>
                 </div>
+            </div>
+
+            <div class="route-input-group" id="voiceRouteGroup" style="display:none; padding: 12px;">
+                <button class="start-nav-btn" style="background:#5856d6;" onclick="window.startVoiceRouteSearch('start')">🎤 Сказать "Откуда"</button>
+                <div style="height:8px;"></div>
+                <button class="start-nav-btn" style="background:#5856d6;" onclick="window.startVoiceRouteSearch('end')">🎤 Сказать "Куда"</button>
             </div>
 
             <div class="route-result-box" id="routeResult">
@@ -218,17 +225,29 @@
 </div>
 
 <div id="add-place-overlay" class="hidden-overlay" style="display:none; z-index: 9999;">
-    <div class="panel" style="width: 90%; max-width: 400px; padding: 20px;">
-        <h3>Добавить место</h3>
+    <div class="panel" style="width: 90%; max-width: 400px; padding: 20px; display:flex; flex-direction:column; gap:10px;">
+        <h3 id="txtAddPlaceTitle">Добавить место</h3>
         <input type="text" id="new-place-name" placeholder="Название" class="form-input">
         <select id="new-place-cat" class="form-input">
             <option value="shop">Магазин</option>
             <option value="pharmacy">Аптека</option>
             <option value="food">Еда</option>
         </select>
-        <label><input type="checkbox" id="new-place-wheel"> Пандус есть</label>
+        <textarea id="new-place-desc" placeholder="Описание (необязательно)" class="form-input" rows="2"></textarea>
+
+        <label id="lblAccessLevel" style="font-size:12px; color:var(--text-muted); font-weight:600; text-transform:uppercase; margin-bottom:-4px;">Доступность для колясок</label>
+        <select id="new-place-access" class="form-input">
+            <option value="full">✅ Полный доступ (пандус/лифт)</option>
+            <option value="partial">🤝 Частично (нужна помощь/звонок)</option>
+            <option value="none">❌ Недоступно (лестницы)</option>
+        </select>
+
+        <label class="sub-option-label" style="margin-top:4px;">
+            <input type="checkbox" id="new-place-deaf"> 🧏 Есть текстовое меню/табло
+        </label>
+
         <button onclick="window.saveNewPlace()" class="start-nav-btn">Сохранить</button>
-        <button onclick="document.getElementById('add-place-overlay').style.display='none'" class="reset-btn">Отмена</button>
+        <button onclick="window.closeAddPlaceModal()" class="reset-btn">Отмена</button>
     </div>
 </div>
 
